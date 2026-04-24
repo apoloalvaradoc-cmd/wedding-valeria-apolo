@@ -75,12 +75,14 @@ a { color: inherit; text-decoration: none; }
 body.locked { overflow: hidden; }
 
 /* ============================================================
-   COVER · sobre sage embossed + sello de cera
+   COVER · velvet burgundy + sobre cream embossed + sello realista
 ============================================================ */
 #cover {
   position: fixed; inset: 0; z-index: 200;
   background:
-    radial-gradient(ellipse at 50% 30%, #FBF4E2 0%, #F0E6CC 55%, #DCD0B4 100%);
+    /* velvet fiber texture */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7 0.04' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.02 0 0 0 0 0.04 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 35%, #6B1A2D 0%, #4A101F 50%, #2A0810 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
   transition: opacity 0.9s ease 0.6s, visibility 0s linear 1.5s;
@@ -88,12 +90,14 @@ body.locked { overflow: hidden; }
 }
 #cover::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: var(--paper-noise);
-  mix-blend-mode: multiply; opacity: 0.7;
+  background:
+    radial-gradient(ellipse at 50% 35%, transparent 40%, rgba(0, 0, 0, 0.65) 100%);
+  mix-blend-mode: multiply;
 }
 #cover::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse at 50% 35%, transparent 40%, rgba(122, 100, 70, 0.18) 100%);
+  background:
+    radial-gradient(ellipse at 50% 25%, rgba(255, 200, 150, 0.06), transparent 55%);
 }
 #cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; }
 
@@ -166,11 +170,12 @@ body.locked { overflow: hidden; }
 .petal.cream { background: radial-gradient(circle at 35% 30%, #FFFFFF, #F5E4D6 60%, #D9C4AB); }
 
 .cover-eyebrow {
-  font-family: var(--font-sans); font-size: 0.7rem;
+  font-family: var(--font-sans); font-size: 0.72rem;
   letter-spacing: 0.55em; text-transform: uppercase;
-  color: #6E7A4B; margin-bottom: 2.4rem;
+  color: #E8C8A4; margin-bottom: 2.4rem;
   animation: fadeInUp 1s var(--ease-soft) 0.2s both;
   position: relative; z-index: 5;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
 .envelope-scene {
@@ -190,15 +195,23 @@ body.locked { overflow: hidden; }
 .envelope-back {
   position: absolute; inset: 0;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23394424' stroke-width='0.6' opacity='0.55'%3E%3Cpath d='M55,30 Q70,42 70,55 Q70,68 55,80 Q40,68 40,55 Q40,42 55,30'/%3E%3Cpath d='M55,38 Q63,46 63,55 Q63,64 55,72 Q47,64 47,55 Q47,46 55,38'/%3E%3Cellipse cx='25' cy='30' rx='8' ry='3.5' transform='rotate(-35 25 30)'/%3E%3Cellipse cx='85' cy='30' rx='8' ry='3.5' transform='rotate(35 85 30)'/%3E%3Cellipse cx='25' cy='80' rx='8' ry='3.5' transform='rotate(35 25 80)'/%3E%3Cellipse cx='85' cy='80' rx='8' ry='3.5' transform='rotate(-35 85 80)'/%3E%3Cpath d='M15,55 Q22,52 28,55 Q22,58 15,55'/%3E%3Cpath d='M82,55 Q88,52 95,55 Q88,58 82,55'/%3E%3Cpath d='M55,8 Q52,14 55,20 Q58,14 55,8'/%3E%3Cpath d='M55,90 Q52,96 55,102 Q58,96 55,90'/%3E%3C/g%3E%3Cg fill='%23394424' opacity='0.32'%3E%3Ccircle cx='55' cy='55' r='5'/%3E%3Cellipse cx='51' cy='53' rx='2.5' ry='1.6'/%3E%3Cellipse cx='59' cy='53' rx='2.5' ry='1.6'/%3E%3Cellipse cx='55' cy='58' rx='2.5' ry='1.6'/%3E%3C/g%3E%3Cg fill='%23A8B58F' opacity='0.42'%3E%3Ccircle cx='56' cy='54' r='4.5'/%3E%3C/g%3E%3C/svg%3E"),
-    linear-gradient(135deg, #A8B189 0%, #8E9A6B 45%, #6E7A4B 100%);
-  background-size: 78px 78px, 100% 100%;
+    /* shadow-side embossed flowers (offset down-right) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23B59C7A' opacity='0.45'%3E%3Cg transform='translate(60 60)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(170 130)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3Cg transform='translate(110 190)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    /* highlight-side embossed flowers (offset up-left) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23FFFAEC' opacity='0.55'%3E%3Cg transform='translate(58 58)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(168 128)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3Cg transform='translate(108 188)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    /* base paper grain */
+    var(--paper-noise),
+    /* base cream */
+    linear-gradient(135deg, #F5E9D0 0%, #EFE0BF 45%, #E5D2A8 100%);
+  background-size: 220px 220px, 220px 220px, 320px 320px, 100% 100%;
+  background-blend-mode: multiply, screen, multiply, normal;
   border-radius: 3px;
   box-shadow:
-    0 30px 50px -15px rgba(60, 70, 30, 0.45),
-    0 10px 18px rgba(60, 70, 30, 0.22),
-    inset 0 0 60px rgba(40, 50, 20, 0.18),
-    inset 0 -2px 6px rgba(255, 255, 255, 0.08);
+    0 30px 50px -15px rgba(0, 0, 0, 0.55),
+    0 12px 22px rgba(0, 0, 0, 0.3),
+    inset 0 0 80px rgba(160, 130, 80, 0.18),
+    inset 0 2px 6px rgba(255, 255, 255, 0.45),
+    inset 0 -3px 10px rgba(120, 90, 50, 0.12);
   overflow: hidden;
 }
 .envelope-back::before, .envelope-back::after {
@@ -225,75 +238,46 @@ body.locked { overflow: hidden; }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23394424' stroke-width='0.6' opacity='0.5'%3E%3Cpath d='M55,30 Q70,42 70,55 Q70,68 55,80 Q40,68 40,55 Q40,42 55,30'/%3E%3Cellipse cx='25' cy='30' rx='8' ry='3.5' transform='rotate(-35 25 30)'/%3E%3Cellipse cx='85' cy='30' rx='8' ry='3.5' transform='rotate(35 85 30)'/%3E%3C/g%3E%3Cg fill='%23394424' opacity='0.28'%3E%3Ccircle cx='55' cy='55' r='4'/%3E%3C/g%3E%3C/svg%3E"),
-    linear-gradient(170deg, #B5BE92 0%, #93A073 55%, #6E7A4B 100%);
-  background-size: 78px 78px, 100% 100%;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23B59C7A' opacity='0.45'%3E%3Cg transform='translate(60 60)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(170 130)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23FFFAEC' opacity='0.55'%3E%3Cg transform='translate(58 58)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(168 128)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    var(--paper-noise),
+    linear-gradient(170deg, #FAF1D9 0%, #F0E0BB 55%, #E2CC9D 100%);
+  background-size: 220px 220px, 220px 220px, 320px 320px, 100% 100%;
+  background-blend-mode: multiply, screen, multiply, normal;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center; transform: rotateX(0deg);
   transition: transform 1.3s var(--ease-luxe) 0.3s;
   z-index: 4; backface-visibility: hidden;
-  box-shadow: inset 0 -4px 12px rgba(40, 50, 20, 0.25), inset 0 2px 6px rgba(255,255,255,0.15);
+  box-shadow:
+    inset 0 -8px 16px rgba(120, 90, 50, 0.18),
+    inset 0 3px 8px rgba(255,255,255,0.45);
 }
 .envelope.opening .envelope-flap { transform: rotateX(-178deg); }
 
 .envelope-seal {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%) rotate(-6deg);
-  width: clamp(96px, 26%, 130px); aspect-ratio: 1; border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 28%, #C84766 0%, #9A2C42 18%, #6B1626 45%, #4A0F1B 72%, #2A0710 100%);
+  width: clamp(108px, 30%, 144px); aspect-ratio: 1;
   display: flex; align-items: center; justify-content: center; z-index: 5;
-  box-shadow:
-    0 14px 28px rgba(0,0,0,0.55),
-    0 4px 10px rgba(0,0,0,0.4),
-    inset -6px -8px 14px rgba(0,0,0,0.5),
-    inset 4px 4px 8px rgba(255,180,180,0.18),
-    inset 0 0 24px rgba(232,108,128,0.15);
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,0.55)) drop-shadow(0 4px 8px rgba(0,0,0,0.35));
   transition: transform 0.5s var(--ease-luxe), opacity 0.45s ease 0.1s;
 }
-/* Wax drip irregularity — pseudo-elements simulate seal edge melt */
-.envelope-seal::before {
-  content: ''; position: absolute; inset: -8%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #9A2C42 0%, #6B1626 40%, transparent 65%);
-  opacity: 0.7; z-index: -1;
-  filter: blur(4px);
-  clip-path: polygon(
-    50% 0%, 62% 4%, 78% 12%, 90% 28%, 98% 46%, 100% 60%,
-    96% 76%, 88% 88%, 76% 96%, 60% 100%, 44% 98%, 30% 94%,
-    18% 86%, 8% 72%, 2% 56%, 0% 40%, 4% 24%, 14% 12%, 28% 4%, 42% 0%
-  );
-}
-.envelope-seal::after {
-  content: ''; position: absolute; inset: 6%; border-radius: 50%;
-  border: 1px dashed rgba(255, 220, 200, 0.4);
-  pointer-events: none;
-}
-.envelope-seal-text {
-  font-family: var(--font-script); color: #F8DDC8;
-  font-size: clamp(2rem, 7.5vw, 2.8rem);
-  line-height: 1; letter-spacing: -0.04em;
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.45),
-    0 -1px 0 rgba(255,200,180,0.18),
-    0 2px 4px rgba(0,0,0,0.5);
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.4));
-  position: relative; z-index: 2;
-}
+.envelope-seal svg { width: 100%; height: 100%; overflow: visible; }
 .envelope.opening .envelope-seal { transform: translate(-50%, 180%) rotate(45deg) scale(0.4); opacity: 0; }
 
 .cover-label { margin-top: 2.6rem; animation: fadeInUp 1s var(--ease-soft) 0.9s both; text-align: center; position: relative; z-index: 5; }
-.cover-names { font-family: var(--font-script); color: var(--wine); font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1; }
-.cover-date { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.5em; text-transform: uppercase; color: #6E7A4B; margin-top: 0.7rem; }
-.cover-divider { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.9rem auto 0; opacity: 0.7; }
-.cover-divider .line { width: 38px; height: 1px; background: linear-gradient(to right, transparent, #6E7A4B, transparent); }
-.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--wine); }
+.cover-names { font-family: var(--font-script); color: #F5E2C8; font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1; text-shadow: 0 2px 12px rgba(0,0,0,0.7); }
+.cover-date { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.5em; text-transform: uppercase; color: #E8C8A4; margin-top: 0.7rem; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+.cover-divider { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.9rem auto 0; opacity: 0.85; }
+.cover-divider .line { width: 38px; height: 1px; background: linear-gradient(to right, transparent, #E8C8A4, transparent); }
+.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: #E8C8A4; box-shadow: 0 0 6px rgba(232, 200, 164, 0.6); }
 
 .cover-cta {
   margin-top: 2rem; font-family: var(--font-sans); font-size: 0.7rem;
-  letter-spacing: 0.4em; text-transform: uppercase; color: rgba(110, 122, 75, 0.75);
+  letter-spacing: 0.4em; text-transform: uppercase; color: rgba(232, 200, 164, 0.8);
   animation: pulse 2.2s ease-in-out infinite, fadeInUp 1s var(--ease-soft) 1.4s both;
   display: flex; align-items: center; gap: 0.6rem; position: relative; z-index: 5;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 .cover-cta::before, .cover-cta::after { content: ''; width: 24px; height: 1px; background: var(--rose-powder); }
 
@@ -913,12 +897,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     </defs>
   </svg>
 
-  <!-- Florals at 4 corners -->
-  <svg class="bloom tl" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
-  <svg class="bloom tr" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
-  <svg class="bloom bl" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
-  <svg class="bloom br" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
-
   <!-- Pétalos cayendo -->
   <div class="petals" aria-hidden="true">
     <span class="petal"></span><span class="petal cream"></span><span class="petal"></span>
@@ -940,11 +918,65 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       </div>
       <div class="envelope-flap"></div>
       <div class="envelope-seal" aria-hidden="true">
-        <svg class="envelope-seal-text" viewBox="0 0 100 60" width="62%" style="overflow:visible">
-          <text x="50" y="44" text-anchor="middle" font-family="Italianno, cursive" font-size="50" fill="#F8DDC8"
-                style="filter:drop-shadow(0 1px 0 rgba(0,0,0,0.5))">V&amp;A</text>
-          <text x="50" y="44" text-anchor="middle" font-family="Italianno, cursive" font-size="50" fill="none"
-                stroke="rgba(255,210,190,0.18)" stroke-width="0.4">V&amp;A</text>
+        <svg viewBox="-10 -10 220 220">
+          <defs>
+            <radialGradient id="wax-base" cx="32%" cy="26%">
+              <stop offset="0%" stop-color="#C84766"/>
+              <stop offset="22%" stop-color="#9C2840"/>
+              <stop offset="55%" stop-color="#6B1A2D"/>
+              <stop offset="85%" stop-color="#3F0C18"/>
+              <stop offset="100%" stop-color="#2A0710"/>
+            </radialGradient>
+            <radialGradient id="wax-marble" cx="60%" cy="70%">
+              <stop offset="0%" stop-color="#8A2438" stop-opacity="0.6"/>
+              <stop offset="60%" stop-color="#4A0F1B" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="wax-bevel" x="-15%" y="-15%" width="130%" height="130%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="blur"/>
+              <feSpecularLighting in="blur" surfaceScale="6" specularConstant="1.6" specularExponent="22" lighting-color="#FFD0BA" result="spec">
+                <feDistantLight azimuth="135" elevation="55"/>
+              </feSpecularLighting>
+              <feComposite in="spec" in2="SourceAlpha" operator="in" result="specMasked"/>
+              <feMerge>
+                <feMergeNode in="SourceGraphic"/>
+                <feMergeNode in="specMasked"/>
+              </feMerge>
+            </filter>
+            <filter id="wax-marble-noise">
+              <feTurbulence baseFrequency="0.7" numOctaves="2" seed="5"/>
+              <feColorMatrix values="0 0 0 0 0.25  0 0 0 0 0.05  0 0 0 0 0.10  0 0 0 0.18 0"/>
+              <feComposite in2="SourceGraphic" operator="in"/>
+            </filter>
+            <filter id="emboss-mono" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur"/>
+              <feSpecularLighting in="blur" surfaceScale="3" specularConstant="2.4" specularExponent="30" lighting-color="#FFE0CB" result="spec">
+                <feDistantLight azimuth="135" elevation="60"/>
+              </feSpecularLighting>
+              <feComposite in="spec" in2="SourceAlpha" operator="in" result="specMasked"/>
+              <feMerge>
+                <feMergeNode in="SourceGraphic"/>
+                <feMergeNode in="specMasked"/>
+              </feMerge>
+            </filter>
+            <symbol id="wax-shape" viewBox="0 0 200 200">
+              <!-- Irregular drip outline -->
+              <path d="M100,8 Q132,10 156,28 Q182,48 188,82 Q196,118 178,148 Q160,182 122,190 Q88,196 56,180 Q22,162 12,128 Q4,94 18,62 Q34,28 64,14 Q82,6 100,8 Z"/>
+            </symbol>
+          </defs>
+          <!-- Drip cast shadow -->
+          <use href="#wax-shape" fill="rgba(0,0,0,0.45)" transform="translate(4 8)" filter="url(#blur1)"/>
+          <!-- Wax base with bevel -->
+          <use href="#wax-shape" fill="url(#wax-base)" filter="url(#wax-bevel)"/>
+          <!-- Marbling overlay -->
+          <use href="#wax-shape" fill="url(#wax-marble)"/>
+          <use href="#wax-shape" fill="#000" filter="url(#wax-marble-noise)" opacity="0.35"/>
+          <!-- Inner ring engraving -->
+          <circle cx="100" cy="100" r="76" fill="none" stroke="#3F0C18" stroke-width="1.2" opacity="0.55"/>
+          <circle cx="100" cy="100" r="76" fill="none" stroke="#FFC8B0" stroke-width="0.5" opacity="0.25" transform="translate(0 -1)"/>
+          <!-- Embossed V&A monogram (raised by feSpecularLighting + dark fill) -->
+          <text x="100" y="135" text-anchor="middle" font-family="Cormorant Garamond, serif"
+                font-size="118" font-weight="500" letter-spacing="-6"
+                fill="#3F0C18" filter="url(#emboss-mono)" opacity="0.95">V&amp;A</text>
         </svg>
       </div>
     </div>
