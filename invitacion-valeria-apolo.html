@@ -75,12 +75,12 @@ a { color: inherit; text-decoration: none; }
 body.locked { overflow: hidden; }
 
 /* ============================================================
-   COVER · jardín premium + sobre con sello de cera
+   COVER · sobre sage embossed + sello de cera
 ============================================================ */
 #cover {
   position: fixed; inset: 0; z-index: 200;
   background:
-    radial-gradient(ellipse at 50% 38%, #2A0810 0%, #1B040A 50%, #0E0206 100%);
+    radial-gradient(ellipse at 50% 30%, #FBF4E2 0%, #F0E6CC 55%, #DCD0B4 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
   transition: opacity 0.9s ease 0.6s, visibility 0s linear 1.5s;
@@ -88,21 +88,23 @@ body.locked { overflow: hidden; }
 }
 #cover::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.5) 100%),
-    var(--paper-noise);
-  mix-blend-mode: multiply;
+  background: var(--paper-noise);
+  mix-blend-mode: multiply; opacity: 0.7;
+}
+#cover::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 35%, transparent 40%, rgba(122, 100, 70, 0.18) 100%);
 }
 #cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; }
 
-/* Floral corner arrangements — layered peonies + eucalyptus */
+/* Floral corner arrangements — soft sage + blush peonies */
 .bloom {
   position: absolute; pointer-events: none;
   width: 220px; height: 220px;
   opacity: 0; transform: scale(0.4) rotate(var(--r, 0deg));
   animation: bloomIn 1.6s var(--ease-soft) var(--d, 0.4s) both;
   transform-origin: var(--anchor, center);
-  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 6px 14px rgba(94, 78, 50, 0.18));
 }
 .bloom.tl { top: -40px; left: -50px; --r: -12deg; --anchor: top left; --d: 0.3s; }
 .bloom.tr { top: -40px; right: -50px; --r: 16deg; --anchor: top right; --d: 0.55s; transform: scale(0.4) rotate(var(--r)) scaleX(-1); }
@@ -133,28 +135,42 @@ body.locked { overflow: hidden; }
   100% { transform: scale(1.18) rotate(var(--r, 0deg)) scaleX(-1); }
 }
 
-/* Gold dust particles */
-.gold-dust { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.gold-speck {
-  position: absolute; width: 3px; height: 3px; border-radius: 50%;
-  background: radial-gradient(circle, #E8C77F, #B8945A 60%, transparent 75%);
-  box-shadow: 0 0 6px rgba(232, 199, 127, 0.7);
-  animation: floatGold linear infinite;
+/* Falling rose petals */
+.petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+.petal {
+  position: absolute; top: -30px;
+  width: 14px; height: 14px;
+  background: radial-gradient(circle at 35% 30%, #FAEBE2, #E0B5B0 60%, #B79784);
+  border-radius: 50% 0 50% 0;
+  opacity: 0;
+  filter: drop-shadow(0 2px 3px rgba(94, 78, 50, 0.18));
+  animation: petalFall linear infinite;
 }
-@keyframes floatGold {
-  0%   { transform: translate3d(0, 100vh, 0) scale(0.6); opacity: 0; }
-  10%  { opacity: 0.9; }
-  90%  { opacity: 0.7; }
-  100% { transform: translate3d(var(--gx, 30px), -10vh, 0) scale(1.2); opacity: 0; }
+@keyframes petalFall {
+  0%   { transform: translate3d(0, -30px, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.9; }
+  92%  { opacity: 0.8; }
+  100% { transform: translate3d(var(--x-drift, 30px), 110vh, 0) rotate(540deg); opacity: 0; }
 }
+.petal:nth-child(1)  { left: 6%;  animation-duration: 16s; animation-delay: -1s;  --x-drift: 35px; width: 12px; height: 12px; }
+.petal:nth-child(2)  { left: 16%; animation-duration: 22s; animation-delay: -4s;  --x-drift: -28px; width: 10px; height: 10px; }
+.petal:nth-child(3)  { left: 28%; animation-duration: 18s; animation-delay: -7s;  --x-drift: 45px; width: 14px; height: 14px; }
+.petal:nth-child(4)  { left: 42%; animation-duration: 24s; animation-delay: -2s;  --x-drift: -38px; width: 11px; height: 11px; }
+.petal:nth-child(5)  { left: 56%; animation-duration: 20s; animation-delay: -9s;  --x-drift: 32px; width: 13px; height: 13px; }
+.petal:nth-child(6)  { left: 70%; animation-duration: 17s; animation-delay: -5s;  --x-drift: -45px; width: 12px; height: 12px; }
+.petal:nth-child(7)  { left: 84%; animation-duration: 23s; animation-delay: -11s; --x-drift: 22px; width: 15px; height: 15px; }
+.petal:nth-child(8)  { left: 92%; animation-duration: 19s; animation-delay: -3s;  --x-drift: -18px; width: 10px; height: 10px; }
+.petal:nth-child(9)  { left: 36%; animation-duration: 21s; animation-delay: -13s; --x-drift: 40px; width: 11px; height: 11px; }
+.petal:nth-child(10) { left: 64%; animation-duration: 25s; animation-delay: -6s;  --x-drift: -32px; width: 13px; height: 13px; }
+.petal.dark  { background: radial-gradient(circle at 35% 30%, #E0B5B0, #B8455E 60%, #6B1A2D); }
+.petal.cream { background: radial-gradient(circle at 35% 30%, #FFFFFF, #F5E4D6 60%, #D9C4AB); }
 
 .cover-eyebrow {
   font-family: var(--font-sans); font-size: 0.7rem;
   letter-spacing: 0.55em; text-transform: uppercase;
-  color: #C9A789; margin-bottom: 2.4rem;
+  color: #6E7A4B; margin-bottom: 2.4rem;
   animation: fadeInUp 1s var(--ease-soft) 0.2s both;
   position: relative; z-index: 5;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
 .envelope-scene {
@@ -174,10 +190,15 @@ body.locked { overflow: hidden; }
 .envelope-back {
   position: absolute; inset: 0;
   background:
-    var(--paper-grain),
-    linear-gradient(135deg, var(--wine-dark) 0%, var(--corinto) 50%, var(--wine-deep) 100%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23394424' stroke-width='0.6' opacity='0.55'%3E%3Cpath d='M55,30 Q70,42 70,55 Q70,68 55,80 Q40,68 40,55 Q40,42 55,30'/%3E%3Cpath d='M55,38 Q63,46 63,55 Q63,64 55,72 Q47,64 47,55 Q47,46 55,38'/%3E%3Cellipse cx='25' cy='30' rx='8' ry='3.5' transform='rotate(-35 25 30)'/%3E%3Cellipse cx='85' cy='30' rx='8' ry='3.5' transform='rotate(35 85 30)'/%3E%3Cellipse cx='25' cy='80' rx='8' ry='3.5' transform='rotate(35 25 80)'/%3E%3Cellipse cx='85' cy='80' rx='8' ry='3.5' transform='rotate(-35 85 80)'/%3E%3Cpath d='M15,55 Q22,52 28,55 Q22,58 15,55'/%3E%3Cpath d='M82,55 Q88,52 95,55 Q88,58 82,55'/%3E%3Cpath d='M55,8 Q52,14 55,20 Q58,14 55,8'/%3E%3Cpath d='M55,90 Q52,96 55,102 Q58,96 55,90'/%3E%3C/g%3E%3Cg fill='%23394424' opacity='0.32'%3E%3Ccircle cx='55' cy='55' r='5'/%3E%3Cellipse cx='51' cy='53' rx='2.5' ry='1.6'/%3E%3Cellipse cx='59' cy='53' rx='2.5' ry='1.6'/%3E%3Cellipse cx='55' cy='58' rx='2.5' ry='1.6'/%3E%3C/g%3E%3Cg fill='%23A8B58F' opacity='0.42'%3E%3Ccircle cx='56' cy='54' r='4.5'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg, #A8B189 0%, #8E9A6B 45%, #6E7A4B 100%);
+  background-size: 78px 78px, 100% 100%;
   border-radius: 3px;
-  box-shadow: 0 24px 44px -12px rgba(40, 28, 18, 0.4), 0 8px 16px rgba(40, 28, 18, 0.18), inset 0 0 50px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 30px 50px -15px rgba(60, 70, 30, 0.45),
+    0 10px 18px rgba(60, 70, 30, 0.22),
+    inset 0 0 60px rgba(40, 50, 20, 0.18),
+    inset 0 -2px 6px rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 .envelope-back::before, .envelope-back::after {
@@ -204,13 +225,14 @@ body.locked { overflow: hidden; }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    var(--paper-grain),
-    linear-gradient(170deg, var(--corinto) 0%, var(--wine-dark) 65%, var(--wine-deep) 100%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23394424' stroke-width='0.6' opacity='0.5'%3E%3Cpath d='M55,30 Q70,42 70,55 Q70,68 55,80 Q40,68 40,55 Q40,42 55,30'/%3E%3Cellipse cx='25' cy='30' rx='8' ry='3.5' transform='rotate(-35 25 30)'/%3E%3Cellipse cx='85' cy='30' rx='8' ry='3.5' transform='rotate(35 85 30)'/%3E%3C/g%3E%3Cg fill='%23394424' opacity='0.28'%3E%3Ccircle cx='55' cy='55' r='4'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(170deg, #B5BE92 0%, #93A073 55%, #6E7A4B 100%);
+  background-size: 78px 78px, 100% 100%;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center; transform: rotateX(0deg);
   transition: transform 1.3s var(--ease-luxe) 0.3s;
   z-index: 4; backface-visibility: hidden;
-  box-shadow: inset 0 -4px 12px rgba(0,0,0,0.2);
+  box-shadow: inset 0 -4px 12px rgba(40, 50, 20, 0.25), inset 0 2px 6px rgba(255,255,255,0.15);
 }
 .envelope.opening .envelope-flap { transform: rotateX(-178deg); }
 
@@ -261,15 +283,15 @@ body.locked { overflow: hidden; }
 .envelope.opening .envelope-seal { transform: translate(-50%, 180%) rotate(45deg) scale(0.4); opacity: 0; }
 
 .cover-label { margin-top: 2.6rem; animation: fadeInUp 1s var(--ease-soft) 0.9s both; text-align: center; position: relative; z-index: 5; }
-.cover-names { font-family: var(--font-script); color: #F4D9C7; font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1; text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
-.cover-date { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.5em; text-transform: uppercase; color: #C9A789; margin-top: 0.7rem; }
+.cover-names { font-family: var(--font-script); color: var(--wine); font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1; }
+.cover-date { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.5em; text-transform: uppercase; color: #6E7A4B; margin-top: 0.7rem; }
 .cover-divider { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.9rem auto 0; opacity: 0.7; }
-.cover-divider .line { width: 38px; height: 1px; background: linear-gradient(to right, transparent, #C9A789, transparent); }
-.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: #E8C77F; box-shadow: 0 0 8px #E8C77F; }
+.cover-divider .line { width: 38px; height: 1px; background: linear-gradient(to right, transparent, #6E7A4B, transparent); }
+.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--wine); }
 
 .cover-cta {
   margin-top: 2rem; font-family: var(--font-sans); font-size: 0.7rem;
-  letter-spacing: 0.4em; text-transform: uppercase; color: rgba(232, 199, 127, 0.75);
+  letter-spacing: 0.4em; text-transform: uppercase; color: rgba(110, 122, 75, 0.75);
   animation: pulse 2.2s ease-in-out infinite, fadeInUp 1s var(--ease-soft) 1.4s both;
   display: flex; align-items: center; gap: 0.6rem; position: relative; z-index: 5;
 }
@@ -781,32 +803,32 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <radialGradient id="peony-burgundy" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#C84766"/>
-        <stop offset="50%" stop-color="#8A2438"/>
-        <stop offset="100%" stop-color="#3F0C18"/>
+        <stop offset="0%" stop-color="#F5C8C8"/>
+        <stop offset="50%" stop-color="#D9A0A4"/>
+        <stop offset="100%" stop-color="#9C6266"/>
       </radialGradient>
       <radialGradient id="peony-rose" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#E89AA8"/>
-        <stop offset="55%" stop-color="#B8455E"/>
-        <stop offset="100%" stop-color="#6B1A2D"/>
+        <stop offset="0%" stop-color="#F8DDD8"/>
+        <stop offset="55%" stop-color="#E0B5B0"/>
+        <stop offset="100%" stop-color="#A87C7A"/>
       </radialGradient>
       <radialGradient id="peony-blush" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#F4D5D2"/>
-        <stop offset="55%" stop-color="#D9A7AC"/>
-        <stop offset="100%" stop-color="#A06872"/>
+        <stop offset="0%" stop-color="#FAEBE2"/>
+        <stop offset="55%" stop-color="#EBCFC0"/>
+        <stop offset="100%" stop-color="#B79784"/>
       </radialGradient>
       <linearGradient id="leaf-grad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#5A6A2E"/>
-        <stop offset="100%" stop-color="#324019"/>
+        <stop offset="0%" stop-color="#A8B58F"/>
+        <stop offset="100%" stop-color="#6E7A4B"/>
       </linearGradient>
       <linearGradient id="eucal-grad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#9CA882"/>
-        <stop offset="100%" stop-color="#5F6B4A"/>
+        <stop offset="0%" stop-color="#C2CBA8"/>
+        <stop offset="100%" stop-color="#869272"/>
       </linearGradient>
 
       <symbol id="bloom-cluster" viewBox="0 0 320 320">
         <!-- Eucalyptus stems -->
-        <g stroke="#3F4A22" stroke-width="2" fill="none" stroke-linecap="round">
+        <g stroke="#6E7A4B" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.7">
           <path d="M40,280 Q90,220 140,170 T260,60"/>
           <path d="M50,260 Q110,200 170,160"/>
           <path d="M30,240 Q70,180 100,130"/>
@@ -831,49 +853,49 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <path d="M120,160 Q145,140 165,165 Q145,175 120,160 Z" transform="rotate(-20 140 162)"/>
           <path d="M200,90 Q225,75 245,95 Q225,108 200,90 Z" transform="rotate(-30 222 92)"/>
         </g>
-        <!-- Big burgundy peony (back) -->
+        <!-- Big peony (rose) -->
         <g transform="translate(180 180)">
           <circle r="62" fill="url(#peony-burgundy)" opacity="0.95"/>
-          <g fill="#5A0E1A" opacity="0.6">
+          <g fill="#A87C7A" opacity="0.4">
             <ellipse cx="-25" cy="-15" rx="22" ry="14" transform="rotate(-20)"/>
             <ellipse cx="20" cy="-22" rx="20" ry="13" transform="rotate(15)"/>
             <ellipse cx="28" cy="18" rx="24" ry="14" transform="rotate(40)"/>
             <ellipse cx="-22" cy="22" rx="22" ry="13" transform="rotate(-50)"/>
           </g>
-          <g fill="#8A2438">
+          <g fill="#F5C8C8">
             <ellipse cx="-12" cy="-8" rx="18" ry="11" transform="rotate(-15)"/>
             <ellipse cx="14" cy="-12" rx="17" ry="10" transform="rotate(20)"/>
             <ellipse cx="16" cy="14" rx="19" ry="11" transform="rotate(35)"/>
             <ellipse cx="-14" cy="14" rx="17" ry="10" transform="rotate(-40)"/>
           </g>
-          <circle r="14" fill="#3F0C18"/>
-          <circle r="6" fill="#1F0509"/>
+          <circle r="12" fill="#D9A0A4"/>
+          <circle r="5" fill="#A87C7A"/>
         </g>
-        <!-- Mid rose peony -->
+        <!-- Mid blush peony -->
         <g transform="translate(110 240) scale(0.78)">
           <circle r="56" fill="url(#peony-rose)" opacity="0.95"/>
-          <g fill="#7A2238" opacity="0.55">
+          <g fill="#B79784" opacity="0.4">
             <ellipse cx="-22" cy="-12" rx="20" ry="12" transform="rotate(-25)"/>
             <ellipse cx="22" cy="-18" rx="18" ry="11" transform="rotate(20)"/>
             <ellipse cx="24" cy="16" rx="22" ry="12" transform="rotate(45)"/>
           </g>
-          <g fill="#C25A72" opacity="0.85">
+          <g fill="#FAEBE2" opacity="0.95">
             <ellipse cx="-10" cy="-6" rx="14" ry="9" transform="rotate(-15)"/>
             <ellipse cx="12" cy="-10" rx="13" ry="8" transform="rotate(20)"/>
           </g>
-          <circle r="10" fill="#5C1525"/>
+          <circle r="9" fill="#D9A0A4"/>
         </g>
-        <!-- Blush peony bud -->
+        <!-- Cream peony bud -->
         <g transform="translate(245 130) scale(0.62)">
           <circle r="44" fill="url(#peony-blush)" opacity="0.95"/>
-          <g fill="#9C5260" opacity="0.5">
+          <g fill="#B79784" opacity="0.4">
             <ellipse cx="-16" cy="-10" rx="16" ry="10" transform="rotate(-30)"/>
             <ellipse cx="18" cy="-14" rx="15" ry="9" transform="rotate(20)"/>
           </g>
-          <circle r="8" fill="#7A3845"/>
+          <circle r="7" fill="#D9B3A0"/>
         </g>
         <!-- Filler buds -->
-        <g fill="#9C3A50" opacity="0.85">
+        <g fill="#D9A0A4" opacity="0.85">
           <circle cx="80" cy="180" r="7"/>
           <circle cx="65" cy="195" r="5"/>
           <circle cx="155" cy="120" r="6"/>
@@ -881,7 +903,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <circle cx="240" cy="220" r="5"/>
           <circle cx="100" cy="290" r="6"/>
         </g>
-        <g fill="#D9A7AC" opacity="0.9">
+        <g fill="#FAEBE2" opacity="0.95">
           <circle cx="55" cy="170" r="3.5"/>
           <circle cx="150" cy="135" r="3"/>
           <circle cx="200" cy="215" r="4"/>
@@ -897,18 +919,15 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   <svg class="bloom bl" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
   <svg class="bloom br" viewBox="0 0 320 320"><use href="#bloom-cluster"/></svg>
 
-  <!-- Gold dust shimmer -->
-  <div class="gold-dust" aria-hidden="true">
-    <span class="gold-speck" style="left:8%;animation-duration:14s;animation-delay:-2s;--gx:30px"></span>
-    <span class="gold-speck" style="left:22%;animation-duration:18s;animation-delay:-7s;--gx:-25px"></span>
-    <span class="gold-speck" style="left:38%;animation-duration:16s;animation-delay:-3s;--gx:40px"></span>
-    <span class="gold-speck" style="left:52%;animation-duration:20s;animation-delay:-10s;--gx:-35px"></span>
-    <span class="gold-speck" style="left:68%;animation-duration:15s;animation-delay:-5s;--gx:25px"></span>
-    <span class="gold-speck" style="left:82%;animation-duration:19s;animation-delay:-12s;--gx:-30px"></span>
-    <span class="gold-speck" style="left:92%;animation-duration:17s;animation-delay:-1s;--gx:20px"></span>
+  <!-- Pétalos cayendo -->
+  <div class="petals" aria-hidden="true">
+    <span class="petal"></span><span class="petal cream"></span><span class="petal"></span>
+    <span class="petal dark"></span><span class="petal"></span><span class="petal cream"></span>
+    <span class="petal"></span><span class="petal dark"></span><span class="petal"></span>
+    <span class="petal cream"></span>
   </div>
 
-  <div class="cover-eyebrow">Tenemos algo que contarte</div>
+  <div class="cover-eyebrow">You are invited</div>
   <div class="envelope-scene">
     <div id="envelope" class="envelope" role="button" tabindex="0" aria-label="Toca para abrir la invitación">
       <div class="envelope-back">
