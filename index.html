@@ -854,6 +854,24 @@ body.locked { overflow: hidden; }
 }
 
 /* ============================================================
+   ITINERARIO · imagen "El Plan" con timeline botánico
+============================================================ */
+.itinerario-art {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+}
+.itinerario-art-img {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+/* ============================================================
    HERO
 ============================================================ */
 .hero {
@@ -1516,60 +1534,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     </div>
   </section>
 
-  <!-- ITINERARIO -->
-  <section class="section" id="itinerario">
-    <div class="section-inner">
-      <div class="section-title-block reveal">
-        <div class="section-eyebrow">Itinerario</div>
-        <h2 class="section-title">El plan del día</h2>
-        <p class="section-subtitle">Para que no te pierdas ningún momento especial.</p>
-        <div class="section-divider"></div>
-      </div>
-      <div class="itinerary-list reveal">
-        <div class="itinerary-card">
-          <div class="itinerary-time">4:00<small>PM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Ceremonia religiosa</div>
-            <div class="itinerary-desc">Eventos San Bernardo. Recomendamos llegar 20 minutos antes.</div>
-          </div>
-        </div>
-        <div class="itinerary-card">
-          <div class="itinerary-time">5:00<small>PM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Cóctel de bienvenida</div>
-            <div class="itinerary-desc">Aperitivos, bebidas y las primeras fotos de la tarde.</div>
-          </div>
-        </div>
-        <div class="itinerary-card">
-          <div class="itinerary-time">6:30<small>PM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Cena & brindis</div>
-            <div class="itinerary-desc">Pasamos a la mesa para compartir y brindar por los novios.</div>
-          </div>
-        </div>
-        <div class="itinerary-card">
-          <div class="itinerary-time">8:30<small>PM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Primer baile</div>
-            <div class="itinerary-desc">El inicio oficial de la fiesta.</div>
-          </div>
-        </div>
-        <div class="itinerary-card">
-          <div class="itinerary-time">9:00<small>PM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Fiesta & hora loca</div>
-            <div class="itinerary-desc">Pista, foto del pastel y la mejor playlist (con tus canciones).</div>
-          </div>
-        </div>
-        <div class="itinerary-card">
-          <div class="itinerary-time">1:00<small>AM</small></div>
-          <div class="itinerary-body">
-            <div class="itinerary-title">Cierre</div>
-            <div class="itinerary-desc">Menú after party y despedida con los novios.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- ITINERARIO · imagen "El Plan" con timeline botánico -->
+  <section class="itinerario-art" id="itinerario">
+    <img class="itinerario-art-img" src="itinerario-art.png" alt="El plan del día · 4:00 P.M Ceremonia · 5:00 P.M Cóctel · 6:00 P.M Recepción · Baile · Hora Loca · 1:00 A.M Felices por siempre" draggable="false">
   </section>
 
   <!-- LOCATION -->
