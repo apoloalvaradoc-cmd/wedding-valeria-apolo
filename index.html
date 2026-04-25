@@ -639,10 +639,10 @@ body.locked { overflow: hidden; }
 .section-inner { max-width: 680px; margin: 0 auto; }
 @media (min-width: 768px) { .section { padding: 6rem 2rem; } }
 .section-title-block { text-align: center; margin-bottom: 3rem; }
-.section-eyebrow { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.95rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--wine-dark); margin-bottom: 1rem; }
+.section-eyebrow { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.95rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 1rem; }
 .section-title { font-family: var(--font-script); color: var(--wine); font-size: clamp(3.2rem, 11vw, 4.8rem); line-height: 1; }
 .section-subtitle { max-width: 520px; margin: 1.2rem auto 0; font-size: 1.1rem; color: var(--ink); font-family: var(--font-serif); font-style: italic; line-height: 1.55; }
-.section-divider { width: 80px; height: 1px; background: linear-gradient(to right, transparent, rgba(140, 90, 45, 0.55) 50%, transparent); margin: 1.4rem auto 0; }
+.section-divider { width: 80px; height: 1px; background: linear-gradient(to right, transparent, var(--sage) 50%, transparent); margin: 1.4rem auto 0; }
 .section-divider::before, .section-divider::after { content: none; }
 /* Floral divider variant */
 .ornament-divider { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 1.4rem auto 0; max-width: 200px; }
@@ -667,33 +667,26 @@ body.locked { overflow: hidden; }
 
 .hero-card {
   position: relative; max-width: 520px; margin: 0 auto;
-  background:
-    /* embossed paper texture (matches the cover) */
-    url("Textura%20papel.png"),
-    /* warm ivory base, subtly different from the body so it reads as a card */
-    linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%);
-  background-size: cover, 100% 100%;
-  background-position: center, center;
-  background-blend-mode: multiply, normal;
-  border: 1px solid rgba(140, 90, 45, 0.22);
+  /* FLAT cream — sin textura para que el texto se lea bien */
+  background: #FDF7E8;
+  border: 1px solid rgba(138, 151, 96, 0.35);
   padding: 2.5rem 1.8rem;
   /* layered paper-shadow: hairline contact + lift + ambient */
   box-shadow:
     0 1px 0 rgba(120, 75, 30, 0.16),
     0 3px 5px rgba(95, 55, 20, 0.18),
     0 12px 22px rgba(85, 45, 15, 0.18),
-    0 28px 48px rgba(70, 35, 10, 0.16),
-    inset 0 0 60px rgba(110, 70, 30, 0.05);
+    0 28px 48px rgba(70, 35, 10, 0.16);
   text-align: center;
 }
 @media (min-width: 640px) { .hero-card { padding: 3.5rem 2.8rem; } }
-.hero-card::before, .hero-card::after { content: ''; position: absolute; width: 44px; height: 44px; border: 1px solid rgba(155, 110, 50, 0.5); pointer-events: none; }
+.hero-card::before, .hero-card::after { content: ''; position: absolute; width: 44px; height: 44px; border: 1px solid rgba(78, 92, 29, 0.6); pointer-events: none; }
 .hero-card::before { top: 12px; left: 12px; border-right: none; border-bottom: none; }
 .hero-card::after { bottom: 12px; right: 12px; border-left: none; border-top: none; }
 
-.hero-eyebrow { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.92rem; letter-spacing: 0.38em; text-transform: uppercase; color: var(--wine-dark); display: inline-flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
-.hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 26px; height: 1px; background: linear-gradient(to right, transparent, rgba(74, 16, 31, 0.5), transparent); }
-.hero-photo-wrap { margin: 1.8rem auto 1.8rem; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; border: 3px solid #FDF7E8; box-shadow: 0 1px 0 rgba(155, 110, 50, 0.4), 0 8px 22px rgba(85, 45, 15, 0.3), 0 0 0 1px rgba(140, 90, 45, 0.45); }
+.hero-eyebrow { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.92rem; letter-spacing: 0.38em; text-transform: uppercase; color: var(--olive-dark); display: inline-flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
+.hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 26px; height: 1px; background: linear-gradient(to right, transparent, var(--sage), transparent); }
+.hero-photo-wrap { margin: 1.8rem auto 1.8rem; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; border: 3px solid #FDF7E8; box-shadow: 0 1px 0 rgba(78, 92, 29, 0.4), 0 8px 22px rgba(85, 45, 15, 0.3), 0 0 0 1px var(--sage); }
 .hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
 .hero-names { font-family: var(--font-script); color: var(--wine); font-size: clamp(4.2rem, 15vw, 6rem); line-height: 0.95; margin: 0.3rem 0; }
@@ -710,7 +703,7 @@ body.locked { overflow: hidden; }
 /* Timeline integrado */
 .hero-timeline { margin: 2.4rem auto 0; padding-top: 2rem; border-top: 1px solid rgba(107, 26, 45, 0.2); max-width: 360px; }
 .hero-timeline-heading { font-family: var(--font-script); color: var(--wine); font-size: 2.4rem; line-height: 1; margin-bottom: 0.35rem; }
-.hero-timeline-sub { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.82rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--wine-dark); margin-bottom: 1.4rem; }
+.hero-timeline-sub { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.82rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 1.4rem; }
 .hero-timeline-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; text-align: left; }
 .hero-timeline-row { display: grid; grid-template-columns: 90px 12px 1fr; align-items: baseline; gap: 0.5rem; }
 .hero-timeline-time { font-family: var(--font-serif); font-weight: 500; color: var(--wine); font-size: 1rem; letter-spacing: 0.06em; text-align: right; }
@@ -731,8 +724,8 @@ body.locked { overflow: hidden; }
 #countdown { background: transparent; }
 .countdown-tiles { display: flex; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.5rem; }
 .countdown-tile { display: flex; flex-direction: column; align-items: center; min-width: 76px; }
-.countdown-value { width: 76px; height: 84px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 400; font-size: 2.6rem; color: var(--wine); background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.3); border-radius: 2px; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13); }
-.countdown-label { margin-top: 0.65rem; font-family: var(--font-serif); font-style: italic; font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--wine-dark); }
+.countdown-value { width: 76px; height: 84px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 400; font-size: 2.6rem; color: var(--wine); background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.4); border-radius: 2px; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13); }
+.countdown-label { margin-top: 0.65rem; font-family: var(--font-serif); font-style: italic; font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--olive-dark); }
 
 /* ============================================================
    FECHAS (reemplaza "Historia")
@@ -740,9 +733,9 @@ body.locked { overflow: hidden; }
 #fechas { background: transparent; }
 .fechas-list { display: grid; grid-template-columns: 1fr; gap: 1.2rem; max-width: 560px; margin: 0 auto; }
 @media (min-width: 720px) { .fechas-list { grid-template-columns: repeat(3, 1fr); } }
-.fecha-card { text-align: center; padding: 2rem 1rem; background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.15), 0 14px 26px rgba(85, 45, 15, 0.15); }
+.fecha-card { text-align: center; padding: 2rem 1rem; background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.15), 0 14px 26px rgba(85, 45, 15, 0.15); }
 .fecha-day { font-family: var(--font-serif); color: var(--wine); font-size: 3.4rem; font-weight: 300; line-height: 1; }
-.fecha-month { font-family: var(--font-serif); font-style: italic; color: var(--wine-dark); font-size: 1.05rem; margin-top: 0.2rem; letter-spacing: 0.1em; }
+.fecha-month { font-family: var(--font-serif); font-style: italic; color: var(--olive-dark); font-size: 1.05rem; margin-top: 0.2rem; letter-spacing: 0.1em; }
 .fecha-year { font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
 .fecha-label { font-family: var(--font-script); color: var(--wine); font-size: 2rem; margin-top: 1rem; line-height: 1; }
 .fecha-note { text-align: center; margin-top: 2rem; font-family: var(--font-serif); font-style: italic; color: var(--muted); font-size: 0.95rem; max-width: 480px; margin-left: auto; margin-right: auto; }
@@ -776,10 +769,10 @@ body.locked { overflow: hidden; }
 ============================================================ */
 #rsvp { background: transparent; }
 .rsvp-wrap { max-width: 520px; margin: 0 auto; }
-.rsvp-card { background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); padding: 1.8rem 1.4rem; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.15), 0 18px 32px rgba(85, 45, 15, 0.15); }
+.rsvp-card { background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); padding: 1.8rem 1.4rem; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.15), 0 18px 32px rgba(85, 45, 15, 0.15); }
 @media (min-width: 640px) { .rsvp-card { padding: 2.2rem 2rem; } }
 
-.rsvp-label { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--wine-dark); margin-bottom: 0.6rem; display: block; }
+.rsvp-label { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 0.6rem; display: block; }
 .input-wrap { position: relative; }
 .input-wrap svg { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
 .input, .textarea, .select { width: 100%; padding: 0.85rem 1rem; border: 1px solid rgba(217, 167, 172, 0.6); background: var(--cream); color: var(--ink); font-family: var(--font-sans); outline: none; transition: border-color 0.2s ease; border-radius: 1px; font-size: 0.95rem; }
@@ -799,7 +792,7 @@ body.locked { overflow: hidden; }
 .alert-info { background: rgba(157, 168, 106, 0.2); color: var(--ink); }
 
 .form-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 0.8rem; }
-.form-head-greet { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--wine-dark); }
+.form-head-greet { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); }
 .form-head-name { font-family: var(--font-script); color: var(--wine); font-size: 2.2rem; line-height: 1; margin-top: 0.2rem; }
 .form-head-cupos { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
 .form-close { color: var(--muted); padding: 0.3rem; }
@@ -835,9 +828,9 @@ body.locked { overflow: hidden; }
 #dresscode { background: transparent; }
 .dress-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .dress-grid { grid-template-columns: 1fr 1fr; } }
-.dress-card { padding: 1.5rem; background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
+.dress-card { padding: 1.5rem; background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
 .dress-card.forbidden { border-color: rgba(184, 69, 94, 0.45); }
-.dress-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--wine-dark); margin-bottom: 1rem; }
+.dress-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 1rem; }
 .dress-card.forbidden .dress-heading { color: var(--wine); }
 .dress-swatches { display: flex; flex-wrap: wrap; gap: 0.8rem; }
 .swatch { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
@@ -851,7 +844,7 @@ body.locked { overflow: hidden; }
    ADULTS
 ============================================================ */
 #adults { padding: 3rem 1.5rem; }
-.adults-card { max-width: 500px; margin: 0 auto; padding: 2.2rem 1.5rem; background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); text-align: center; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 14px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
+.adults-card { max-width: 500px; margin: 0 auto; padding: 2.2rem 1.5rem; background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); text-align: center; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 14px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
 .adults-icon { color: var(--wine); margin-bottom: 0.8rem; }
 .adults-text { font-family: var(--font-serif); font-style: italic; color: var(--wine); font-size: 1.2rem; line-height: 1.5; }
 .adults-sub { margin-top: 0.7rem; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
@@ -862,8 +855,8 @@ body.locked { overflow: hidden; }
 #gifts { background: transparent; }
 .gifts-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .gifts-grid { grid-template-columns: 1fr 1fr; } }
-.gift-card { padding: 1.5rem; background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
-.gift-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--wine-dark); margin-bottom: 0.5rem; }
+.gift-card { padding: 1.5rem; background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
+.gift-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 0.5rem; }
 .gift-title { font-family: var(--font-serif); color: var(--wine); font-size: 1.25rem; font-weight: 400; }
 .gift-sub { margin-top: 0.3rem; font-size: 0.9rem; color: var(--ink); }
 .gift-desc { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
@@ -930,8 +923,8 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 .story-timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(to bottom, transparent, var(--wine) 15%, var(--wine) 85%, transparent); opacity: 0.35; }
 .story-item { position: relative; margin-bottom: 2.2rem; }
 .story-item:last-child { margin-bottom: 0; }
-.story-dot { position: absolute; left: -1.2rem; top: 0.35rem; width: 14px; height: 14px; border-radius: 50%; background: var(--ivory); border: 2px solid var(--wine); box-shadow: 0 0 0 4px var(--cream), 0 2px 4px rgba(107, 26, 45, 0.3); }
-.story-year { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--wine-dark); }
+.story-dot { position: absolute; left: -1.2rem; top: 0.35rem; width: 14px; height: 14px; border-radius: 50%; background: var(--ivory); border: 2px solid var(--olive-dark); box-shadow: 0 0 0 4px #FDF7E8, 0 2px 4px rgba(78, 92, 29, 0.3); }
+.story-year { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--olive-dark); }
 .story-title { font-family: var(--font-script); color: var(--wine); font-size: 2.2rem; line-height: 1; margin: 0.2rem 0 0.6rem; }
 .story-text { color: var(--ink); font-size: 0.95rem; line-height: 1.65; font-family: var(--font-serif); }
 .story-photo { margin-top: 0.9rem; aspect-ratio: 4/3; overflow: hidden; border: 1px solid rgba(107, 26, 45, 0.3); max-width: 340px; box-shadow: 0 10px 22px -10px rgba(69, 16, 28, 0.35); }
@@ -942,7 +935,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 ============================================================ */
 #itinerario { background: transparent; }
 .itinerary-list { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.8rem; }
-.itinerary-card { display: grid; grid-template-columns: 74px 1fr; gap: 1rem; padding: 1.1rem 1.2rem; background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(140, 90, 45, 0.22); position: relative; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 3px 6px rgba(95, 55, 20, 0.12), 0 10px 18px rgba(85, 45, 15, 0.12); }
+.itinerary-card { display: grid; grid-template-columns: 74px 1fr; gap: 1rem; padding: 1.1rem 1.2rem; background: #FDF7E8; border: 1px solid rgba(138, 151, 96, 0.35); position: relative; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 3px 6px rgba(95, 55, 20, 0.12), 0 10px 18px rgba(85, 45, 15, 0.12); }
 .itinerary-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--wine); }
 .itinerary-time { font-family: var(--font-serif); color: var(--wine); font-size: 1.15rem; font-weight: 500; text-align: right; padding-right: 0.8rem; border-right: 1px solid rgba(217, 167, 172, 0.5); line-height: 1.1; align-self: center; }
 .itinerary-time small { display: block; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.15rem; font-weight: 400; }
@@ -956,10 +949,8 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 #playlist { background: transparent; position: relative; overflow: hidden; }
 .playlist-card {
   max-width: 480px; margin: 0 auto; padding: 2.2rem 1.6rem; text-align: center;
-  background: url("Textura%20papel.png"), linear-gradient(180deg, #FDF7E8 0%, #F8EFD8 100%);
-  background-size: cover, 100% 100%;
-  background-blend-mode: multiply, normal;
-  border: 1px solid rgba(140, 90, 45, 0.22);
+  background: #FDF7E8;
+  border: 1px solid rgba(138, 151, 96, 0.35);
   box-shadow:
     0 1px 0 rgba(120, 75, 30, 0.15),
     0 6px 14px rgba(95, 55, 20, 0.15),
