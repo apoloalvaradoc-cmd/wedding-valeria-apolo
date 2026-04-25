@@ -126,6 +126,104 @@ body.locked { overflow: hidden; }
 }
 #cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; transform: scale(1.04); }
 
+/* ============================================================
+   COVER · VIDEO + TAP BUTTON (nueva portada)
+============================================================ */
+.cover-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cover-tap {
+  position: absolute;
+  /* Posicionado sobre el sello del video */
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(120px, 30vw, 160px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center,
+      rgba(241, 240, 234, 0.18) 0%,
+      rgba(241, 240, 234, 0.08) 60%,
+      transparent 100%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.25s var(--ease-soft), background 0.25s ease;
+}
+.cover-tap:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  background:
+    radial-gradient(circle at center,
+      rgba(241, 240, 234, 0.28) 0%,
+      rgba(241, 240, 234, 0.12) 60%,
+      transparent 100%);
+}
+.cover-tap:active { transform: translate(-50%, -50%) scale(0.96); }
+.cover-tap:focus-visible { outline: 2px dashed rgba(241, 240, 234, 0.7); outline-offset: 6px; }
+
+/* Pulse rings (idle indicator) — visible burgundy on cream/white */
+.cover-tap-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(88, 4, 16, 0.45);
+  pointer-events: none;
+  animation: coverTapRipple 2.6s ease-out infinite;
+}
+.cover-tap-pulse.delay { animation-delay: 1.3s; }
+@keyframes coverTapRipple {
+  0%   { transform: scale(0.8); opacity: 0; }
+  20%  { opacity: 0.85; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+.cover-tap-label {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--wine);
+  background: rgba(241, 240, 234, 0.9);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0.85rem 1.6rem;
+  border: 1px solid rgba(88, 4, 16, 0.35);
+  white-space: nowrap;
+  font-weight: 500;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(88, 4, 16, 0.25);
+  animation: coverTapLabelPulse 2.4s ease-in-out infinite;
+}
+@keyframes coverTapLabelPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* Cuando está abriendo, esconder el botón inmediatamente */
+#cover.opening .cover-tap,
+#cover.opening .cover-tap-pulse,
+#cover.opening .cover-tap-label { opacity: 0; transition: opacity 0.45s ease; pointer-events: none; }
+
 /* ---------- atmosphere: floating gold motes (sun-flecks on paper) ---------- */
 .dust-motes { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; mix-blend-mode: multiply; }
 .dust-mote {
@@ -1177,63 +1275,19 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   <div class="cover-grain" aria-hidden="true"></div>
 
   <!-- Floating dust motes (light catching particles) -->
-  <div class="dust-motes" aria-hidden="true">
-    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
-    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
-    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
-    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
-  </div>
+  <!-- Cover video — autoplay loop muted -->
+  <video class="cover-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="portada-video.mp4" type="video/mp4">
+  </video>
 
+  <!-- Tap target sobre el sello del video — keeps id #envelope so JS handler works -->
+  <button id="envelope" class="cover-tap" type="button" aria-label="Toca el sello para abrir la invitación">
+    <span class="cover-tap-pulse" aria-hidden="true"></span>
+    <span class="cover-tap-pulse delay" aria-hidden="true"></span>
+  </button>
 
-  <div class="cover-eyebrow">Estás invitado</div>
-
-  <!-- Paper stage: 3D wrapper with parallax tilt -->
-  <div class="paper-stage" id="paper-stage">
-    <div id="envelope" class="envelope" role="button" tabindex="0" aria-label="Toca el sello para abrir la invitación">
-
-      <!-- Envelope body (rectangle behind everything) -->
-      <div class="envelope-body">
-        <div class="envelope-body-monogram">V&amp;A</div>
-        <div class="envelope-body-border"></div>
-      </div>
-
-      <!-- The card (slides up from inside) -->
-      <div class="envelope-card">
-        <div class="card-eyebrow">Save our date</div>
-        <div class="card-monogram">Valeria &amp; Apolo</div>
-        <div class="card-divider"><span class="l"></span><span class="d"></span><span class="r"></span></div>
-        <div class="card-date">07 · 11 · 2026</div>
-      </div>
-
-      <!-- Flap (top triangle, hinged at top) -->
-      <div class="envelope-flap">
-        <div class="envelope-flap-monogram">V &amp; A</div>
-      </div>
-
-      <!-- Tap pulse rings (idle indicator around seal) -->
-      <div class="tap-pulse" aria-hidden="true"></div>
-
-      <!-- Wax seal · verde olivo (real photo recoloreada) -->
-      <div class="envelope-seal" aria-hidden="true">
-        <img src="Sello-verde.png" alt="Sello de cera verde Valeria & Apolo" draggable="false">
-      </div>
-
-      <!-- Wax shards (fly outward when seal cracks) -->
-      <div class="seal-shards" aria-hidden="true">
-        <span class="seal-shard s1"></span>
-        <span class="seal-shard s2"></span>
-        <span class="seal-shard s3"></span>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="cover-label">
-    <div class="cover-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
-    <div class="cover-names">Valeria &amp; Apolo</div>
-    <div class="cover-date">07 · Noviembre · 2026</div>
-  </div>
-  <div class="cover-cta">Toca el sello para abrir</div>
+  <!-- Label CTA, fija en la parte baja del cover -->
+  <div class="cover-tap-label" aria-hidden="true">Toca para abrir</div>
 </div>
 
 <!-- ================= NAV ================= -->
@@ -1904,34 +1958,21 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-/* COVER · tactile parallax + multi-stage opening */
+/* COVER · video + tap → fade transition */
 function openEnvelope() {
   const env = $('#envelope'); if (env.classList.contains('opening')) return;
   env.classList.add('opening');
   $('#cover').classList.add('opening');
-  // Reset tilt during opening so the zoom-out reads cleanly
-  const cover = $('#cover');
-  cover.style.setProperty('--tilt-x', '0deg');
-  cover.style.setProperty('--tilt-y', '0deg');
-  cover.style.setProperty('--tilt-px', '0px');
-  cover.style.setProperty('--tilt-py', '0px');
   ensureInvitadosLoaded();
-  // Choreography total ~4s:
-  // 0.0s seal shake & crack starts
-  // 0.3s shards fly out (1.05s)
-  // 0.55s flap begins rotating open (1.05s → settle ~1.6s)
-  // 1.05s card slides up out of envelope (1.2s → settle ~2.25s)
-  // 0.4s stage lifts gently (3.4s → fades 3.8s)
-  // 3.0s cover begins fading out (1s)
-  // 4.0s dismiss & invitation fully visible
+  // 1.2s gentle fade — el video sigue corriendo mientras se desvanece
   setTimeout(() => {
-    cover.classList.add('dismissed');
+    $('#cover').classList.add('dismissed');
     document.body.classList.remove('locked');
     $('#invitation').classList.add('visible');
     $('#invitation').setAttribute('aria-hidden', 'false');
     $('#nav').classList.add('visible');
     observeReveal();
-  }, 4000);
+  }, 1200);
 }
 ensureInvitadosLoaded();
 $('#envelope').addEventListener('click', openEnvelope);
