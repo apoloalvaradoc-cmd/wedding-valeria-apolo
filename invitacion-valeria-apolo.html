@@ -234,13 +234,13 @@ body.locked { overflow: hidden; }
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d; cursor: pointer;
   transition: transform 0.4s var(--ease-soft);
-  /* Paper-on-paper depth: tight contact shadow + soft lifted shadow + wide ambient */
+  /* burgundy on cream — sombras más oscuras para contraste */
   filter:
-    drop-shadow(0 1px 0 rgba(120, 75, 30, 0.18))            /* hairline edge */
-    drop-shadow(0 3px 4px rgba(95, 55, 20, 0.32))           /* contact shadow */
-    drop-shadow(0 12px 18px rgba(85, 45, 15, 0.28))         /* lift shadow */
-    drop-shadow(0 28px 42px rgba(70, 35, 10, 0.22))         /* mid ambient */
-    drop-shadow(0 50px 70px rgba(60, 25, 5, 0.16));         /* wide ambient */
+    drop-shadow(0 1px 0 rgba(40, 10, 18, 0.32))             /* hairline edge */
+    drop-shadow(0 3px 5px rgba(40, 10, 18, 0.4))            /* contact shadow */
+    drop-shadow(0 14px 22px rgba(50, 15, 22, 0.32))         /* lift shadow */
+    drop-shadow(0 32px 48px rgba(40, 10, 18, 0.24))         /* mid ambient */
+    drop-shadow(0 56px 76px rgba(30, 5, 12, 0.18));         /* wide ambient */
   animation: envelopeBreathe 7s ease-in-out infinite 2s;
 }
 .envelope:hover { transform: translateY(-2px); }
@@ -253,40 +253,38 @@ body.locked { overflow: hidden; }
 .envelope-body {
   position: absolute; inset: 0;
   background:
-    /* embossed paper texture — SAME crop as flap so they read as one paper */
-    url("Textura%20papel.png"),
-    /* uniform cream — sin gradient direccional */
-    #F4E8C9;
-  background-size: cover, 100% 100%;
+    /* very subtle paper grain noise (so it doesn't look plastic) */
+    var(--paper-noise),
+    /* deep burgundy wine */
+    #6B1A2D;
+  background-size: 320px 320px, 100% 100%;
   background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
-  background-blend-mode: multiply, normal;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: soft-light, normal;
   border-radius: 3px;
-  /* shadows uniformes en los 4 lados */
+  /* deeper inner shadows for the wine paper feel */
   box-shadow:
-    inset 0 0 60px rgba(140, 100, 50, 0.06),
-    inset 1px 0 2px rgba(255, 252, 240, 0.18),
-    inset -1px 0 2px rgba(120, 80, 35, 0.08);
+    inset 0 0 80px rgba(0, 0, 0, 0.25),
+    inset 1px 0 3px rgba(255, 220, 200, 0.08),
+    inset -1px 0 3px rgba(0, 0, 0, 0.25),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
   overflow: hidden;
 }
-/* very subtle side-shading on all 4 edges (uniform, no preferential direction) */
+/* darker side-shading on burgundy — adds depth */
 .envelope-body::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 130% 8% at 50% 0%,   transparent 60%, rgba(110, 70, 30, 0.10) 100%),
-    radial-gradient(ellipse 130% 8% at 50% 100%, transparent 60%, rgba(110, 70, 30, 0.10) 100%),
-    radial-gradient(ellipse 6% 120% at 0% 50%,   transparent 60%, rgba(110, 70, 30, 0.08) 100%),
-    radial-gradient(ellipse 6% 120% at 100% 50%, transparent 60%, rgba(110, 70, 30, 0.08) 100%);
+    radial-gradient(ellipse 130% 8% at 50% 0%,   transparent 60%, rgba(0, 0, 0, 0.18) 100%),
+    radial-gradient(ellipse 130% 8% at 50% 100%, transparent 60%, rgba(0, 0, 0, 0.18) 100%),
+    radial-gradient(ellipse 6% 120% at 0% 50%,   transparent 60%, rgba(0, 0, 0, 0.15) 100%),
+    radial-gradient(ellipse 6% 120% at 100% 50%, transparent 60%, rgba(0, 0, 0, 0.15) 100%);
 }
-/* diagonal closing seam — where the flap meets the body when shut */
+/* V-crease shadow — darker on burgundy */
 .envelope-body::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    /* the V-crease shadows (drawn from each top corner inward) */
-    linear-gradient(to bottom right, transparent 49.4%, rgba(95, 55, 20, 0.32) 49.75%, rgba(95, 55, 20, 0.45) 50%, rgba(95, 55, 20, 0.32) 50.25%, transparent 50.6%),
-    linear-gradient(to bottom left,  transparent 49.4%, rgba(95, 55, 20, 0.32) 49.75%, rgba(95, 55, 20, 0.45) 50%, rgba(95, 55, 20, 0.32) 50.25%, transparent 50.6%),
-    /* horizontal seam at the bottom of the visible flap (62% mark) */
-    linear-gradient(to bottom, transparent 61.5%, rgba(95, 55, 20, 0.18) 62%, transparent 62.5%);
+    linear-gradient(to bottom right, transparent 49.4%, rgba(0, 0, 0, 0.32) 49.75%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.32) 50.25%, transparent 50.6%),
+    linear-gradient(to bottom left,  transparent 49.4%, rgba(0, 0, 0, 0.32) 49.75%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.32) 50.25%, transparent 50.6%);
 }
 
 /* monogram on body (visible only when flap is open — sits behind card) */
@@ -389,24 +387,24 @@ body.locked { overflow: hidden; }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    /* MISMO texture, MISMO crop, MISMO color que el body */
-    url("Textura%20papel.png"),
-    #F4E8C9;
-  background-size: cover, 100% 100%;
+    /* matching grain — same paper, slightly darker burgundy for fold contrast */
+    var(--paper-noise),
+    /* mismo wine, ligeramente más oscuro para que el flap se lea sobre el body */
+    #5C1525;
+  background-size: 320px 320px, 100% 100%;
   background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
-  background-blend-mode: multiply, normal;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: soft-light, normal;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center;
   transform: rotateX(0deg);
   transition: transform 1.2s cubic-bezier(0.5, 0.05, 0.2, 1.15) 0.55s;
   z-index: 4;
   backface-visibility: hidden;
-  /* sin inset shadow — la V se lee solo por el drop-shadow del filter */
-  /* sombra suave al body para leer la V por luz */
+  /* drop-shadow del flap sobre el body — define la V */
   filter:
-    drop-shadow(0 3px 5px rgba(105, 65, 25, 0.22))
-    drop-shadow(0 1px 2px rgba(95, 50, 20, 0.16));
+    drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 /* subtle fold highlight at top */
 .envelope-flap::before {
@@ -435,10 +433,10 @@ body.locked { overflow: hidden; }
   left: -6%; right: -6%; top: -2%; bottom: -10%;
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 60%,
-    rgba(80, 40, 15, 0) 50%,
-    rgba(80, 40, 15, 0.18) 65%,
-    rgba(80, 40, 15, 0.32) 75%,
-    rgba(80, 40, 15, 0) 90%);
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 0, 0, 0.25) 65%,
+    rgba(0, 0, 0, 0.42) 75%,
+    rgba(0, 0, 0, 0) 90%);
   filter: blur(4px);
   z-index: -1;
 }
@@ -448,15 +446,15 @@ body.locked { overflow: hidden; }
   display: block;
   pointer-events: none;
   user-select: none;
-  /* Tiny irregular tilt + multi-layer drop shadow that mimics 3D wax sitting on paper */
+  /* Tiny irregular tilt + multi-layer drop shadow on the burgundy paper */
   transform: rotate(2deg);
   filter:
-    drop-shadow(0 1px 1px rgba(50, 15, 20, 0.5))
-    drop-shadow(0 4px 6px rgba(50, 15, 20, 0.45))
-    drop-shadow(0 10px 14px rgba(60, 20, 25, 0.4));
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 10px 14px rgba(0, 0, 0, 0.4));
 }
 .envelope-seal:hover { transform: translate(-50%, -50%) rotate(-7deg) scale(1.04); }
-.envelope-seal:hover img { filter: drop-shadow(0 1px 1px rgba(50, 15, 20, 0.5)) drop-shadow(0 4px 6px rgba(50, 15, 20, 0.45)) drop-shadow(0 14px 20px rgba(60, 20, 25, 0.55)) brightness(1.05); }
+.envelope-seal:hover img { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45)) drop-shadow(0 14px 20px rgba(0, 0, 0, 0.55)) brightness(1.05); }
 /* on click: tiny shake → growth → crack apart */
 .envelope.opening .envelope-seal {
   animation: sealSnap 0.7s cubic-bezier(0.4, 0, 0.7, 0) forwards;
@@ -482,14 +480,11 @@ body.locked { overflow: hidden; }
 .seal-shard {
   position: absolute;
   inset: 0;
-  background-image: url("Sello%20invitaci%C3%B3n.png");
+  background-image: url("Sello-verde.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  filter: drop-shadow(0 6px 8px rgba(50, 15, 20, 0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 6px 8px rgba(20, 30, 10, 0.5)) drop-shadow(0 2px 3px rgba(0,0,0,0.4));
   opacity: 0;
-}
-.seal-shard {
-  background-image: url("Sello-transparente.png");
 }
 .seal-shard.s1 {
   clip-path: polygon(50% 50%, 100% 22%, 100% 70%, 78% 100%, 50% 92%);
@@ -1241,9 +1236,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       <!-- Tap pulse rings (idle indicator around seal) -->
       <div class="tap-pulse" aria-hidden="true"></div>
 
-      <!-- Wax seal · transparent PNG (real photo, sits naturally on paper) -->
+      <!-- Wax seal · verde olivo (real photo recoloreada) -->
       <div class="envelope-seal" aria-hidden="true">
-        <img src="Sello-transparente.png" alt="Sello de cera Valeria & Apolo" draggable="false">
+        <img src="Sello-verde.png" alt="Sello de cera verde Valeria & Apolo" draggable="false">
       </div>
 
       <!-- Wax shards (fly outward when seal cracks) -->
