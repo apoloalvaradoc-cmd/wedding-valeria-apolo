@@ -142,10 +142,10 @@ body.locked { overflow: hidden; }
 
 .cover-tap {
   position: absolute;
-  /* Posicionado sobre el sello del video */
-  top: 50%; left: 50%;
+  /* Posicionado sobre el sello del video — alineado con el sello cera verde */
+  top: 53%; left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(120px, 30vw, 160px);
+  width: clamp(110px, 26vw, 140px);
   aspect-ratio: 1;
   border-radius: 50%;
   background:
@@ -174,6 +174,9 @@ body.locked { overflow: hidden; }
       transparent 100%);
 }
 .cover-tap:active { transform: translate(-50%, -50%) scale(0.96); }
+
+/* When fading, slide the button up slightly */
+#cover.opening .cover-tap { transform: translate(-50%, -50%) scale(1.1); opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
 .cover-tap:focus-visible { outline: 2px dashed rgba(241, 240, 234, 0.7); outline-offset: 6px; }
 
 /* Pulse rings (idle indicator) — visible burgundy on cream/white */
@@ -1275,8 +1278,8 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   <div class="cover-grain" aria-hidden="true"></div>
 
   <!-- Floating dust motes (light catching particles) -->
-  <!-- Cover video — autoplay loop muted -->
-  <video class="cover-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+  <!-- Cover video — pausado en el frame del sello hasta que se haga click -->
+  <video class="cover-video" muted playsinline preload="auto" aria-hidden="true">
     <source src="portada-video.mp4" type="video/mp4">
   </video>
 
@@ -1958,13 +1961,38 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-/* COVER · video + tap → fade transition */
+/* COVER · video pausado en frame del sello → click → play → fade transition */
+const SEAL_FRAME_TIME = 1.5; // segundos en el video donde aparece el sello (envelope frame)
+
+const coverVideo = document.querySelector('.cover-video');
+if (coverVideo) {
+  // Cuando carga, salta al frame del sello y pausa
+  const seekToSeal = () => {
+    try {
+      coverVideo.currentTime = SEAL_FRAME_TIME;
+      coverVideo.pause();
+    } catch (e) { /* ignore */ }
+  };
+  if (coverVideo.readyState >= 1) seekToSeal();
+  else coverVideo.addEventListener('loadedmetadata', seekToSeal, { once: true });
+  // En caso de que algo lo haga reproducir antes del click, lo paramos
+  coverVideo.addEventListener('play', () => {
+    if (!$('#cover').classList.contains('opening')) {
+      seekToSeal();
+    }
+  });
+}
+
 function openEnvelope() {
   const env = $('#envelope'); if (env.classList.contains('opening')) return;
   env.classList.add('opening');
   $('#cover').classList.add('opening');
   ensureInvitadosLoaded();
-  // 1.2s gentle fade — el video sigue corriendo mientras se desvanece
+  // Reproduce el video desde donde está (frame del sello) hacia adelante
+  if (coverVideo) {
+    try { coverVideo.play(); } catch (e) { /* ignore */ }
+  }
+  // 1.6s para dejar que el video corra un poco antes del fade
   setTimeout(() => {
     $('#cover').classList.add('dismissed');
     document.body.classList.remove('locked');
@@ -1972,7 +2000,7 @@ function openEnvelope() {
     $('#invitation').setAttribute('aria-hidden', 'false');
     $('#nav').classList.add('visible');
     observeReveal();
-  }, 1200);
+  }, 1600);
 }
 ensureInvitadosLoaded();
 $('#envelope').addEventListener('click', openEnvelope);
