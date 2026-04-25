@@ -18,8 +18,12 @@ img = Image.open(src).convert("RGBA")
 w, h = img.size
 px = img.load()
 
-# Target burgundy hue (~341deg = 0.948 in [0..1]) — matches our --wine #6B1A2D
-TARGET_HUE = 0.948
+# Target #580410 HSV ≈ (0.976, 0.954, 0.345) — official wedding palette burgundy
+TARGET_HUE = 0.976
+TARGET_SAT = 0.95
+# Map cream [0..1] V → burgundy [0.04 .. 0.345] preserving embossing variation
+V_BASE = 0.04
+V_RANGE = 0.30
 
 for y in range(h):
     for x in range(w):
@@ -28,13 +32,9 @@ for y in range(h):
             continue
         rr, gg, bb = r/255, g/255, b/255
         h_, s_, v_ = colorsys.rgb_to_hsv(rr, gg, bb)
-        # Shift hue to burgundy
         new_h = TARGET_HUE
-        # Boost saturation if pixel is mostly desaturated cream
-        new_s = max(s_, 0.55)
-        # Darken value — cream is light, burgundy is dark, but preserve relative variation
-        # Map v_ in [0,1] to roughly [0.05, 0.4] so embossing detail stays
-        new_v = 0.05 + v_ * 0.40
+        new_s = TARGET_SAT
+        new_v = V_BASE + v_ * V_RANGE
         nr, ng, nb = colorsys.hsv_to_rgb(new_h, new_s, new_v)
         px[x, y] = (int(nr*255), int(ng*255), int(nb*255), a)
 
