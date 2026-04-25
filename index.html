@@ -718,6 +718,30 @@ body.locked { overflow: hidden; }
 .ornament-divider .mark { color: var(--wine); font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; }
 
 /* ============================================================
+   INTRO ART · primera vista tras el cover
+============================================================ */
+.intro-art {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+}
+.intro-art-img {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  display: block;
+  user-select: none;
+  /* fade-in elegant entrance after the cover dismisses */
+  animation: introArtFadeIn 1.4s var(--ease-soft) 0.2s both;
+}
+@keyframes introArtFadeIn {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ============================================================
    HERO
 ============================================================ */
 .hero {
@@ -1305,6 +1329,11 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 
 <!-- ================= INVITATION ================= -->
 <main id="invitation" aria-hidden="true">
+  <!-- INTRO ART · primer contenido tras la animación del cover -->
+  <section class="intro-art">
+    <img class="intro-art-img" src="intro-art.png" alt="Valeria y Apolo · Acompáñanos en nuestra boda · 7 de Noviembre 2026 · Finca San Bernardo" draggable="false">
+  </section>
+
   <!-- HERO -->
   <section class="hero">
     <div class="hero-card reveal">
