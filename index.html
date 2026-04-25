@@ -742,7 +742,7 @@ body.locked { overflow: hidden; }
 #faq { background: transparent; }
 .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; }
 .faq-item {
-  background: var(--cream);
+  background: #ffffff;
   border: 1px solid rgba(196, 197, 160, 0.4);
   padding: 1rem 1.2rem;
   box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 4px 8px rgba(95, 55, 20, 0.1);
@@ -789,7 +789,7 @@ body.locked { overflow: hidden; }
 .closing-card {
   max-width: 520px; margin: 0 auto; padding: 2.6rem 1.8rem;
   text-align: center;
-  background: var(--cream);
+  background: #ffffff;
   border: 1px solid rgba(88, 4, 16, 0.25);
   box-shadow:
     0 1px 0 rgba(120, 75, 30, 0.16),
@@ -851,6 +851,29 @@ body.locked { overflow: hidden; }
 @keyframes introArtFadeIn {
   0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
   100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ============================================================
+   INFORMACIÓN DEL EVENTO · imagen botánica con estilo tarjeta
+============================================================ */
+.info-evento-card-wrap {
+  width: 100%;
+  padding: 3rem 1.5rem 2.5rem;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+}
+.info-evento-card-img {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  display: block;
+  user-select: none;
+  box-shadow:
+    0 1px 0 rgba(120, 75, 30, 0.16),
+    0 3px 5px rgba(95, 55, 20, 0.18),
+    0 12px 22px rgba(85, 45, 15, 0.18),
+    0 28px 48px rgba(70, 35, 10, 0.16);
 }
 
 /* ============================================================
@@ -949,7 +972,7 @@ body.locked { overflow: hidden; }
 #countdown { background: transparent; }
 .countdown-tiles { display: flex; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.5rem; }
 .countdown-tile { display: flex; flex-direction: column; align-items: center; min-width: 76px; }
-.countdown-value { width: 76px; height: 84px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 400; font-size: 2.6rem; color: var(--wine); background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.45); border-radius: 2px; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13); }
+.countdown-value { width: 76px; height: 84px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 400; font-size: 2.6rem; color: var(--wine); background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.45); border-radius: 2px; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13); }
 .countdown-label { margin-top: 0.65rem; font-family: var(--font-serif); font-style: italic; font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--olive-dark); }
 
 /* ============================================================
@@ -958,7 +981,7 @@ body.locked { overflow: hidden; }
 #fechas { background: transparent; }
 .fechas-list { display: grid; grid-template-columns: 1fr; gap: 1.2rem; max-width: 560px; margin: 0 auto; }
 @media (min-width: 720px) { .fechas-list { grid-template-columns: repeat(3, 1fr); } }
-.fecha-card { text-align: center; padding: 2rem 1rem; background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.15), 0 14px 26px rgba(85, 45, 15, 0.15); }
+.fecha-card { text-align: center; padding: 2rem 1rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.15), 0 14px 26px rgba(85, 45, 15, 0.15); }
 .fecha-day { font-family: var(--font-serif); color: var(--wine); font-size: 3.4rem; font-weight: 300; line-height: 1; }
 .fecha-month { font-family: var(--font-serif); font-style: italic; color: var(--olive-dark); font-size: 1.05rem; margin-top: 0.2rem; letter-spacing: 0.1em; }
 .fecha-year { font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
@@ -977,7 +1000,7 @@ body.locked { overflow: hidden; }
    LOCATION
 ============================================================ */
 #location { background: transparent; }
-.location-card { text-align: center; max-width: 460px; margin: 0 auto; }
+.location-card { text-align: center; max-width: 460px; margin: 0 auto; padding: 2rem 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
 .location-name { font-family: var(--font-serif); font-weight: 400; color: var(--wine); font-size: 1.8rem; }
 .location-address { margin-top: 0.5rem; color: var(--ink); font-size: 0.95rem; }
 .location-note { margin-top: 1.2rem; font-style: italic; color: var(--muted); font-size: 0.85rem; }
@@ -994,7 +1017,7 @@ body.locked { overflow: hidden; }
 ============================================================ */
 #rsvp { background: transparent; }
 .rsvp-wrap { max-width: 520px; margin: 0 auto; }
-.rsvp-card { background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); padding: 1.8rem 1.4rem; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.15), 0 18px 32px rgba(85, 45, 15, 0.15); }
+.rsvp-card { background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); padding: 1.8rem 1.4rem; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.15), 0 18px 32px rgba(85, 45, 15, 0.15); }
 @media (min-width: 640px) { .rsvp-card { padding: 2.2rem 2rem; } }
 
 .rsvp-label { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 0.6rem; display: block; }
@@ -1053,7 +1076,7 @@ body.locked { overflow: hidden; }
 #dresscode { background: transparent; }
 .dress-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .dress-grid { grid-template-columns: 1fr 1fr; } }
-.dress-card { padding: 1.5rem; background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
+.dress-card { padding: 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
 .dress-card.forbidden { border-color: rgba(184, 69, 94, 0.45); }
 .dress-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 1rem; }
 .dress-card.forbidden .dress-heading { color: var(--wine); }
@@ -1069,7 +1092,7 @@ body.locked { overflow: hidden; }
    ADULTS
 ============================================================ */
 #adults { padding: 3rem 1.5rem; }
-.adults-card { max-width: 500px; margin: 0 auto; padding: 2.2rem 1.5rem; background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); text-align: center; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 14px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
+.adults-card { max-width: 500px; margin: 0 auto; padding: 2.2rem 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); text-align: center; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 14px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
 .adults-icon { color: var(--wine); margin-bottom: 0.8rem; }
 .adults-text { font-family: var(--font-serif); font-style: italic; color: var(--wine); font-size: 1.2rem; line-height: 1.5; }
 .adults-sub { margin-top: 0.7rem; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
@@ -1080,7 +1103,7 @@ body.locked { overflow: hidden; }
 #gifts { background: transparent; }
 .gifts-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .gifts-grid { grid-template-columns: 1fr 1fr; } }
-.gift-card { padding: 1.5rem; background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
+.gift-card { padding: 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
 .gift-heading { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 0.5rem; }
 .gift-title { font-family: var(--font-serif); color: var(--wine); font-size: 1.25rem; font-weight: 400; }
 .gift-sub { margin-top: 0.3rem; font-size: 0.9rem; color: var(--ink); }
@@ -1148,7 +1171,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 #historia { background: transparent; }
 .story-timeline { position: relative; max-width: 560px; margin: 0 auto; padding-left: 1.2rem; }
 .story-timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(to bottom, transparent, var(--wine) 15%, var(--wine) 85%, transparent); opacity: 0.35; }
-.story-item { position: relative; margin-bottom: 2.2rem; }
+.story-item { position: relative; margin-bottom: 2.2rem; padding: 1.4rem 1.3rem 1.3rem 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 4px 8px rgba(95, 55, 20, 0.1), 0 12px 22px rgba(85, 45, 15, 0.1); }
 .story-item:last-child { margin-bottom: 0; }
 .story-dot { position: absolute; left: -1.2rem; top: 0.35rem; width: 14px; height: 14px; border-radius: 50%; background: var(--ivory); border: 2px solid var(--olive-dark); box-shadow: 0 0 0 4px var(--cream), 0 2px 4px rgba(78, 92, 29, 0.3); }
 .story-year { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--olive-dark); }
@@ -1162,7 +1185,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 ============================================================ */
 #itinerario { background: transparent; }
 .itinerary-list { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.8rem; }
-.itinerary-card { display: grid; grid-template-columns: 74px 1fr; gap: 1rem; padding: 1.1rem 1.2rem; background: url("Textura%20papel.png"), var(--cream); background-size: cover, 100% 100%; background-blend-mode: multiply, normal; border: 1px solid rgba(196, 197, 160, 0.4); position: relative; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 3px 6px rgba(95, 55, 20, 0.12), 0 10px 18px rgba(85, 45, 15, 0.12); }
+.itinerary-card { display: grid; grid-template-columns: 74px 1fr; gap: 1rem; padding: 1.1rem 1.2rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); position: relative; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 3px 6px rgba(95, 55, 20, 0.12), 0 10px 18px rgba(85, 45, 15, 0.12); }
 .itinerary-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--wine); }
 .itinerary-time { font-family: var(--font-serif); color: var(--wine); font-size: 1.15rem; font-weight: 500; text-align: right; padding-right: 0.8rem; border-right: 1px solid rgba(217, 167, 172, 0.5); line-height: 1.1; align-self: center; }
 .itinerary-time small { display: block; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.15rem; font-weight: 400; }
@@ -1176,9 +1199,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 #playlist { background: transparent; position: relative; overflow: hidden; }
 .playlist-card {
   max-width: 480px; margin: 0 auto; padding: 2.2rem 1.6rem; text-align: center;
-  background: url("Textura%20papel.png"), var(--cream);
-  background-size: cover, 100% 100%;
-  background-blend-mode: multiply, normal;
+  background: #ffffff;
   border: 1px solid rgba(196, 197, 160, 0.4);
   box-shadow:
     0 1px 0 rgba(120, 75, 30, 0.15),
@@ -1463,24 +1484,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     <img class="intro-art-img" src="intro-art.png" alt="Valeria y Apolo · Acompáñanos en nuestra boda · 7 de Noviembre 2026 · Finca San Bernardo" draggable="false">
   </section>
 
-  <!-- 2. INFORMACIÓN DEL EVENTO -->
-  <section class="hero" id="evento">
-    <div class="hero-card reveal">
-      <div class="hero-eyebrow">Información del evento</div>
-      <div class="hero-photo-wrap">
-        <img id="hero-photo" alt="Valeria y Apolo" src="WhatsApp%20Image%202026-04-24%20at%2012.13.50%20PM.jpeg">
-      </div>
-      <h1 class="hero-names">Valeria</h1>
-      <div class="hero-amp"><span>&amp;</span></div>
-      <h1 class="hero-names">Apolo</h1>
-      <div class="hero-date">
-        <div class="day">07</div>
-        <div class="meta"><strong>Sábado</strong>Noviembre<br>2026</div>
-      </div>
-      <div class="hero-venue">Eventos San Bernardo · 4:00 p.m.</div>
-      <p class="hero-intro-text">Acompáñanos a celebrar el día más importante de nuestras vidas. Con cariño te invitamos a ser parte de cada momento.</p>
-      <button class="hero-rsvp-btn" onclick="scrollTo('rsvp')">Confirmar asistencia</button>
-    </div>
+  <!-- 2. INFORMACIÓN DEL EVENTO · imagen botánica con estilo tarjeta -->
+  <section class="info-evento-card-wrap" id="evento">
+    <img class="info-evento-card-img reveal" src="info-evento-art.png" alt="Información del evento · Valeria y Apolo · 07 Sábado Noviembre 2026 · Finca San Bernardo · 4:00 p.m." draggable="false">
   </section>
 
   <!-- COUNTDOWN -->
