@@ -148,13 +148,8 @@ body.locked { overflow: hidden; }
   width: clamp(110px, 26vw, 140px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at center,
-      rgba(241, 240, 234, 0.18) 0%,
-      rgba(241, 240, 234, 0.08) 60%,
-      transparent 100%);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  /* Transparente — solo el borde y los pulse rings son visibles */
+  background: transparent;
   border: none;
   cursor: pointer;
   z-index: 5;
@@ -163,15 +158,10 @@ body.locked { overflow: hidden; }
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: transform 0.25s var(--ease-soft), background 0.25s ease;
+  transition: transform 0.25s var(--ease-soft);
 }
 .cover-tap:hover {
   transform: translate(-50%, -50%) scale(1.05);
-  background:
-    radial-gradient(circle at center,
-      rgba(241, 240, 234, 0.28) 0%,
-      rgba(241, 240, 234, 0.12) 60%,
-      transparent 100%);
 }
 .cover-tap:active { transform: translate(-50%, -50%) scale(0.96); }
 
