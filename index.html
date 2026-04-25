@@ -40,8 +40,16 @@
   --ease-luxe:    cubic-bezier(0.76, 0, 0.24, 1);
   --ease-soft:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --paper-linen:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cdefs%3E%3Cpattern id='v' x='0' y='0' width='2.2' height='80' patternUnits='userSpaceOnUse'%3E%3Crect width='0.7' height='80' fill='%23000' opacity='0.05'/%3E%3C/pattern%3E%3Cpattern id='h' x='0' y='0' width='80' height='2.2' patternUnits='userSpaceOnUse'%3E%3Crect width='80' height='0.5' fill='%23000' opacity='0.035'/%3E%3C/pattern%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.4' numOctaves='1' stitchTiles='stitch' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.08 0 0 0 0 0.12 0 0 0 0.08 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23v)'/%3E%3Crect width='100%25' height='100%25' fill='url(%23h)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  --paper-noise:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.28 0 0 0 0 0.06 0 0 0 0 0.10 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --paper-grain:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='1' stitchTiles='stitch' seed='8'/%3E%3CfeColorMatrix values='0 0 0 0 0.18 0 0 0 0 0.06 0 0 0 0 0.09 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --paper-noise:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.28 0 0 0 0 0.06 0 0 0 0 0.10 0 0 0 0.07 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-grain:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='1' stitchTiles='stitch' seed='8'/%3E%3CfeColorMatrix values='0 0 0 0 0.18 0 0 0 0 0.06 0 0 0 0 0.09 0 0 0 0.05 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  /* High-frequency cotton fibers (long thin strands) */
+  --paper-fibers: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.025 1.4' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.30 0 0 0 0 0.18 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  /* Cross-fiber weave (low-freq mottling) */
+  --paper-cotton: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 280'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.50 0 0 0 0 0.32 0 0 0 0 0.20 0 0 0 0.10 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+  /* Velvet pile — directional thread pattern */
+  --velvet-pile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='vp'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9 0.04' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.04 0 0 0 0 0.02 0 0 0 0 0.03 0 0 0 0.65 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23vp)'/%3E%3C/svg%3E");
+  /* Foxing / time spots — irregular faded marks */
+  --paper-foxing: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cfilter id='fx'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2' seed='17'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.35 0 0 0 0 0.18 0 0 0 0.06 -0.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23fx)'/%3E%3C/svg%3E");
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -75,211 +83,520 @@ a { color: inherit; text-decoration: none; }
 body.locked { overflow: hidden; }
 
 /* ============================================================
-   COVER · velvet burgundy + sobre cream embossed + sello realista
+   COVER · cream embossed envelope on linen surface
+   Real photographic textures · Textura papel.png + Sello invitación.png
 ============================================================ */
 #cover {
   position: fixed; inset: 0; z-index: 200;
+  /* Tilt parallax variables (set by JS) */
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-px: 0px;
+  --tilt-py: 0px;
+  --light-x: 35%;
+  --light-y: 28%;
+
   background:
-    /* velvet fiber texture */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7 0.04' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.02 0 0 0 0 0.04 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 50% 35%, #6B1A2D 0%, #4A101F 50%, #2A0810 100%);
+    /* warm key light (responds to tilt/cursor) */
+    radial-gradient(circle 70vmin at var(--light-x) var(--light-y),
+      rgba(255, 240, 215, 0.5) 0%,
+      rgba(255, 235, 205, 0.18) 35%,
+      transparent 70%),
+    /* fine cotton fibers */
+    var(--paper-fibers),
+    /* mid-frequency mottle */
+    var(--paper-cotton),
+    /* the actual paper texture image (subtle, from user upload) */
+    url("Textura%20papel.png"),
+    /* base cream warmth */
+    linear-gradient(178deg, #F8F0DA 0%, #F0E2BC 60%, #E2CFA0 100%);
+  background-size: 100% 100%, 320px 320px, 280px 280px, cover, 100% 100%;
+  background-position: center, center, center, center, center;
+  background-blend-mode: overlay, multiply, multiply, multiply, normal;
+  background-repeat: no-repeat, repeat, repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, fixed, fixed, fixed;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
-  transition: opacity 0.9s ease 0.6s, visibility 0s linear 1.5s;
+  perspective: 1600px;
   overflow: hidden;
+  transition: opacity 1.1s ease 1.1s, transform 1.1s ease 1.1s, visibility 0s linear 2.3s;
 }
+/* warm vignette around edges (cream-on-cream depth) */
 #cover::before {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 35%, transparent 40%, rgba(0, 0, 0, 0.65) 100%);
+    radial-gradient(ellipse 110% 85% at 50% 50%, transparent 50%, rgba(140, 95, 50, 0.18) 90%, rgba(120, 70, 30, 0.32) 100%);
   mix-blend-mode: multiply;
+  z-index: 1;
 }
+/* warm specular bloom (moves with parallax — like a window light reflection) */
 #cover::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 25%, rgba(255, 200, 150, 0.06), transparent 55%);
-}
-#cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; }
-
-/* Floral corner arrangements — soft sage + blush peonies */
-.bloom {
-  position: absolute; pointer-events: none;
-  width: 220px; height: 220px;
-  opacity: 0; transform: scale(0.4) rotate(var(--r, 0deg));
-  animation: bloomIn 1.6s var(--ease-soft) var(--d, 0.4s) both;
-  transform-origin: var(--anchor, center);
-  filter: drop-shadow(0 6px 14px rgba(94, 78, 50, 0.18));
-}
-.bloom.tl { top: -40px; left: -50px; --r: -12deg; --anchor: top left; --d: 0.3s; }
-.bloom.tr { top: -40px; right: -50px; --r: 16deg; --anchor: top right; --d: 0.55s; transform: scale(0.4) rotate(var(--r)) scaleX(-1); }
-.bloom.bl { bottom: -50px; left: -60px; --r: 165deg; --anchor: bottom left; --d: 0.7s; }
-.bloom.br { bottom: -50px; right: -60px; --r: -165deg; --anchor: bottom right; --d: 0.85s; }
-@media (min-width: 640px) { .bloom { width: 320px; height: 320px; } }
-@media (min-width: 900px) { .bloom { width: 380px; height: 380px; } }
-@keyframes bloomIn {
-  0%   { opacity: 0; transform: scale(0.4) rotate(var(--r, 0deg)); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: scale(1) rotate(var(--r, 0deg)); }
-}
-.bloom.tr { animation-name: bloomInMirror; }
-@keyframes bloomInMirror {
-  0%   { opacity: 0; transform: scale(0.4) rotate(var(--r, 0deg)) scaleX(-1); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: scale(1) rotate(var(--r, 0deg)) scaleX(-1); }
-}
-/* Second-stage bloom when envelope opens — extra petals push in */
-#cover.opening .bloom { animation: bloomBurst 1.6s var(--ease-soft) forwards; }
-@keyframes bloomBurst {
-  0%   { transform: scale(1) rotate(var(--r, 0deg)); }
-  100% { transform: scale(1.18) rotate(var(--r, 0deg)); opacity: 1; }
-}
-#cover.opening .bloom.tr { animation-name: bloomBurstMirror; }
-@keyframes bloomBurstMirror {
-  0%   { transform: scale(1) rotate(var(--r, 0deg)) scaleX(-1); }
-  100% { transform: scale(1.18) rotate(var(--r, 0deg)) scaleX(-1); }
+    radial-gradient(circle 35vmin at var(--light-x) var(--light-y),
+      rgba(255, 245, 220, 0.32) 0%,
+      rgba(255, 235, 200, 0.12) 40%,
+      transparent 70%);
+  z-index: 2; mix-blend-mode: screen;
 }
 
-/* Falling rose petals */
+/* unifying paper-grain overlay across the whole cover (above envelope, very subtle) */
+.cover-grain {
+  position: absolute; inset: 0; pointer-events: none; z-index: 30;
+  background-image: var(--paper-fibers), var(--paper-grain);
+  background-size: 320px 320px, 200px 200px;
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+#cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; transform: scale(1.04); }
+
+/* ---------- atmosphere: floating gold motes (sun-flecks on paper) ---------- */
+.dust-motes { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; mix-blend-mode: multiply; }
+.dust-mote {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(150, 100, 50, 0.65) 0%, rgba(140, 90, 45, 0.25) 40%, transparent 70%);
+  filter: blur(0.6px);
+  opacity: 0;
+  animation: dustDrift linear infinite;
+}
+@keyframes dustDrift {
+  0%   { transform: translate3d(0, 105vh, 0); opacity: 0; }
+  10%  { opacity: var(--dust-op, 0.7); }
+  85%  { opacity: var(--dust-op, 0.7); }
+  100% { transform: translate3d(var(--dust-dx, 30px), -10vh, 0); opacity: 0; }
+}
+.dust-mote:nth-child(1)  { left: 6%;  width: 5px; height: 5px; --dust-dx: 30px;  --dust-op: 0.85; animation-duration: 24s; animation-delay: -2s; }
+.dust-mote:nth-child(2)  { left: 14%; width: 3px; height: 3px; --dust-dx: -22px; --dust-op: 0.55; animation-duration: 32s; animation-delay: -8s; }
+.dust-mote:nth-child(3)  { left: 22%; width: 6px; height: 6px; --dust-dx: 40px;  --dust-op: 0.7;  animation-duration: 28s; animation-delay: -16s; }
+.dust-mote:nth-child(4)  { left: 30%; width: 2px; height: 2px; --dust-dx: -35px; --dust-op: 0.4;  animation-duration: 38s; animation-delay: -4s; }
+.dust-mote:nth-child(5)  { left: 38%; width: 4px; height: 4px; --dust-dx: 18px;  --dust-op: 0.7;  animation-duration: 30s; animation-delay: -22s; }
+.dust-mote:nth-child(6)  { left: 48%; width: 3px; height: 3px; --dust-dx: -28px; --dust-op: 0.5;  animation-duration: 26s; animation-delay: -10s; }
+.dust-mote:nth-child(7)  { left: 56%; width: 5px; height: 5px; --dust-dx: 33px;  --dust-op: 0.8;  animation-duration: 34s; animation-delay: -18s; }
+.dust-mote:nth-child(8)  { left: 64%; width: 2px; height: 2px; --dust-dx: -20px; --dust-op: 0.45; animation-duration: 40s; animation-delay: -6s; }
+.dust-mote:nth-child(9)  { left: 72%; width: 4px; height: 4px; --dust-dx: 42px;  --dust-op: 0.65; animation-duration: 28s; animation-delay: -14s; }
+.dust-mote:nth-child(10) { left: 80%; width: 6px; height: 6px; --dust-dx: -25px; --dust-op: 0.85; animation-duration: 30s; animation-delay: -2s; }
+.dust-mote:nth-child(11) { left: 88%; width: 3px; height: 3px; --dust-dx: 22px;  --dust-op: 0.55; animation-duration: 36s; animation-delay: -20s; }
+.dust-mote:nth-child(12) { left: 94%; width: 4px; height: 4px; --dust-dx: -30px; --dust-op: 0.7;  animation-duration: 32s; animation-delay: -12s; }
+
+/* ---------- falling rose petals (burgundy on cream — readable contrast) ---------- */
 .petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
 .petal {
   position: absolute; top: -30px;
   width: 14px; height: 14px;
-  background: radial-gradient(circle at 35% 30%, #FAEBE2, #E0B5B0 60%, #B79784);
+  background: radial-gradient(ellipse at 30% 30%, #C8657A, #9C2840 55%, #6B1A2D 100%);
   border-radius: 50% 0 50% 0;
   opacity: 0;
-  filter: drop-shadow(0 2px 3px rgba(94, 78, 50, 0.18));
+  filter: drop-shadow(0 3px 4px rgba(80, 30, 35, 0.3)) blur(0.6px);
   animation: petalFall linear infinite;
 }
 @keyframes petalFall {
   0%   { transform: translate3d(0, -30px, 0) rotate(0deg); opacity: 0; }
-  8%   { opacity: 0.9; }
-  92%  { opacity: 0.8; }
+  8%   { opacity: 0.85; }
+  92%  { opacity: 0.7; }
   100% { transform: translate3d(var(--x-drift, 30px), 110vh, 0) rotate(540deg); opacity: 0; }
 }
-.petal:nth-child(1)  { left: 6%;  animation-duration: 16s; animation-delay: -1s;  --x-drift: 35px; width: 12px; height: 12px; }
-.petal:nth-child(2)  { left: 16%; animation-duration: 22s; animation-delay: -4s;  --x-drift: -28px; width: 10px; height: 10px; }
-.petal:nth-child(3)  { left: 28%; animation-duration: 18s; animation-delay: -7s;  --x-drift: 45px; width: 14px; height: 14px; }
-.petal:nth-child(4)  { left: 42%; animation-duration: 24s; animation-delay: -2s;  --x-drift: -38px; width: 11px; height: 11px; }
-.petal:nth-child(5)  { left: 56%; animation-duration: 20s; animation-delay: -9s;  --x-drift: 32px; width: 13px; height: 13px; }
-.petal:nth-child(6)  { left: 70%; animation-duration: 17s; animation-delay: -5s;  --x-drift: -45px; width: 12px; height: 12px; }
-.petal:nth-child(7)  { left: 84%; animation-duration: 23s; animation-delay: -11s; --x-drift: 22px; width: 15px; height: 15px; }
-.petal:nth-child(8)  { left: 92%; animation-duration: 19s; animation-delay: -3s;  --x-drift: -18px; width: 10px; height: 10px; }
-.petal:nth-child(9)  { left: 36%; animation-duration: 21s; animation-delay: -13s; --x-drift: 40px; width: 11px; height: 11px; }
-.petal:nth-child(10) { left: 64%; animation-duration: 25s; animation-delay: -6s;  --x-drift: -32px; width: 13px; height: 13px; }
-.petal.dark  { background: radial-gradient(circle at 35% 30%, #E0B5B0, #B8455E 60%, #6B1A2D); }
-.petal.cream { background: radial-gradient(circle at 35% 30%, #FFFFFF, #F5E4D6 60%, #D9C4AB); }
+.petal:nth-child(1)  { left: 8%;  animation-duration: 18s; animation-delay: -1s;  --x-drift: 35px; }
+.petal:nth-child(2)  { left: 24%; animation-duration: 24s; animation-delay: -7s;  --x-drift: -28px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)) blur(1.4px); }
+.petal:nth-child(3)  { left: 42%; animation-duration: 22s; animation-delay: -13s; --x-drift: 45px; }
+.petal:nth-child(4)  { left: 60%; animation-duration: 26s; animation-delay: -3s;  --x-drift: -38px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)) blur(1.6px); }
+.petal:nth-child(5)  { left: 76%; animation-duration: 20s; animation-delay: -9s;  --x-drift: 32px; }
+.petal:nth-child(6)  { left: 92%; animation-duration: 23s; animation-delay: -5s;  --x-drift: -25px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)) blur(1.2px); }
+.petal.dark  { background: radial-gradient(ellipse at 30% 30%, #9C2E45, #6B1A2D 60%, #3F0C18); }
+.petal.cream { background: radial-gradient(ellipse at 30% 30%, #E0B5B0, #B8455E 55%, #8B2A3F); }
 
+/* ---------- top eyebrow ---------- */
 .cover-eyebrow {
-  font-family: var(--font-sans); font-size: 0.72rem;
-  letter-spacing: 0.55em; text-transform: uppercase;
-  color: #E8C8A4; margin-bottom: 2.4rem;
-  animation: fadeInUp 1s var(--ease-soft) 0.2s both;
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 0.72rem; letter-spacing: 0.45em; text-transform: uppercase;
+  color: var(--wine-dark);
+  margin-bottom: 2rem;
   position: relative; z-index: 5;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, 0.7);
+  opacity: 0; animation: fadeInUp 1.2s var(--ease-soft) 0.4s both;
+}
+.cover-eyebrow::before, .cover-eyebrow::after {
+  content: ''; width: 28px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(74, 16, 31, 0.55), transparent);
 }
 
-.envelope-scene {
-  perspective: 1800px; width: min(90vw, 420px);
-  aspect-ratio: 1.42 / 1; position: relative;
-  z-index: 5;
+/* ---------- the paper stage (3D wrapper for parallax tilt) ---------- */
+.paper-stage {
+  position: relative; z-index: 10;
+  width: min(86vw, 410px);
+  aspect-ratio: 1.42 / 1;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--tilt-y) * -1)) rotateY(var(--tilt-x)) translate3d(var(--tilt-px), var(--tilt-py), 0);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0; animation: stageEntrance 1.4s var(--ease-luxe) 0.5s both;
 }
-@media (min-width: 640px) { .envelope-scene { width: min(70vw, 480px); } }
+@media (min-width: 640px) { .paper-stage { width: min(70vw, 470px); } }
+@keyframes stageEntrance {
+  0%   { opacity: 0; transform: translateY(-80px) scale(0.92) rotateX(8deg); }
+  60%  { opacity: 1; transform: translateY(8px) scale(1.01) rotateX(-1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
+}
+
+/* ---------- THE ENVELOPE ---------- */
 .envelope {
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d; cursor: pointer;
   transition: transform 0.4s var(--ease-soft);
-  filter: drop-shadow(0 30px 50px rgba(0,0,0,0.55));
+  /* Paper-on-paper depth: tight contact shadow + soft lifted shadow + wide ambient */
+  filter:
+    drop-shadow(0 1px 0 rgba(120, 75, 30, 0.18))            /* hairline edge */
+    drop-shadow(0 3px 4px rgba(95, 55, 20, 0.32))           /* contact shadow */
+    drop-shadow(0 12px 18px rgba(85, 45, 15, 0.28))         /* lift shadow */
+    drop-shadow(0 28px 42px rgba(70, 35, 10, 0.22))         /* mid ambient */
+    drop-shadow(0 50px 70px rgba(60, 25, 5, 0.16));         /* wide ambient */
+  animation: envelopeBreathe 7s ease-in-out infinite 2s;
 }
-.envelope:hover { transform: translateY(-6px); }
+.envelope:hover { transform: translateY(-2px); }
+@keyframes envelopeBreathe {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
 
-.envelope-back {
+/* ---------- ENVELOPE BODY (rectangle behind the flap, embossed corners visible) ---------- */
+.envelope-body {
   position: absolute; inset: 0;
   background:
-    /* shadow-side embossed flowers (offset down-right) */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23B59C7A' opacity='0.45'%3E%3Cg transform='translate(60 60)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(170 130)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3Cg transform='translate(110 190)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    /* highlight-side embossed flowers (offset up-left) */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23FFFAEC' opacity='0.55'%3E%3Cg transform='translate(58 58)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(168 128)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3Cg transform='translate(108 188)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    /* base paper grain */
-    var(--paper-noise),
-    /* base cream */
-    linear-gradient(135deg, #F5E9D0 0%, #EFE0BF 45%, #E5D2A8 100%);
-  background-size: 220px 220px, 220px 220px, 320px 320px, 100% 100%;
-  background-blend-mode: multiply, screen, multiply, normal;
+    /* fine cotton fibers (subtle multiply on top of the photo) */
+    var(--paper-fibers),
+    /* THE REAL embossed paper texture (positioned to show bottom corners' flowers) */
+    url("Textura%20papel.png"),
+    /* warm cream fallback */
+    linear-gradient(135deg, #FAF1DC 0%, #F2E4BD 48%, #DEC9A0 100%);
+  background-size: 320px 320px, 130% 200%, 100% 100%;
+  background-position: center, center bottom, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: multiply, normal, normal;
   border-radius: 3px;
   box-shadow:
-    0 30px 50px -15px rgba(0, 0, 0, 0.55),
-    0 12px 22px rgba(0, 0, 0, 0.3),
-    inset 0 0 80px rgba(160, 130, 80, 0.18),
-    inset 0 2px 6px rgba(255, 255, 255, 0.45),
-    inset 0 -3px 10px rgba(120, 90, 50, 0.12);
+    inset 0 0 90px rgba(140, 95, 50, 0.16),
+    inset 0 2px 6px rgba(255, 250, 230, 0.6),
+    inset 0 -3px 10px rgba(110, 70, 30, 0.18),
+    inset 1.5px 0 3px rgba(255, 250, 230, 0.3),
+    inset -1.5px 0 3px rgba(110, 70, 30, 0.2);
   overflow: hidden;
 }
-.envelope-back::before, .envelope-back::after {
-  content: ''; position: absolute; top: 0; width: 50%; height: 100%;
-  background: linear-gradient(to bottom right, transparent 49.5%, rgba(0,0,0,0.12) 49.8%, rgba(0,0,0,0.12) 50.2%, transparent 50.5%);
+/* warm side-shading (suggests envelope thickness) */
+.envelope-body::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 130% 12% at 50% 100%, transparent 55%, rgba(110, 70, 30, 0.20) 100%),
+    radial-gradient(ellipse 8% 120% at 0% 50%,    transparent 55%, rgba(110, 70, 30, 0.16) 100%),
+    radial-gradient(ellipse 8% 120% at 100% 50%,  transparent 55%, rgba(110, 70, 30, 0.16) 100%);
 }
-.envelope-back::before { left: 0; }
-.envelope-back::after  { right: 0; transform: scaleX(-1); }
+/* diagonal closing seam — where the flap meets the body when shut */
+.envelope-body::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    /* the V-crease shadows (drawn from each top corner inward) */
+    linear-gradient(to bottom right, transparent 49.4%, rgba(95, 55, 20, 0.32) 49.75%, rgba(95, 55, 20, 0.45) 50%, rgba(95, 55, 20, 0.32) 50.25%, transparent 50.6%),
+    linear-gradient(to bottom left,  transparent 49.4%, rgba(95, 55, 20, 0.32) 49.75%, rgba(95, 55, 20, 0.45) 50%, rgba(95, 55, 20, 0.32) 50.25%, transparent 50.6%),
+    /* horizontal seam at the bottom of the visible flap (62% mark) */
+    linear-gradient(to bottom, transparent 61.5%, rgba(95, 55, 20, 0.18) 62%, transparent 62.5%);
+}
 
+/* monogram on body (visible only when flap is open — sits behind card) */
+.envelope-body-monogram {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -55%);
+  font-family: var(--font-script);
+  font-size: clamp(4rem, 14vw, 6rem);
+  color: rgba(110, 65, 30, 0.18);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  text-shadow:
+    1px 1px 0 rgba(60, 30, 12, 0.16),
+    -1px -1px 0 rgba(255, 250, 230, 0.5);
+  pointer-events: none;
+  z-index: 1;
+  display: none; /* keep clean — texture handles the visual richness */
+}
+
+/* gold foil hairline border visible inside the envelope */
+.envelope-body-border {
+  position: absolute; inset: 8px; pointer-events: none;
+  border: 0.5px solid rgba(155, 110, 50, 0.35);
+  z-index: 1;
+}
+.envelope-body-border::after {
+  content: ''; position: absolute; inset: 1.5px; pointer-events: none;
+  border: 0.5px solid rgba(255, 230, 180, 0.25);
+}
+
+/* ---------- THE INNER CARD (slides up from envelope) ---------- */
 .envelope-card {
-  position: absolute; top: 12%; left: 6%; right: 6%; bottom: 12%;
-  background: linear-gradient(180deg, var(--cream-light) 0%, var(--cream) 100%);
-  border-radius: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 0.8rem; text-align: center; z-index: 2;
-  transform: translateY(0) scale(0.96); opacity: 0;
-  transition: transform 1.6s var(--ease-soft) 1s, opacity 0.7s ease 1s;
+  position: absolute;
+  top: 9%; left: 5%; right: 5%; bottom: 9%;
+  background:
+    var(--paper-fibers),
+    var(--paper-cotton),
+    linear-gradient(180deg, #FFFAEC 0%, #F8EFD9 65%, #F0E2BD 100%);
+  background-size: 320px 320px, 280px 280px, 100% 100%;
+  background-blend-mode: multiply, multiply, normal;
+  border-radius: 1px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1rem 1.4rem;
+  z-index: 2;
+  transform: translateY(0) scale(0.96);
+  opacity: 0;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 6px 16px rgba(0,0,0,0.25),
+    0 14px 30px rgba(0,0,0,0.18);
+  transition: transform 1.2s var(--ease-luxe), opacity 0.55s ease, box-shadow 1s ease;
 }
-.envelope-card-inner { border: 1px solid rgba(92, 21, 37, 0.25); padding: 1rem 1.2rem; width: 100%; }
-.envelope-card-script { font-family: var(--font-script); color: var(--wine); font-size: 2.2rem; line-height: 1; }
-.envelope-card-date { font-family: var(--font-serif); font-style: italic; color: var(--wine-dark); font-size: 0.9rem; margin-top: 0.3rem; letter-spacing: 0.15em; }
-.envelope.opening .envelope-card { transform: translateY(-62%) scale(1); opacity: 1; }
+.envelope-card::before {
+  content: ''; position: absolute; inset: 8px; pointer-events: none;
+  border: 0.5px solid rgba(120, 70, 35, 0.35);
+}
+.envelope-card::after {
+  content: ''; position: absolute; inset: 11px; pointer-events: none;
+  border-top: 0.5px solid rgba(170, 130, 70, 0.4);
+  border-bottom: 0.5px solid rgba(170, 130, 70, 0.4);
+}
+.card-eyebrow {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 0.55rem; letter-spacing: 0.5em; text-transform: uppercase;
+  color: rgba(115, 70, 35, 0.7);
+}
+.card-monogram {
+  font-family: var(--font-script);
+  color: var(--wine-deep);
+  font-size: clamp(2rem, 6.5vw, 2.6rem);
+  line-height: 1;
+  margin: 0.25rem 0 0.15rem;
+  text-shadow:
+    1px 1px 0 rgba(255,250,235,0.6),
+    -0.5px -0.5px 0 rgba(60, 30, 12, 0.4);
+}
+.card-divider {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin: 0.2rem 0;
+}
+.card-divider .l { width: 22px; height: 1px; background: linear-gradient(to right, transparent, rgba(115, 70, 35, 0.6)); }
+.card-divider .r { width: 22px; height: 1px; background: linear-gradient(to left, transparent, rgba(115, 70, 35, 0.6)); }
+.card-divider .d { width: 3px; height: 3px; border-radius: 50%; background: rgba(115, 70, 35, 0.7); }
+.card-date {
+  font-family: var(--font-serif); font-style: italic;
+  color: var(--wine-deep);
+  font-size: 0.78rem; letter-spacing: 0.32em;
+  margin-top: 0.2rem;
+}
+.envelope.opening .envelope-card {
+  transform: translateY(-58%) scale(1);
+  opacity: 1;
+  transition-delay: 1.05s;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 18px 40px rgba(0,0,0,0.45),
+    0 30px 60px rgba(0,0,0,0.25);
+}
 
+/* ---------- THE FLAP (top triangle, hinged at top — uses real paper texture) ---------- */
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23B59C7A' opacity='0.45'%3E%3Cg transform='translate(60 60)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(170 130)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cg fill='%23FFFAEC' opacity='0.55'%3E%3Cg transform='translate(58 58)'%3E%3Cg id='f1'%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-32' rx='10' ry='28' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3C/g%3E%3C/g%3E%3Cg transform='translate(168 128)'%3E%3Cuse href='%23f1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    var(--paper-noise),
-    linear-gradient(170deg, #FAF1D9 0%, #F0E0BB 55%, #E2CC9D 100%);
-  background-size: 220px 220px, 220px 220px, 320px 320px, 100% 100%;
-  background-blend-mode: multiply, screen, multiply, normal;
+    /* subtle fibers on top */
+    var(--paper-fibers),
+    /* REAL embossed paper texture — positioned to show top corners' embossed flowers */
+    url("Textura%20papel.png"),
+    /* warm tint to differentiate flap from body (slightly darker / yellower cream) */
+    linear-gradient(168deg, #F0E2BD 0%, #E5D2A8 60%, #C9B080 100%);
+  background-size: 320px 320px, 130% 200%, 100% 100%;
+  background-position: center, center top, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: multiply, multiply, normal;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transform-origin: top center; transform: rotateX(0deg);
-  transition: transform 1.3s var(--ease-luxe) 0.3s;
-  z-index: 4; backface-visibility: hidden;
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 1.05s cubic-bezier(0.65, 0, 0.32, 1) 0.45s;
+  z-index: 4;
+  backface-visibility: hidden;
   box-shadow:
-    inset 0 -8px 16px rgba(120, 90, 50, 0.18),
-    inset 0 3px 8px rgba(255,255,255,0.45);
+    inset 0 -12px 20px rgba(95, 60, 25, 0.32),
+    inset 0 3px 6px rgba(255, 250, 230, 0.55);
+  /* drop shadow falls onto the body (so the V-shape reads as on top) */
+  filter:
+    drop-shadow(0 6px 8px rgba(95, 50, 25, 0.4))
+    drop-shadow(0 2px 3px rgba(80, 40, 20, 0.3));
 }
-.envelope.opening .envelope-flap { transform: rotateX(-178deg); }
+/* subtle fold highlight at top */
+.envelope-flap::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to bottom,
+    rgba(255, 250, 230, 0.5) 0%,
+    rgba(120, 80, 35, 0.18) 100%);
+  pointer-events: none;
+}
+.envelope-flap-monogram { display: none; }
 
+.envelope.opening .envelope-flap { transform: rotateX(-178deg); transition-delay: 0.55s; }
+
+/* ---------- WAX SEAL · real photo (background-blend-mode knocks out white) ---------- */
 .envelope-seal {
   position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%) rotate(-6deg);
-  width: clamp(108px, 30%, 144px); aspect-ratio: 1;
-  display: flex; align-items: center; justify-content: center; z-index: 5;
-  filter: drop-shadow(0 12px 18px rgba(0,0,0,0.55)) drop-shadow(0 4px 8px rgba(0,0,0,0.35));
-  transition: transform 0.5s var(--ease-luxe), opacity 0.45s ease 0.1s;
+  transform: translate(-50%, -50%) rotate(-7deg);
+  width: clamp(135px, 38%, 175px); aspect-ratio: 1;
+  z-index: 5;
+  /* Seal photo over a cream gradient that mimics the smooth area where wax was pressed.
+     Multiply: white pixels of seal × cream = cream (invisible).
+     Red wax pixels × cream = vivid darker red. */
+  background-image:
+    /* moving specular highlight (lit from the cover light position) */
+    radial-gradient(ellipse 35% 35% at 28% 22%, rgba(255, 220, 180, 0.4) 0%, rgba(255, 220, 180, 0) 70%),
+    url("Sello%20invitaci%C3%B3n.png"),
+    radial-gradient(ellipse at 35% 30%, #F2E5C2 0%, #E8D5A8 60%, #DCC494 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-blend-mode: screen, multiply, normal;
+  /* Soft circular mask hides the rectangular corners of the cream backdrop
+     so only the wax shape (and its drips) remain visible. */
+  -webkit-mask-image: radial-gradient(circle at 50% 52%, black 60%, rgba(0,0,0,0.95) 75%, transparent 90%);
+  mask-image: radial-gradient(circle at 50% 52%, black 60%, rgba(0,0,0,0.95) 75%, transparent 90%);
+  filter:
+    drop-shadow(0 10px 14px rgba(60, 15, 20, 0.55))
+    drop-shadow(0 4px 7px rgba(50, 15, 20, 0.45))
+    drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  transition: transform 0.4s var(--ease-luxe), opacity 0.4s ease;
+  cursor: pointer;
 }
-.envelope-seal svg { width: 100%; height: 100%; overflow: visible; }
-.envelope.opening .envelope-seal { transform: translate(-50%, 180%) rotate(45deg) scale(0.4); opacity: 0; }
+.envelope-seal:hover { transform: translate(-50%, -50%) rotate(-7deg) scale(1.05); filter: drop-shadow(0 12px 16px rgba(60, 15, 20, 0.65)) drop-shadow(0 4px 7px rgba(50, 15, 20, 0.45)) drop-shadow(0 1px 2px rgba(0,0,0,0.3)) brightness(1.04); }
+/* hide the inner img since we now use background-image */
+.envelope-seal img { display: none; }
+/* on click: scale up briefly then crack apart */
+.envelope.opening .envelope-seal {
+  animation: sealSnap 0.55s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+@keyframes sealSnap {
+  0%   { transform: translate(-50%, -50%) rotate(-7deg) scale(1); opacity: 1; }
+  35%  { transform: translate(-50%, -50%) rotate(-7deg) scale(1.14); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(-7deg) scale(0.85); opacity: 0; }
+}
 
-.cover-label { margin-top: 2.6rem; animation: fadeInUp 1s var(--ease-soft) 0.9s both; text-align: center; position: relative; z-index: 5; }
-.cover-names { font-family: var(--font-script); color: #F5E2C8; font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1; text-shadow: 0 2px 12px rgba(0,0,0,0.7); }
-.cover-date { font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.5em; text-transform: uppercase; color: #E8C8A4; margin-top: 0.7rem; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
-.cover-divider { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.9rem auto 0; opacity: 0.85; }
-.cover-divider .line { width: 38px; height: 1px; background: linear-gradient(to right, transparent, #E8C8A4, transparent); }
-.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: #E8C8A4; box-shadow: 0 0 6px rgba(232, 200, 164, 0.6); }
+/* wax shards — copies of the real seal image, masked to chunks, flying outward */
+.seal-shards {
+  position: absolute; top: 50%; left: 50%;
+  width: clamp(120px, 34%, 160px); aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotate(-7deg);
+  pointer-events: none; z-index: 6;
+  opacity: 0;
+}
+.envelope.opening .seal-shards { opacity: 1; }
+.seal-shard {
+  position: absolute;
+  inset: 0;
+  background-image: url("Sello%20invitaci%C3%B3n.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 6px 8px rgba(50, 15, 20, 0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.4));
+  opacity: 0;
+}
+.seal-shard.s1 {
+  clip-path: polygon(50% 50%, 100% 22%, 100% 70%, 78% 100%, 50% 92%);
+  animation: shardFly1 1.05s cubic-bezier(0.35, 0, 0.65, 1.2) 0.3s forwards;
+}
+.seal-shard.s2 {
+  clip-path: polygon(50% 50%, 22% 100%, 0% 75%, 5% 35%, 28% 18%);
+  animation: shardFly2 1.05s cubic-bezier(0.35, 0, 0.65, 1.2) 0.34s forwards;
+}
+.seal-shard.s3 {
+  clip-path: polygon(50% 50%, 28% 18%, 50% 8%, 78% 18%, 95% 35%);
+  animation: shardFly3 1.05s cubic-bezier(0.35, 0, 0.65, 1.2) 0.38s forwards;
+}
+@keyframes shardFly1 {
+  0%   { opacity: 1; transform: translate(0,0) rotate(0); }
+  100% { opacity: 0; transform: translate(70%, 95%) rotate(160deg); }
+}
+@keyframes shardFly2 {
+  0%   { opacity: 1; transform: translate(0,0) rotate(0); }
+  100% { opacity: 0; transform: translate(-85%, 105%) rotate(-200deg); }
+}
+@keyframes shardFly3 {
+  0%   { opacity: 1; transform: translate(0,0) rotate(0); }
+  100% { opacity: 0; transform: translate(15%, -60%) rotate(120deg); }
+}
+
+/* tap pulse rings around seal */
+.tap-pulse {
+  position: absolute; top: 50%; left: 50%;
+  width: clamp(110px, 30%, 142px); aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 4;
+}
+.tap-pulse::before, .tap-pulse::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(107, 26, 45, 0.45);
+  animation: tapRipple 2.6s ease-out infinite;
+}
+.tap-pulse::after { animation-delay: 1.3s; }
+@keyframes tapRipple {
+  0%   { transform: scale(0.7); opacity: 0; }
+  20%  { opacity: 0.85; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+.envelope.opening .tap-pulse { display: none; }
+
+/* ---------- COVER LABELS (below envelope, on cream paper) ---------- */
+.cover-label {
+  margin-top: 2.2rem; text-align: center;
+  position: relative; z-index: 5;
+  opacity: 0; animation: fadeInUp 1.2s var(--ease-soft) 1.2s both;
+}
+.cover-names {
+  font-family: var(--font-script); color: var(--wine-deep);
+  font-size: clamp(3rem, 11vw, 4.4rem); line-height: 1;
+  text-shadow:
+    0 1px 0 rgba(255, 250, 230, 0.7),
+    1px 1px 1px rgba(95, 45, 25, 0.18);
+  letter-spacing: 0.005em;
+}
+.cover-date {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 0.82rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--wine); margin-top: 0.6rem;
+  text-shadow: 0 1px 0 rgba(255, 250, 230, 0.7);
+}
+.cover-divider { display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; margin: 0.8rem auto 0; opacity: 0.75; }
+.cover-divider .line { width: 36px; height: 1px; background: linear-gradient(to right, transparent, var(--wine), transparent); }
+.cover-divider .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--wine); }
 
 .cover-cta {
-  margin-top: 2rem; font-family: var(--font-sans); font-size: 0.7rem;
-  letter-spacing: 0.4em; text-transform: uppercase; color: rgba(232, 200, 164, 0.8);
-  animation: pulse 2.2s ease-in-out infinite, fadeInUp 1s var(--ease-soft) 1.4s both;
-  display: flex; align-items: center; gap: 0.6rem; position: relative; z-index: 5;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  margin-top: 1.6rem; font-family: var(--font-sans); font-size: 0.62rem;
+  letter-spacing: 0.45em; text-transform: uppercase;
+  color: var(--wine);
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  position: relative; z-index: 5;
+  text-shadow: 0 1px 0 rgba(255, 250, 230, 0.7);
+  opacity: 0;
+  animation: fadeInUp 1s var(--ease-soft) 1.6s both, ctaPulse 2.4s ease-in-out 2.6s infinite;
 }
-.cover-cta::before, .cover-cta::after { content: ''; width: 24px; height: 1px; background: var(--rose-powder); }
+.cover-cta::before, .cover-cta::after { content: ''; width: 22px; height: 1px; background: rgba(107, 26, 45, 0.55); }
+@keyframes ctaPulse { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+#cover.opening .cover-cta { opacity: 0; transition: opacity 0.3s ease; }
+
+/* opening cover: dim background + zoom stage as final beat */
+#cover.opening { transition: opacity 1s ease 2.6s, visibility 0s linear 3.6s; }
+#cover.opening .paper-stage {
+  animation: stageZoom 3.4s cubic-bezier(0.55, 0, 0.4, 1) 0.6s forwards;
+}
+@keyframes stageZoom {
+  0%   { transform: rotateX(0) rotateY(0) translate3d(0,0,0) scale(1); }
+  55%  { transform: rotateX(0) rotateY(0) translate3d(0, -10px, 0) scale(1.04); }
+  100% { transform: rotateX(0) rotateY(0) translate3d(0, -40px, 0) scale(2.2); opacity: 0; }
+}
+#cover.opening .cover-label,
+#cover.opening .cover-eyebrow {
+  opacity: 0; transition: opacity 0.5s ease;
+}
+#cover.opening::before { opacity: 0.4; transition: opacity 1.5s ease 1.5s; }
 
 @keyframes pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -688,29 +1005,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 .roster-restriction:focus { border-bottom-color: var(--wine); color: var(--ink); }
 .roster-restriction:disabled { opacity: 0.4; }
 
-/* (Old petal/glow blocks moved into the new dark-luxe cover above) */
-
-/* Envelope hover subtle breathing */
-.envelope-scene { animation: fadeInUp 1.1s var(--ease-soft) 0.4s both, float 5.5s ease-in-out infinite 2s; }
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
-}
-
-/* Enhanced envelope opening */
-.envelope.opening .envelope-back { animation: envelopeLift 2.2s var(--ease-luxe) forwards; }
-@keyframes envelopeLift {
-  0%   { transform: translateY(0) scale(1); }
-  55%  { transform: translateY(-8px) scale(1.02); }
-  100% { transform: translateY(-60px) scale(1.06); opacity: 0.35; filter: blur(2px); }
-}
-.envelope.opening .envelope-seal { transition: transform 0.7s var(--ease-luxe), opacity 0.5s ease; }
-
-/* Cover dismissal: fade with upward drift */
-#cover {
-  transition: opacity 1.2s ease 0.9s, transform 1.2s ease 0.9s, visibility 0s linear 2.1s;
-}
-#cover.dismissed { opacity: 0; pointer-events: none; visibility: hidden; transform: translateY(-40px) scale(1.05); }
+/* (Cover styles consolidated above into the tactile-paper block) */
 
 /* Hero names reveal: script slides in */
 #invitation { transition: opacity 1.4s ease 1.6s; }
@@ -781,9 +1076,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 </head>
 <body class="locked">
 
-<!-- ================= COVER · jardín ================= -->
+<!-- ================= COVER · tactile paper on velvet ================= -->
 <div id="cover">
-  <!-- Reusable peony+eucalyptus arrangement SVG -->
+  <!-- Hidden defs (kept for any reuse below) -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <radialGradient id="peony-burgundy" cx="35%" cy="30%">
@@ -897,90 +1192,70 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     </defs>
   </svg>
 
-  <!-- Pétalos cayendo -->
-  <div class="petals" aria-hidden="true">
-    <span class="petal"></span><span class="petal cream"></span><span class="petal"></span>
-    <span class="petal dark"></span><span class="petal"></span><span class="petal cream"></span>
-    <span class="petal"></span><span class="petal dark"></span><span class="petal"></span>
-    <span class="petal cream"></span>
+  <!-- Unifying paper grain overlay -->
+  <div class="cover-grain" aria-hidden="true"></div>
+
+  <!-- Floating dust motes (light catching particles) -->
+  <div class="dust-motes" aria-hidden="true">
+    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
+    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
+    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
+    <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
   </div>
 
-  <div class="cover-eyebrow">You are invited</div>
-  <div class="envelope-scene">
-    <div id="envelope" class="envelope" role="button" tabindex="0" aria-label="Toca para abrir la invitación">
-      <div class="envelope-back">
-        <div class="envelope-card">
-          <div class="envelope-card-inner">
-            <div class="envelope-card-script">Save our date</div>
-            <div class="envelope-card-date">07 · 11 · 2026</div>
-          </div>
-        </div>
+  <!-- Falling rose petals (background atmosphere with depth blur) -->
+  <div class="petals" aria-hidden="true">
+    <span class="petal"></span>
+    <span class="petal cream"></span>
+    <span class="petal"></span>
+    <span class="petal dark"></span>
+    <span class="petal cream"></span>
+    <span class="petal"></span>
+  </div>
+
+  <div class="cover-eyebrow">Estás invitado</div>
+
+  <!-- Paper stage: 3D wrapper with parallax tilt -->
+  <div class="paper-stage" id="paper-stage">
+    <div id="envelope" class="envelope" role="button" tabindex="0" aria-label="Toca el sello para abrir la invitación">
+
+      <!-- Envelope body (rectangle behind everything) -->
+      <div class="envelope-body">
+        <div class="envelope-body-monogram">V&amp;A</div>
+        <div class="envelope-body-border"></div>
       </div>
-      <div class="envelope-flap"></div>
+
+      <!-- The card (slides up from inside) -->
+      <div class="envelope-card">
+        <div class="card-eyebrow">Save our date</div>
+        <div class="card-monogram">Valeria &amp; Apolo</div>
+        <div class="card-divider"><span class="l"></span><span class="d"></span><span class="r"></span></div>
+        <div class="card-date">07 · 11 · 2026</div>
+      </div>
+
+      <!-- Flap (top triangle, hinged at top) -->
+      <div class="envelope-flap">
+        <div class="envelope-flap-monogram">V &amp; A</div>
+      </div>
+
+      <!-- Tap pulse rings (idle indicator around seal) -->
+      <div class="tap-pulse" aria-hidden="true"></div>
+
+      <!-- Wax seal · real photo -->
       <div class="envelope-seal" aria-hidden="true">
-        <svg viewBox="-10 -10 220 220">
-          <defs>
-            <radialGradient id="wax-base" cx="32%" cy="26%">
-              <stop offset="0%" stop-color="#C84766"/>
-              <stop offset="22%" stop-color="#9C2840"/>
-              <stop offset="55%" stop-color="#6B1A2D"/>
-              <stop offset="85%" stop-color="#3F0C18"/>
-              <stop offset="100%" stop-color="#2A0710"/>
-            </radialGradient>
-            <radialGradient id="wax-marble" cx="60%" cy="70%">
-              <stop offset="0%" stop-color="#8A2438" stop-opacity="0.6"/>
-              <stop offset="60%" stop-color="#4A0F1B" stop-opacity="0"/>
-            </radialGradient>
-            <filter id="wax-bevel" x="-15%" y="-15%" width="130%" height="130%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="blur"/>
-              <feSpecularLighting in="blur" surfaceScale="6" specularConstant="1.6" specularExponent="22" lighting-color="#FFD0BA" result="spec">
-                <feDistantLight azimuth="135" elevation="55"/>
-              </feSpecularLighting>
-              <feComposite in="spec" in2="SourceAlpha" operator="in" result="specMasked"/>
-              <feMerge>
-                <feMergeNode in="SourceGraphic"/>
-                <feMergeNode in="specMasked"/>
-              </feMerge>
-            </filter>
-            <filter id="wax-marble-noise">
-              <feTurbulence baseFrequency="0.7" numOctaves="2" seed="5"/>
-              <feColorMatrix values="0 0 0 0 0.25  0 0 0 0 0.05  0 0 0 0 0.10  0 0 0 0.18 0"/>
-              <feComposite in2="SourceGraphic" operator="in"/>
-            </filter>
-            <filter id="emboss-mono" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur"/>
-              <feSpecularLighting in="blur" surfaceScale="3" specularConstant="2.4" specularExponent="30" lighting-color="#FFE0CB" result="spec">
-                <feDistantLight azimuth="135" elevation="60"/>
-              </feSpecularLighting>
-              <feComposite in="spec" in2="SourceAlpha" operator="in" result="specMasked"/>
-              <feMerge>
-                <feMergeNode in="SourceGraphic"/>
-                <feMergeNode in="specMasked"/>
-              </feMerge>
-            </filter>
-            <symbol id="wax-shape" viewBox="0 0 200 200">
-              <!-- Irregular drip outline -->
-              <path d="M100,8 Q132,10 156,28 Q182,48 188,82 Q196,118 178,148 Q160,182 122,190 Q88,196 56,180 Q22,162 12,128 Q4,94 18,62 Q34,28 64,14 Q82,6 100,8 Z"/>
-            </symbol>
-          </defs>
-          <!-- Drip cast shadow -->
-          <use href="#wax-shape" fill="rgba(0,0,0,0.45)" transform="translate(4 8)" filter="url(#blur1)"/>
-          <!-- Wax base with bevel -->
-          <use href="#wax-shape" fill="url(#wax-base)" filter="url(#wax-bevel)"/>
-          <!-- Marbling overlay -->
-          <use href="#wax-shape" fill="url(#wax-marble)"/>
-          <use href="#wax-shape" fill="#000" filter="url(#wax-marble-noise)" opacity="0.35"/>
-          <!-- Inner ring engraving -->
-          <circle cx="100" cy="100" r="76" fill="none" stroke="#3F0C18" stroke-width="1.2" opacity="0.55"/>
-          <circle cx="100" cy="100" r="76" fill="none" stroke="#FFC8B0" stroke-width="0.5" opacity="0.25" transform="translate(0 -1)"/>
-          <!-- Embossed V&A monogram (raised by feSpecularLighting + dark fill) -->
-          <text x="100" y="135" text-anchor="middle" font-family="Cormorant Garamond, serif"
-                font-size="118" font-weight="500" letter-spacing="-6"
-                fill="#3F0C18" filter="url(#emboss-mono)" opacity="0.95">V&amp;A</text>
-        </svg>
+        <img src="Sello%20invitaci%C3%B3n.png" alt="Sello de cera Valeria & Apolo" draggable="false">
       </div>
+
+      <!-- Wax shards (fly outward when seal cracks) -->
+      <div class="seal-shards" aria-hidden="true">
+        <span class="seal-shard s1"></span>
+        <span class="seal-shard s2"></span>
+        <span class="seal-shard s3"></span>
+      </div>
+
     </div>
   </div>
+
   <div class="cover-label">
     <div class="cover-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
     <div class="cover-names">Valeria &amp; Apolo</div>
@@ -1657,24 +1932,119 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-/* COVER */
+/* COVER · tactile parallax + multi-stage opening */
 function openEnvelope() {
   const env = $('#envelope'); if (env.classList.contains('opening')) return;
   env.classList.add('opening');
   $('#cover').classList.add('opening');
+  // Reset tilt during opening so the zoom-out reads cleanly
+  const cover = $('#cover');
+  cover.style.setProperty('--tilt-x', '0deg');
+  cover.style.setProperty('--tilt-y', '0deg');
+  cover.style.setProperty('--tilt-px', '0px');
+  cover.style.setProperty('--tilt-py', '0px');
   ensureInvitadosLoaded();
+  // Choreography total: 3.6s (seal 0.55s → flap 1.5s → card 2.4s → zoom 3.0s → dismiss 3.6s)
   setTimeout(() => {
-    $('#cover').classList.add('dismissed');
+    cover.classList.add('dismissed');
     document.body.classList.remove('locked');
     $('#invitation').classList.add('visible');
     $('#invitation').setAttribute('aria-hidden', 'false');
     $('#nav').classList.add('visible');
     observeReveal();
-  }, 2400);
+  }, 3600);
 }
 ensureInvitadosLoaded();
 $('#envelope').addEventListener('click', openEnvelope);
 $('#envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); } });
+
+/* Tilt parallax — paper responds to mouse / device orientation as if real */
+(function setupCoverParallax() {
+  const cover = document.getElementById('cover');
+  if (!cover) return;
+  const MAX_ROT = 9;     // max tilt rotation in deg
+  const MAX_TRANS = 6;   // max translate in px
+  let raf = 0;
+  let target = { rx: 0, ry: 0, tx: 0, ty: 0, lx: 32, ly: 22 };
+  let current = { rx: 0, ry: 0, tx: 0, ty: 0, lx: 32, ly: 22 };
+
+  function apply() {
+    // ease toward target
+    current.rx += (target.rx - current.rx) * 0.12;
+    current.ry += (target.ry - current.ry) * 0.12;
+    current.tx += (target.tx - current.tx) * 0.12;
+    current.ty += (target.ty - current.ty) * 0.12;
+    current.lx += (target.lx - current.lx) * 0.08;
+    current.ly += (target.ly - current.ly) * 0.08;
+    cover.style.setProperty('--tilt-x', current.rx.toFixed(2) + 'deg');
+    cover.style.setProperty('--tilt-y', current.ry.toFixed(2) + 'deg');
+    cover.style.setProperty('--tilt-px', current.tx.toFixed(2) + 'px');
+    cover.style.setProperty('--tilt-py', current.ty.toFixed(2) + 'px');
+    cover.style.setProperty('--light-x', current.lx.toFixed(1) + '%');
+    cover.style.setProperty('--light-y', current.ly.toFixed(1) + '%');
+    const dx = Math.abs(target.rx - current.rx);
+    const dy = Math.abs(target.ry - current.ry);
+    if (dx > 0.05 || dy > 0.05) raf = requestAnimationFrame(apply); else raf = 0;
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(apply); }
+
+  // Mouse / pointer tilt
+  cover.addEventListener('mousemove', (e) => {
+    if (cover.classList.contains('opening')) return;
+    const r = cover.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width  - 0.5;  // -0.5..0.5
+    const ny = (e.clientY - r.top)  / r.height - 0.5;
+    target.rx = nx * MAX_ROT;
+    target.ry = ny * MAX_ROT;
+    target.tx = -nx * MAX_TRANS;
+    target.ty = -ny * MAX_TRANS;
+    // light follows cursor (with offset)
+    target.lx = 50 + nx * 35;
+    target.ly = 35 + ny * 25;
+    schedule();
+  });
+  cover.addEventListener('mouseleave', () => {
+    target.rx = 0; target.ry = 0; target.tx = 0; target.ty = 0;
+    target.lx = 32; target.ly = 22;
+    schedule();
+  });
+
+  // Device orientation tilt (mobile)
+  let orientationActive = false;
+  function onOrient(e) {
+    if (cover.classList.contains('opening')) return;
+    if (e.beta == null || e.gamma == null) return;
+    orientationActive = true;
+    // gamma: left-right tilt (-90..90), beta: front-back tilt (-180..180)
+    const g = Math.max(-25, Math.min(25, e.gamma)) / 25;  // -1..1
+    const b = Math.max(-25, Math.min(25, e.beta - 30)) / 25;
+    target.rx = g * MAX_ROT * 0.85;
+    target.ry = b * MAX_ROT * 0.85;
+    target.tx = -g * MAX_TRANS * 0.85;
+    target.ty = -b * MAX_TRANS * 0.85;
+    target.lx = 50 + g * 30;
+    target.ly = 35 + b * 22;
+    schedule();
+  }
+  function tryAttachOrientation() {
+    if (typeof DeviceOrientationEvent === 'undefined') return;
+    // iOS 13+ requires permission
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // Defer permission until user interacts (one-time, on first tap on stage area)
+      const stage = document.getElementById('paper-stage');
+      const askOnce = () => {
+        DeviceOrientationEvent.requestPermission().then((res) => {
+          if (res === 'granted') window.addEventListener('deviceorientation', onOrient);
+        }).catch(() => {});
+        stage && stage.removeEventListener('touchstart', askOnce);
+      };
+      stage && stage.addEventListener('touchstart', askOnce, { passive: true, once: true });
+    } else {
+      window.addEventListener('deviceorientation', onOrient);
+    }
+  }
+  tryAttachOrientation();
+})();
 
 /* NAV */
 $('#nav-toggle').addEventListener('click', () => $('#nav-menu').classList.toggle('open'));
