@@ -95,16 +95,7 @@ body.locked { overflow: hidden; }
   --light-x: 35%;
   --light-y: 28%;
 
-  background:
-    /* the actual paper texture image (the real embossed paper) */
-    url("Textura%20papel.png"),
-    /* uniform ivory — sin gradient direccional que ilumina solo arriba */
-    #F5EDD9;
-  background-size: cover, 100% 100%;
-  background-position: center, center;
-  background-blend-mode: multiply, normal;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
+  background: #FFFFFF;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
   perspective: 1600px;
@@ -247,21 +238,17 @@ body.locked { overflow: hidden; }
 .envelope-body {
   position: absolute; inset: 0;
   background:
-    /* very subtle paper grain noise (so it doesn't look plastic) */
-    var(--paper-noise),
-    /* deep burgundy wine */
+    /* burgundy envelope photo recoloreada — embossed flowers + V baked in */
+    url("Sobre-burgundy.png"),
     #6B1A2D;
-  background-size: 320px 320px, 100% 100%;
-  background-position: center, center;
-  background-repeat: repeat, no-repeat;
-  background-blend-mode: soft-light, normal;
+  /* show bottom portion of the image (below the V) so body reads as plain burgundy paper */
+  background-size: 100% 220%, 100% 100%;
+  background-position: center 100%, center;
+  background-repeat: no-repeat, no-repeat;
   border-radius: 3px;
-  /* deeper inner shadows for the wine paper feel */
   box-shadow:
-    inset 0 0 80px rgba(0, 0, 0, 0.25),
-    inset 1px 0 3px rgba(255, 220, 200, 0.08),
-    inset -1px 0 3px rgba(0, 0, 0, 0.25),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
+    inset 0 0 60px rgba(0, 0, 0, 0.2),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 /* darker side-shading on burgundy — adds depth */
@@ -381,14 +368,12 @@ body.locked { overflow: hidden; }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    /* matching grain — same paper, slightly darker burgundy for fold contrast */
-    var(--paper-noise),
-    /* mismo wine, ligeramente más oscuro para que el flap se lea sobre el body */
+    /* same burgundy envelope image — show top portion (con la V baked in) */
+    url("Sobre-burgundy.png"),
     #5C1525;
-  background-size: 320px 320px, 100% 100%;
-  background-position: center, center;
-  background-repeat: repeat, no-repeat;
-  background-blend-mode: soft-light, normal;
+  background-size: 100% 162%, 100% 100%;
+  background-position: center 0%, center;
+  background-repeat: no-repeat, no-repeat;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center;
   transform: rotateX(0deg);
@@ -1198,15 +1183,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     <span class="dust-mote"></span><span class="dust-mote"></span><span class="dust-mote"></span>
   </div>
 
-  <!-- Falling rose petals (background atmosphere with depth blur) -->
-  <div class="petals" aria-hidden="true">
-    <span class="petal"></span>
-    <span class="petal cream"></span>
-    <span class="petal"></span>
-    <span class="petal dark"></span>
-    <span class="petal cream"></span>
-    <span class="petal"></span>
-  </div>
 
   <div class="cover-eyebrow">Estás invitado</div>
 
