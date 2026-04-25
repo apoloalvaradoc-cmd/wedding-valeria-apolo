@@ -683,7 +683,8 @@ body.locked { overflow: hidden; }
   transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
 }
 #nav.visible { opacity: 1; transform: translateY(0); }
-.nav-monogram { font-family: var(--font-script); color: var(--wine); font-size: 1.9rem; line-height: 1; }
+.nav-monogram { height: 38px; width: auto; display: block; user-select: none; }
+@media (min-width: 640px) { .nav-monogram { height: 44px; } }
 .nav-toggle { padding: 0.4rem; color: var(--wine); }
 #nav-menu {
   position: fixed; inset: 0;
@@ -938,6 +939,8 @@ body.locked { overflow: hidden; }
    FOOTER
 ============================================================ */
 footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream); text-align: center; }
+.footer-logo { height: 70px; width: auto; display: block; margin: 0 auto 1.4rem; filter: brightness(0) invert(1) opacity(0.92); user-select: none; }
+@media (min-width: 640px) { .footer-logo { height: 90px; } }
 .footer-names { font-family: var(--font-display); font-size: 3.4rem; line-height: 1.1; }
 .footer-date { margin-top: 0.5rem; font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(244, 237, 221, 0.75); }
 .footer-heart { margin-top: 2rem; color: var(--rose-powder); }
@@ -1285,7 +1288,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 
 <!-- ================= NAV ================= -->
 <nav id="nav" aria-label="Menú principal">
-  <div class="nav-monogram">V &amp; A</div>
+  <img class="nav-monogram" src="logo-va.png" alt="V&amp;A" draggable="false">
   <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
   </button>
@@ -1726,6 +1729,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   </section>
 
   <footer>
+    <img class="footer-logo" src="logo-va.png" alt="V&amp;A" draggable="false">
     <div class="footer-names">Valeria &amp; Apolo</div>
     <div class="footer-date">07 · Noviembre · 2026</div>
     <div class="footer-heart">
