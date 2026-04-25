@@ -718,6 +718,118 @@ body.locked { overflow: hidden; }
 .ornament-divider .mark { color: var(--wine); font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; }
 
 /* ============================================================
+   ORDEN DE SECCIONES (flex order overrides el orden del HTML)
+============================================================ */
+#invitation { display: flex; flex-direction: column; }
+#invitation > .intro-art { order: 1; }
+#invitation > #evento     { order: 2; }
+#invitation > #countdown  { order: 3; }
+#invitation > #rsvp       { order: 4; }
+#invitation > #itinerario { order: 5; }
+#invitation > #location   { order: 6; }
+#invitation > #dresscode  { order: 7; }
+#invitation > #adults     { order: 8; }
+#invitation > #historia   { order: 9; }
+#invitation > #playlist   { order: 10; }
+#invitation > #gifts      { order: 11; }
+#invitation > #faq        { order: 12; }
+#invitation > #closing-cta{ order: 13; }
+#invitation > footer      { order: 99; }
+
+/* ============================================================
+   FAQ · accordion preguntas frecuentes
+============================================================ */
+#faq { background: transparent; }
+.faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; }
+.faq-item {
+  background: var(--cream);
+  border: 1px solid rgba(196, 197, 160, 0.4);
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 0 rgba(120, 75, 30, 0.12), 0 4px 8px rgba(95, 55, 20, 0.1);
+  transition: box-shadow 0.25s ease;
+}
+.faq-item[open] {
+  box-shadow: 0 1px 0 rgba(120, 75, 30, 0.16), 0 8px 18px rgba(95, 55, 20, 0.18);
+}
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  color: var(--wine);
+  font-weight: 500;
+  position: relative;
+  padding-right: 1.8rem;
+  user-select: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: ''; position: absolute; right: 0.2rem; top: 50%;
+  width: 10px; height: 10px;
+  border-right: 1.5px solid var(--olive);
+  border-bottom: 1.5px solid var(--olive);
+  transform: translateY(-65%) rotate(45deg);
+  transition: transform 0.25s ease;
+}
+.faq-item[open] summary::after { transform: translateY(-30%) rotate(-135deg); }
+.faq-item p {
+  margin-top: 0.7rem;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(196, 197, 160, 0.4);
+}
+
+/* ============================================================
+   CLOSING CTA · cierre con botón de confirmación
+============================================================ */
+#closing-cta { background: transparent; padding-top: 2rem; padding-bottom: 4rem; }
+.closing-card {
+  max-width: 520px; margin: 0 auto; padding: 2.6rem 1.8rem;
+  text-align: center;
+  background: var(--cream);
+  border: 1px solid rgba(88, 4, 16, 0.25);
+  box-shadow:
+    0 1px 0 rgba(120, 75, 30, 0.16),
+    0 6px 14px rgba(95, 55, 20, 0.18),
+    0 22px 40px rgba(85, 45, 15, 0.16);
+}
+.closing-eyebrow {
+  font-family: var(--font-serif); font-style: italic; font-weight: 500;
+  font-size: 0.78rem; letter-spacing: 0.45em; text-transform: uppercase;
+  color: var(--olive-dark);
+  margin-bottom: 0.4rem;
+}
+.closing-title {
+  font-family: var(--font-display);
+  color: var(--wine);
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  line-height: 1.05;
+  margin-bottom: 1rem;
+}
+.closing-message {
+  font-family: var(--font-serif); font-style: italic;
+  color: var(--ink); font-size: 1rem; line-height: 1.65;
+  margin-bottom: 1.6rem;
+  max-width: 380px; margin-left: auto; margin-right: auto;
+}
+
+/* ============================================================
+   HERO · intro text (texto descriptivo bajo el venue)
+============================================================ */
+.hero-intro-text {
+  margin: 1.4rem auto 0;
+  max-width: 360px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+/* ============================================================
    INTRO ART · primera vista tras el cover
 ============================================================ */
 .intro-art {
@@ -1318,26 +1430,25 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   </button>
 </nav>
 <div id="nav-menu" aria-hidden="true">
-  <a href="#historia" data-nav>Historia</a>
-  <a href="#itinerario" data-nav>Itinerario</a>
+  <a href="#inicio" data-nav>Inicio</a>
+  <a href="#evento" data-nav>Evento</a>
+  <a href="#rsvp" data-nav>Confirmar asistencia</a>
   <a href="#location" data-nav>Ubicación</a>
-  <a href="#rsvp" data-nav>RSVP</a>
-  <a href="#gifts" data-nav>Regalos</a>
   <a href="#dresscode" data-nav>Dress code</a>
-  <a href="#playlist" data-nav>Playlist</a>
+  <a href="#gifts" data-nav>Regalos</a>
 </div>
 
 <!-- ================= INVITATION ================= -->
 <main id="invitation" aria-hidden="true">
-  <!-- INTRO ART · primer contenido tras la animación del cover -->
-  <section class="intro-art">
+  <!-- 1. INTRO ART · primer contenido tras la animación del cover -->
+  <section class="intro-art" id="inicio">
     <img class="intro-art-img" src="intro-art.png" alt="Valeria y Apolo · Acompáñanos en nuestra boda · 7 de Noviembre 2026 · Finca San Bernardo" draggable="false">
   </section>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- 2. INFORMACIÓN DEL EVENTO -->
+  <section class="hero" id="evento">
     <div class="hero-card reveal">
-      <div class="hero-eyebrow">Estás invitado</div>
+      <div class="hero-eyebrow">Información del evento</div>
       <div class="hero-photo-wrap">
         <img id="hero-photo" alt="Valeria y Apolo" src="WhatsApp%20Image%202026-04-24%20at%2012.13.50%20PM.jpeg">
       </div>
@@ -1349,48 +1460,8 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
         <div class="meta"><strong>Sábado</strong>Noviembre<br>2026</div>
       </div>
       <div class="hero-venue">Eventos San Bernardo · 4:00 p.m.</div>
-
-      <div class="hero-timeline">
-        <div class="hero-timeline-heading">el día</div>
-        <div class="hero-timeline-sub">Orden del evento</div>
-        <ul class="hero-timeline-list">
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">4:00 pm</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Ceremonia religiosa<small>Eventos San Bernardo</small></span>
-          </li>
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">5:00 pm</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Cóctel<small>Aperitivos de bienvenida</small></span>
-          </li>
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">6:00 pm</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Recepción<small>Cena, brindis y bailes</small></span>
-          </li>
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">durante</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Foto del pastel &amp; Hora loca</span>
-          </li>
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">al cierre</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Menú after party</span>
-          </li>
-          <li class="hero-timeline-row">
-            <span class="hero-timeline-time">1:00 am</span>
-            <span class="hero-timeline-dot"></span>
-            <span class="hero-timeline-event">Cierre</span>
-          </li>
-        </ul>
-      </div>
+      <p class="hero-intro-text">Acompáñanos a celebrar el día más importante de nuestras vidas. Con cariño te invitamos a ser parte de cada momento.</p>
       <button class="hero-rsvp-btn" onclick="scrollTo('rsvp')">Confirmar asistencia</button>
-    </div>
-    <div class="scroll-hint reveal">
-      <span>Desliza para más</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"/></svg>
     </div>
   </section>
 
@@ -1441,55 +1512,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <h3 class="story-title">Sí, acepto</h3>
           <p class="story-text">Queremos que seas parte del capítulo que más hemos esperado. Gracias por acompañarnos a celebrar el amor.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FECHAS IMPORTANTES -->
-  <section class="section" id="fechas">
-    <div class="section-inner">
-      <div class="section-title-block reveal">
-        <div class="section-eyebrow">Nuestras fechas</div>
-        <h2 class="section-title">Siempre un 7</h2>
-        <div class="section-divider"></div>
-      </div>
-      <div class="fechas-list reveal">
-        <div class="fecha-card">
-          <div class="fecha-day">07</div>
-          <div class="fecha-month">abril</div>
-          <div class="fecha-year">2019</div>
-          <div class="fecha-label">Novios</div>
-        </div>
-        <div class="fecha-card">
-          <div class="fecha-day">07</div>
-          <div class="fecha-month">noviembre</div>
-          <div class="fecha-year">2025</div>
-          <div class="fecha-label">La propuesta</div>
-        </div>
-        <div class="fecha-card">
-          <div class="fecha-day">07</div>
-          <div class="fecha-month">noviembre</div>
-          <div class="fecha-year">2026</div>
-          <div class="fecha-label">Sí, acepto</div>
-        </div>
-      </div>
-      <p class="fecha-note reveal">Todos los momentos importantes cayeron un día 7. La boda no podía ser diferente.</p>
-    </div>
-  </section>
-
-  <!-- GALLERY -->
-  <section class="section" id="gallery">
-    <div class="section-inner">
-      <div class="section-title-block reveal">
-        <div class="section-eyebrow">Momentos</div>
-        <h2 class="section-title">Camino al altar</h2>
-        <div class="section-divider"></div>
-      </div>
-      <div class="gallery-grid reveal">
-        <img alt="Valeria y Apolo 1" src="WhatsApp%20Image%202026-04-24%20at%2012.13.51%20PM%20%281%29.jpeg">
-        <img alt="Valeria y Apolo 2" src="WhatsApp%20Image%202026-04-24%20at%2012.13.50%20PM%20%281%29.jpeg">
-        <img alt="Valeria y Apolo 3" src="WhatsApp%20Image%202026-04-24%20at%2012.13.50%20PM%20%282%29.jpeg">
-        <img alt="Valeria y Apolo 4" src="WhatsApp%20Image%202026-04-24%20at%2012.13.51%20PM.jpeg">
       </div>
     </div>
   </section>
@@ -1753,6 +1775,55 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <div class="gift-title">Sobre de regalo</div>
           <p class="gift-desc">Habrá un espacio reservado para sobres en la recepción.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. FAQ · preguntas frecuentes -->
+  <section class="section" id="faq">
+    <div class="section-inner">
+      <div class="section-title-block reveal">
+        <div class="section-eyebrow">Preguntas frecuentes</div>
+        <h2 class="section-title">¿Tienes dudas?</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="faq-list reveal">
+        <details class="faq-item">
+          <summary>¿Puedo llevar acompañante?</summary>
+          <p>Cada invitación incluye los cupos disponibles para tu grupo. Búscate por nombre en la confirmación de asistencia para ver los tuyos. Si tienes dudas, escríbenos.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo llevar niños?</summary>
+          <p>Con mucho cariño, hemos decidido que sea una celebración solo para adultos. Agradecemos tu comprensión.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cuál es el dress code?</summary>
+          <p>Formal. Te recomendamos tonos neutros, oscuros o joya. Por favor evita el blanco, marfil, vino y verde olivo (colores de los novios y de la paleta).</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Habrá parking?</summary>
+          <p>Sí, Eventos San Bernardo cuenta con estacionamiento amplio para todos los invitados.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿A qué hora debo llegar?</summary>
+          <p>Te recomendamos llegar 20 minutos antes de las 4:00 p.m. para acomodarte y disfrutar la ceremonia desde el inicio.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo tomar fotos?</summary>
+          <p>¡Por supuesto! Solo te pedimos esperar a que los novios bailen la primera canción antes de publicar en redes. Queremos que la primera foto sea la nuestra.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. CIERRE CON BOTÓN DE CONFIRMACIÓN -->
+  <section class="section" id="closing-cta">
+    <div class="section-inner">
+      <div class="closing-card reveal">
+        <div class="closing-eyebrow">Te esperamos</div>
+        <h2 class="closing-title">Tu confirmación nos importa</h2>
+        <p class="closing-message">Tu respuesta nos ayuda a cuidar cada detalle del día. Si aún no has confirmado, este es el momento.</p>
+        <button class="hero-rsvp-btn" onclick="scrollTo('rsvp')">Confirma tu asistencia</button>
       </div>
     </div>
   </section>
