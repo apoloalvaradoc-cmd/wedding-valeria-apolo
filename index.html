@@ -59,7 +59,7 @@ body {
      the same desk surface */
   background:
     url("Textura%20papel.png"),
-    linear-gradient(178deg, #FAF4E6 0%, #F5EDD9 60%, #EBE0C7 100%);
+    #F5EDD9;
   background-size: cover, 100% 100%;
   background-position: center, center;
   background-blend-mode: multiply, normal;
@@ -102,20 +102,15 @@ body.locked { overflow: hidden; }
   --light-y: 28%;
 
   background:
-    /* warm key light (responds to tilt/cursor) — softer */
-    radial-gradient(circle 70vmin at var(--light-x) var(--light-y),
-      rgba(255, 250, 240, 0.4) 0%,
-      rgba(255, 245, 230, 0.14) 35%,
-      transparent 70%),
     /* the actual paper texture image (the real embossed paper) */
     url("Textura%20papel.png"),
-    /* soft ivory base — matches the reference photo */
-    linear-gradient(178deg, #FAF4E6 0%, #F5EDD9 60%, #EBE0C7 100%);
-  background-size: 100% 100%, cover, 100% 100%;
-  background-position: center, center, center;
-  background-blend-mode: overlay, multiply, normal;
-  background-repeat: no-repeat, no-repeat, no-repeat;
-  background-attachment: fixed, fixed, fixed;
+    /* uniform ivory — sin gradient direccional que ilumina solo arriba */
+    #F5EDD9;
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+  background-blend-mode: multiply, normal;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
   perspective: 1600px;
@@ -130,15 +125,9 @@ body.locked { overflow: hidden; }
   mix-blend-mode: multiply;
   z-index: 1;
 }
-/* warm specular bloom (moves with parallax — like a window light reflection) */
+/* removed warm specular bloom that lit only the upper portion */
 #cover::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(circle 35vmin at var(--light-x) var(--light-y),
-      rgba(255, 245, 220, 0.32) 0%,
-      rgba(255, 235, 200, 0.12) 40%,
-      transparent 70%);
-  z-index: 2; mix-blend-mode: screen;
 }
 
 /* unifying paper-grain overlay across the whole cover (above envelope, very subtle) */
@@ -264,19 +253,18 @@ body.locked { overflow: hidden; }
 .envelope-body {
   position: absolute; inset: 0;
   background:
-    /* embossed paper texture (positioned to show bottom corners' flowers) */
+    /* embossed paper texture — SAME crop as flap so they read as one paper */
     url("Textura%20papel.png"),
-    /* near-uniform cream — sin gradient diagonal que oscurece abajo */
+    /* uniform cream — sin gradient direccional */
     #F4E8C9;
-  background-size: 130% 200%, 100% 100%;
-  background-position: center bottom, center;
+  background-size: cover, 100% 100%;
+  background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   background-blend-mode: multiply, normal;
   border-radius: 3px;
-  /* shadows muy sutiles, sin direcci\u00f3n marcada arriba/abajo */
+  /* shadows uniformes en los 4 lados */
   box-shadow:
     inset 0 0 60px rgba(140, 100, 50, 0.06),
-    inset 0 1px 3px rgba(255, 252, 240, 0.4),
     inset 1px 0 2px rgba(255, 252, 240, 0.18),
     inset -1px 0 2px rgba(120, 80, 35, 0.08);
   overflow: hidden;
@@ -401,12 +389,11 @@ body.locked { overflow: hidden; }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
   background:
-    /* embossed paper texture (positioned to show top corners' embossed flowers) */
+    /* MISMO texture, MISMO crop, MISMO color que el body */
     url("Textura%20papel.png"),
-    /* MISMO cream que el body — la diferencia se lee solo por la sombra del V */
     #F4E8C9;
-  background-size: 130% 200%, 100% 100%;
-  background-position: center top, center;
+  background-size: cover, 100% 100%;
+  background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   background-blend-mode: multiply, normal;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -415,14 +402,11 @@ body.locked { overflow: hidden; }
   transition: transform 1.2s cubic-bezier(0.5, 0.05, 0.2, 1.15) 0.55s;
   z-index: 4;
   backface-visibility: hidden;
-  /* sombra MUY sutil interna — apenas marca el pliegue inferior del flap */
-  box-shadow:
-    inset 0 -8px 14px rgba(110, 75, 30, 0.10),
-    inset 0 2px 4px rgba(255, 252, 240, 0.45);
-  /* sombra al body que crea la V por luz, no por color */
+  /* sin inset shadow — la V se lee solo por el drop-shadow del filter */
+  /* sombra suave al body para leer la V por luz */
   filter:
-    drop-shadow(0 4px 6px rgba(105, 65, 25, 0.28))
-    drop-shadow(0 1px 2px rgba(95, 50, 20, 0.2));
+    drop-shadow(0 3px 5px rgba(105, 65, 25, 0.22))
+    drop-shadow(0 1px 2px rgba(95, 50, 20, 0.16));
 }
 /* subtle fold highlight at top */
 .envelope-flap::before {
