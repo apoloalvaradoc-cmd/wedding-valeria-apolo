@@ -130,9 +130,10 @@
       <h2>Mensaje</h2>
       <div class="tpl-tabs" id="tpl-tabs"></div>
       <p class="hint">
-        Marcadores disponibles: <code>{nombre}</code> · <code>{primer_nombre}</code> ·
-        <code>{cupos}</code> · <code>{link}</code>. El link personalizado de cada invitado se
-        arma solo — no lo escribas a mano.
+        Marcadores: <code>{nombre}</code> · <code>{primer_nombre}</code> ·
+        <code>{cupos}</code> · <code>{link}</code>. El link se arma solo — no lo escribas a mano.
+        Cada invitación se manda a dos números, y el saludo usa el nombre de quien
+        recibe: al titular lo saluda por el suyo, al acompañante por el de él.
       </p>
       <textarea id="tpl-text"></textarea>
       <div class="row" style="margin-top:0.6rem">
@@ -156,8 +157,8 @@
         <table>
           <thead>
             <tr>
-              <th>Nombre</th><th>Teléfono</th><th>Cupos</th><th>Estado</th>
-              <th>Aperturas</th><th>Enviados</th><th>Acción</th>
+              <th>Nombre</th><th>Titular</th><th>Acompañante</th><th>Cupos</th>
+              <th>Estado</th><th>Aperturas</th><th>Link</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -207,7 +208,7 @@ Valeria y Apolo se casan el 7 de noviembre y quieren que seas parte de ese día.
 Aquí está tu invitación con todos los detalles, y ahí mismo puedes confirmar:
 {link}
 
-Tienes {cupos} reservados a tu nombre. Nos encantaría contar contigo.`
+La invitación es para {cupos}. Nos encantaría contar contigo.`
   },
   recordatorio_sin_abrir: {
     label: 'Recordatorio · no abrió',
@@ -293,12 +294,33 @@ function mostrarTel(raw) {
   return '+' + d;
 }
 
+/* ---------- Destinos ----------
+   Cada invitación se manda al titular y al acompañante. Son dos envíos
+   distintos con el mismo link: la apertura de cualquiera de los dos cuenta
+   para la misma invitación. */
+function destinos(g) {
+  const out = [];
+  const t = normalizarTel(g.telefono);
+  const a = normalizarTel(g.telefono_alt);
+  if (t) out.push({ destino: 'titular', tel: t, nombre: g.nombre });
+  // Si por error quedó el mismo número en las dos columnas, no lo mandamos dos veces.
+  if (a && a !== t) out.push({ destino: 'acompanante', tel: a, nombre: g.nombre_acompanante || g.nombre });
+  return out;
+}
+
+function enviadoA(g, destino, tipo) {
+  if (tipo === 'invitacion') return (destino === 'titular' ? g.inv_titular : g.inv_acomp) > 0;
+  return (destino === 'titular' ? g.rec_titular : g.rec_acomp) > 0;
+}
+
+const totalEnvios = (g) => (g.inv_titular || 0) + (g.inv_acomp || 0) + (g.rec_titular || 0) + (g.rec_acomp || 0);
+
 /* ---------- Estado de cada invitado ---------- */
 function estado(g) {
   if (g.asistira === true)  return { k: 'confirmado', label: 'Confirmado', cls: 'b-conf' };
   if (g.asistira === false) return { k: 'declino',    label: 'No asistirá', cls: 'b-dec' };
   if (g.aperturas > 0)      return { k: 'abrio',      label: 'Abrió',      cls: 'b-open' };
-  if (g.invitaciones > 0 || g.recordatorios > 0) return { k: 'enviado', label: 'Enviado', cls: 'b-sent' };
+  if (totalEnvios(g) > 0)   return { k: 'enviado',    label: 'Enviado',    cls: 'b-sent' };
   return { k: 'nuevo', label: 'Sin enviar', cls: 'b-none' };
 }
 
@@ -310,14 +332,22 @@ const FILTROS = [
   { k: 'pendientes',   label: 'Falta confirmar' },
   { k: 'confirmado',   label: 'Confirmados' },
   { k: 'declino',      label: 'No asistirán' },
-  { k: 'sin_telefono', label: 'Sin teléfono' },
+  { k: 'sin_telefono', label: 'Sin ningún teléfono' },
+  { k: 'a_medias',     label: 'Falta un destino' },
 ];
 
 function pasaFiltro(g) {
   const e = estado(g);
   if (filtro === 'todos') return true;
-  if (filtro === 'sin_telefono') return !normalizarTel(g.telefono);
+  if (filtro === 'sin_telefono') return destinos(g).length === 0;
   if (filtro === 'pendientes') return g.asistira === null || g.asistira === undefined;
+  // Recibió el mensaje en un número pero le falta el otro.
+  if (filtro === 'a_medias') {
+    const ds = destinos(g);
+    const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
+    const hechos = ds.filter(d => enviadoA(g, d.destino, tipo)).length;
+    return ds.length > 1 && hechos > 0 && hechos < ds.length;
+  }
   return e.k === filtro;
 }
 
@@ -337,35 +367,41 @@ function baseUrl() {
 function linkDe(g) {
   return `${baseUrl()}?i=${encodeURIComponent(g.token)}`;
 }
-function mensajeDe(g) {
+/* El saludo usa el nombre de quien recibe el mensaje, no siempre el del
+   titular: si va al acompañante, lo saluda a él. El link es el mismo —
+   la invitación es una sola. */
+function mensajeDe(g, nombreDestino) {
   const txt = $('#tpl-text').value || '';
-  const primer = (g.nombre || '').trim().split(/\s+/)[0] || '';
-  const cupos = g.cupos === 1 ? '1 lugar' : `${g.cupos} lugares`;
+  const nombre = (nombreDestino || g.nombre || '').trim();
+  const primer = nombre.split(/\s+/)[0] || '';
+  const cupos = g.cupos === 1 ? '1 persona' : `${g.cupos} personas`;
   return txt
-    .replaceAll('{nombre}', g.nombre || '')
+    .replaceAll('{nombre}', nombre)
     .replaceAll('{primer_nombre}', primer)
     .replaceAll('{cupos}', cupos)
     .replaceAll('{link}', linkDe(g));
 }
 
-async function enviar(id) {
+async function enviar(id, destino = 'titular') {
   const g = datos.find(x => x.id === id);
   if (!g) return;
-  const tel = normalizarTel(g.telefono);
-  if (!tel) { alert(`${g.nombre} no tiene un teléfono válido. Escríbelo en la columna Teléfono.`); return; }
+  const d = destinos(g).find(x => x.destino === destino);
+  if (!d) { alert(`${g.nombre} no tiene un teléfono válido para ese destino.`); return; }
 
   // Se abre primero: si el navegador bloquea popups, el usuario lo nota
   // antes de que se registre un envío que en realidad no salió.
-  const url = `https://wa.me/${tel}?text=${encodeURIComponent(mensajeDe(g))}`;
+  const url = `https://wa.me/${d.tel}?text=${encodeURIComponent(mensajeDe(g, d.nombre))}`;
   const w = window.open(url, '_blank');
   if (!w) { alert('El navegador bloqueó la ventana de WhatsApp. Permite las ventanas emergentes en este sitio.'); return; }
 
   const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
   try {
     await rpc('admin_registrar_envio', {
-      p_clave: clave, p_invitado_id: id, p_tipo: tipo, p_nota: plantillaActiva,
+      p_clave: clave, p_invitado_id: id, p_tipo: tipo,
+      p_nota: plantillaActiva, p_destino: destino,
     });
-    if (tipo === 'recordatorio') g.recordatorios++; else g.invitaciones++;
+    const campo = (tipo === 'invitacion' ? 'inv_' : 'rec_') + (destino === 'titular' ? 'titular' : 'acomp');
+    g[campo] = (g[campo] || 0) + 1;
     g.ultimo_envio = new Date().toISOString();
     render();
   } catch (e) {
@@ -373,11 +409,13 @@ async function enviar(id) {
   }
 }
 
-async function guardarTel(id, valor) {
+async function guardarTel(id, campo, valor) {
   try {
-    await rpc('admin_set_telefono', { p_clave: clave, p_invitado_id: id, p_telefono: valor });
+    await rpc('admin_set_telefono', {
+      p_clave: clave, p_invitado_id: id, p_telefono: valor, p_campo: campo,
+    });
     const g = datos.find(x => x.id === id);
-    if (g) g.telefono = valor;
+    if (g) g[campo] = valor;
     render();
   } catch (e) { alert('No se pudo guardar el teléfono: ' + e.message); }
 }
@@ -399,16 +437,17 @@ function fecha(iso) {
 function render() {
   // Stats
   const total = datos.length;
-  const enviados = datos.filter(g => g.invitaciones > 0 || g.recordatorios > 0).length;
+  const enviados = datos.filter(g => totalEnvios(g) > 0).length;
   const abiertos = datos.filter(g => g.aperturas > 0).length;
   const conf = datos.filter(g => g.asistira === true).length;
   const dec = datos.filter(g => g.asistira === false).length;
   const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
-  const sinTel = datos.filter(g => !normalizarTel(g.telefono)).length;
+  const sinTel = datos.filter(g => destinos(g).length === 0).length;
+  const numeros = datos.reduce((a, g) => a + destinos(g).length, 0);
   $('#stats').innerHTML = [
-    ['Invitaciones', total], ['Enviadas', enviados], ['Abrieron', abiertos],
-    ['Confirmadas', conf], ['No asisten', dec], ['Personas', personas],
-    ['Sin teléfono', sinTel],
+    ['Invitaciones', total], ['Números', numeros], ['Enviadas', enviados],
+    ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
+    ['Personas', personas], ['Sin teléfono', sinTel],
   ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
 
   // Filtros
@@ -419,52 +458,61 @@ function render() {
   // Tabla
   const rows = visibles();
   $('#count').textContent = `${rows.length} de ${total}`;
+  const tipoActual = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
+
+  // Celda de un destino: el número editable y su botón de envío.
+  const celdaDestino = (g, campo, destino, etiqueta) => {
+    const crudo = g[campo] || '';
+    const tel = normalizarTel(crudo);
+    const ya = enviadoA(g, destino, tipoActual);
+    const nombre = destino === 'titular' ? g.nombre : (g.nombre_acompanante || '');
+    return `<td>
+      ${etiqueta ? `<div class="muted" style="margin-bottom:0.15rem">${escapeHtml(nombre)}</div>` : ''}
+      <input class="tel-input" value="${escapeHtml(crudo)}" placeholder="5555 5555"
+             data-tel="${g.id}" data-campo="${campo}"
+             title="${tel ? mostrarTel(crudo) : 'Número no válido'}">
+      <div class="row" style="margin-top:0.25rem">
+        <button class="small ${ya ? '' : 'filled'}" data-send="${g.id}" data-destino="${destino}" ${tel ? '' : 'disabled'}>
+          ${ya ? 'Reenviar' : 'Enviar'}
+        </button>
+        ${crudo && !tel ? '<span class="badge b-warn">revisar</span>' : ''}
+      </div>
+    </td>`;
+  };
+
   $('#tbody').innerHTML = rows.map(g => {
     const e = estado(g);
-    const tel = normalizarTel(g.telefono);
-    const envios = (g.invitaciones || 0) + (g.recordatorios || 0);
-    const yaEnviado = envios > 0;
-    return `<tr class="${yaEnviado ? 'sent' : ''}">
+    return `<tr class="${totalEnvios(g) > 0 ? 'sent' : ''}">
       <td>
         ${escapeHtml(g.nombre)}
         <div class="muted">${escapeHtml(g.grupo || g.tipo || '')}</div>
       </td>
-      <td>
-        <input class="tel-input" value="${escapeHtml(g.telefono || '')}" placeholder="5555 5555"
-               data-tel="${g.id}" title="${tel ? mostrarTel(g.telefono) : 'Número no válido'}">
-        ${tel ? '' : '<div class="badge b-warn">revisar</div>'}
-      </td>
+      ${celdaDestino(g, 'telefono', 'titular', false)}
+      ${celdaDestino(g, 'telefono_alt', 'acompanante', true)}
       <td>${g.cupos}${g.asistira === true ? ` <span class="muted">→ ${g.asistentes}</span>` : ''}</td>
       <td><span class="badge ${e.cls}">${e.label}</span></td>
       <td>${g.aperturas || 0}${g.ultima_apertura ? `<div class="muted">${fecha(g.ultima_apertura)}</div>` : ''}</td>
-      <td>${envios}${g.ultimo_envio ? `<div class="muted">${fecha(g.ultimo_envio)}</div>` : ''}</td>
-      <td>
-        <div class="row">
-          <button class="small ${yaEnviado ? '' : 'filled'}" data-send="${g.id}" ${tel ? '' : 'disabled'}>
-            ${yaEnviado ? 'Reenviar' : 'Enviar'}
-          </button>
-          <button class="small" data-copy="${g.id}">Link</button>
-        </div>
-      </td>
+      <td><button class="small" data-copy="${g.id}">Link</button></td>
     </tr>`;
   }).join('') || `<tr><td colspan="7" style="text-align:center;padding:1.4rem;color:var(--muted)">Sin resultados.</td></tr>`;
 
   // Cola
   const cola = colaPendiente();
   $('#queue-info').textContent = cola.length
-    ? `${cola.length} por enviar con este filtro · siguiente: ${cola[0].nombre}`
+    ? `${cola.length} número${cola.length === 1 ? '' : 's'} por escribir con este filtro · siguiente: ${cola[0].nombre} (${cola[0].destino === 'titular' ? 'titular' : 'acompañante'})`
     : 'Nada pendiente con el filtro actual.';
   $('#btn-queue').disabled = cola.length === 0;
 }
 
-// Solo cuenta como pendiente lo que tiene teléfono válido y aún no recibió
-// nada de esta plantilla — así el botón de cola no repite envíos.
+/* La cola va por NÚMERO, no por invitación: un invitado con dos teléfonos
+   aparece dos veces hasta que ambos reciban el mensaje de esta plantilla. */
 function colaPendiente() {
   const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
-  return visibles().filter(g => {
-    if (!normalizarTel(g.telefono)) return false;
-    return tipo === 'invitacion' ? (g.invitaciones || 0) === 0 : (g.recordatorios || 0) === 0;
-  });
+  return visibles().flatMap(g =>
+    destinos(g)
+      .filter(d => !enviadoA(g, d.destino, tipo))
+      .map(d => ({ id: g.id, destino: d.destino, nombre: d.nombre }))
+  );
 }
 
 function escapeHtml(s) {
@@ -493,7 +541,9 @@ async function cargar() {
 
 /* ---------- Export ---------- */
 function exportar() {
-  const cols = ['id','nombre','telefono','cupos','tipo','grupo','estado','asistentes','aperturas','ultima_apertura','invitaciones','recordatorios','ultimo_envio','confirmado_en','link'];
+  const cols = ['id','nombre','telefono','nombre_acompanante','telefono_alt','cupos','tipo','grupo',
+                'estado','asistentes','aperturas','ultima_apertura',
+                'inv_titular','inv_acomp','rec_titular','rec_acomp','ultimo_envio','confirmado_en','link'];
   const esc = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s; };
   const lineas = [cols.join(',')].concat(datos.map(g => cols.map(c => {
     if (c === 'estado') return esc(estado(g).label);
@@ -570,18 +620,18 @@ $('#base-url').addEventListener('input', () => {
 
 $('#tbody').addEventListener('click', e => {
   const s = e.target.closest('[data-send]');
-  if (s) { enviar(s.dataset.send); return; }
+  if (s) { enviar(s.dataset.send, s.dataset.destino); return; }
   const c = e.target.closest('[data-copy]');
   if (c) { copiarLink(c.dataset.copy); return; }
 });
 $('#tbody').addEventListener('change', e => {
   const t = e.target.closest('[data-tel]');
-  if (t) guardarTel(t.dataset.tel, t.value);
+  if (t) guardarTel(t.dataset.tel, t.dataset.campo, t.value);
 });
 
 $('#btn-queue').addEventListener('click', () => {
   const cola = colaPendiente();
-  if (cola.length) enviar(cola[0].id);
+  if (cola.length) enviar(cola[0].id, cola[0].destino);
 });
 
 /* ---------- Arranque ---------- */

@@ -14,15 +14,16 @@ Backend: Supabase (`psmaynxnphbfbtayzaeb`), PostgreSQL 17.
 ## 1. Cómo funciona el circuito
 
 ```
-Google Sheet (celulares)
-        │  importar_telefonos.mjs
-        ▼
-   invitados  ──token──►  https://…/?i=ecba5a6c3352
-        │                          │
-        │                          ├─► abrir_invitacion()  →  tabla aperturas
-        │                          └─► guardar_rsvp()      →  tabla rsvps
-        │
-        └──►  consola.html  ──wa.me──►  WhatsApp  →  tabla envios
+Google Sheet  ──generar_lista_sql.mjs──►  invitados (143 · 262 cupos)
+                                              │
+                    token ─────────────────────┤
+                      │                        │
+   https://…/?i=<token>                        │
+        ├─► abrir_invitacion()  →  aperturas   │
+        └─► guardar_rsvp()      →  rsvps       │
+                                               │
+   consola.html ──wa.me──► WhatsApp ──► envios ┘
+        (al titular Y al acompañante)
 ```
 
 Cada invitado tiene un **token** de 12 caracteres. Su link es
@@ -69,13 +70,17 @@ que el token no se filtre al navegar fuera.
 
 ```
 invitados    id, nombre, acompanantes[], cupos, grupo, mesa, tipo, codigo,
-             token, telefono, email, notas
+             token, telefono, telefono_alt, nombre_acompanante, email, notas
 rsvps        invitado_id, nombre_titular, asistira, asistentes[jsonb],
              roster[jsonb], email, comentarios, actualizado_en
 aperturas    invitado_id, abierto_en, origen (link|buscador), user_agent, referrer
-envios       invitado_id, tipo (invitacion|recordatorio), canal, enviado_en, nota
+envios       invitado_id, tipo (invitacion|recordatorio),
+             destino (titular|acompanante), canal, enviado_en, nota
 config       clave, valor          ← guarda admin_hash
 ```
+
+`telefono` es el del titular y `telefono_alt` el del acompañante: la invitación
+se manda a los dos, y `envios.destino` registra a cuál ya se le escribió.
 
 `asistentes` guarda quién viene de verdad; `roster` guarda el estado completo
 de los checkboxes, para que al reabrir el link el formulario aparezca tal como
@@ -83,29 +88,47 @@ lo dejaron.
 
 ---
 
-## 4. Cargar los teléfonos
+## 4. La lista viene del Google Sheet
 
-Los 131 invitados ya están en la base. Lo único que falta son los celulares.
-
-```bash
-node importar_telefonos.mjs invitados.csv
-```
-
-Corre en simulación: reporta cuántos hará match, cuáles no aparecen en la
-base, qué números no se entienden y quiénes quedan sin teléfono. Si el
-reporte se ve bien:
+El Sheet es la fuente de verdad. Para reconstruir la tabla `invitados` a
+partir de él:
 
 ```bash
-node importar_telefonos.mjs invitados.csv --aplicar
+curl -sL "https://docs.google.com/spreadsheets/d/1kwuopuj9nY3wlrEXie9k7cKkVkp37T2Lmzi4nIi3i78/export?format=csv" -o invitados.csv
 ```
 
-El script busca solo las columnas de **nombre** y **celular** (tolera que se
-llamen `Celular`, `Teléfono`, `WhatsApp`, `Móvil`), ignora las filas de título,
-normaliza a `+502` los números de 8 dígitos, y compara nombres sin importar
-tildes ni mayúsculas. Nombres repetidos los deja fuera en vez de adivinar.
+Primero el reporte, que no toca nada:
 
-También puedes escribir números sueltos a mano desde la consola, en la columna
-Teléfono.
+```bash
+node generar_lista_sql.mjs invitados.csv --reporte
+```
+
+Dice cuántas invitaciones y cupos salen, quién queda sin teléfono, qué números
+no se entienden, a quién le dedujo los cupos y qué nombres están repetidos.
+Si se ve bien, genera el SQL y pégalo en el SQL Editor de Supabase:
+
+```bash
+node generar_lista_sql.mjs invitados.csv > lista.sql
+```
+
+Lo que hace el script con los datos del Sheet:
+
+- Salta la fila **"INVITADOS PAPÁ"**, que es un bloque colectivo de 56 cupos,
+  no una persona.
+- En la columna Acompañante distingue nombres reales de marcadores genéricos
+  (`No`, `Acompañante`, `Sra.`, `Hijos`, `amigas`). Los genéricos quedan como
+  cupo en blanco para que el invitado escriba el nombre en el RSVP.
+- Separa varios acompañantes por coma o por " y ".
+- Normaliza a `+502` los números de 8 dígitos, y descarta lo que no sea un
+  teléfono (en el Sheet hay un correo y un guión en esa columna).
+- Nunca deja menos cupos que nombres ya listados.
+
+> **Esto regenera todos los tokens**, o sea que invalida los links ya enviados.
+> Solo es seguro mientras no se haya mandado nada.
+
+Para corregir un número suelto sin rehacer la lista, edítalo directamente en la
+consola o usa `importar_telefonos.mjs`, que solo escribe teléfonos sobre la
+lista existente.
 
 ---
 
@@ -117,16 +140,21 @@ entra con la clave.
 - **Plantillas**: invitación, recordatorio para quien no abrió, recordatorio
   para quien abrió sin confirmar, y recordatorio final. Editables — se guardan
   en el navegador. Marcadores: `{nombre}`, `{primer_nombre}`, `{cupos}`, `{link}`.
+- **Dos destinos por invitación**: cada fila tiene la columna del titular y la
+  del acompañante, cada una con su número editable y su botón. El link es el
+  mismo para los dos — la invitación es una sola — pero el saludo usa el nombre
+  de quien recibe el mensaje.
 - **Enviar**: abre WhatsApp con el número y el mensaje ya escritos. Tú das
-  Enter. El envío queda registrado al volver.
-- **Cola**: el botón de abajo salta al siguiente pendiente que tenga teléfono
-  válido y que no haya recibido ya esa plantilla.
+  Enter. El envío queda registrado al volver, anotando a cuál de los dos fue.
+- **Cola**: va por número, no por invitación. Un invitado con dos teléfonos
+  aparece dos veces hasta que ambos reciban esa plantilla.
 - **Filtros**: sin enviar · enviados que no abrieron · abrieron sin confirmar ·
-  falta confirmar · confirmados · no asistirán · sin teléfono.
+  falta confirmar · confirmados · no asistirán · sin ningún teléfono ·
+  **falta un destino** (recibió en un número pero no en el otro).
 
-El envío es asistido a propósito. 131 mensajes seguidos desde un número
-personal es exactamente el patrón que WhatsApp marca como spam — conviene
-mandar en tandas de 30 o 40 por día.
+Hoy son **143 invitaciones y 166 números**. El envío es asistido a propósito:
+166 mensajes seguidos desde un número personal es exactamente el patrón que
+WhatsApp marca como spam — conviene mandar en tandas de 30 o 40 por día.
 
 ---
 
@@ -152,6 +180,7 @@ Dos caminos, mismos datos:
 | `002_links_tracking.sql` | tokens, teléfono, email, aperturas, envios, config, cierre de RLS |
 | `003_rpcs.sql` | funciones de la invitación |
 | `004_rpcs_consola_envio.sql` | funciones de la consola |
+| `005_doble_destino_envio.sql` | segundo teléfono y `envios.destino` |
 
 Al restaurar en un proyecto nuevo hay que correrlas en orden y después
 sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
@@ -171,7 +200,9 @@ protege los datos es RLS y las funciones, no el secreto de la key.
 ## 9. Antes de mandar la primera invitación
 
 - [ ] Cambiar la clave de administración (sección 2).
-- [ ] Cargar los teléfonos (sección 4) y revisar los que queden marcados.
+- [ ] Conseguir teléfono para los 3 que no tienen ninguno: **Abuelito Runy**,
+      **Marco Morales** y **Yali Botas** (esta última dejó un correo en la
+      columna del celular).
 - [ ] Pegar el link real de la playlist en `CONFIG.spotifyPlaylistUrl`.
 - [ ] Mandarte el link a ti mismo y confirmar de prueba, punta a punta.
 - [ ] Borrar esa confirmación de prueba antes de arrancar en serio.

@@ -5,8 +5,9 @@
 Proyecto **activo**. El plan free permite 2 proyectos activos por usuario; para
 reactivar este se pausó `agendaflow-beauty`.
 
-- `invitados`: **131 filas**, todas con token generado. Teléfonos pendientes de
-  cargar desde el Sheet (ver README, sección 4).
+- `invitados`: **143 filas · 262 cupos**, reconstruidas desde el Google Sheet
+  el 26-ago-2026. Todas con token. 140 tienen al menos un teléfono; sin ninguno
+  quedan Abuelito Runy, Marco Morales y Yali Botas.
 - `rsvps`, `aperturas`, `envios`: vacías — aún no se distribuye la invitación.
 - `config`: contiene `admin_hash`.
 
@@ -23,27 +24,28 @@ reactivar este se pausó `agendaflow-beauty`.
 ### Opción B — Proyecto nuevo desde cero
 1. SQL Editor → correr **en orden**:
    `schema.sql` → `migrations/002_links_tracking.sql` →
-   `migrations/003_rpcs.sql` → `migrations/004_rpcs_consola_envio.sql`
+   `migrations/003_rpcs.sql` → `migrations/004_rpcs_consola_envio.sql` →
+   `migrations/005_doble_destino_envio.sql`
 2. Sembrar la clave de administración:
    ```sql
    insert into public.config (clave, valor)
    values ('admin_hash', extensions.crypt('TU_CLAVE', extensions.gen_salt('bf', 10)))
    on conflict (clave) do update set valor = excluded.valor;
    ```
-3. Cargar los invitados (CSV en el Table Editor, o INSERT).
-4. Generar tokens:
-   ```sql
-   update public.invitados
-   set token = substr(md5(id || gen_random_uuid()::text), 1, 12)
-   where token is null;
+3. Regenerar la lista desde el Sheet — genera el INSERT y los tokens de una vez:
+   ```bash
+   curl -sL "https://docs.google.com/spreadsheets/d/1kwuopuj9nY3wlrEXie9k7cKkVkp37T2Lmzi4nIi3i78/export?format=csv" -o invitados.csv
+   node generar_lista_sql.mjs invitados.csv > lista.sql
    ```
+4. Pegar `lista.sql` en el SQL Editor.
 5. Actualizar `CONFIG.supabaseUrl` y `CONFIG.supabaseKey` en `index.html`
    **y** en `consola.html`, más `SUPABASE_URL`/`SUPABASE_KEY` en
    `importar_telefonos.mjs`.
 6. Commit + push a `main`.
 
-> **Ojo:** regenerar tokens invalida todos los links ya enviados. Si la
-> invitación ya circuló, respalda `invitados` con sus tokens antes de tocar nada.
+> **Ojo:** `generar_lista_sql.mjs` borra y recrea `invitados`, lo que regenera
+> todos los tokens e invalida los links ya enviados. Si la invitación ya
+> circuló, respalda `invitados` con sus tokens y no lo corras.
 
 ## Respaldo de datos antes de pausar
 
