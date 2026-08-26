@@ -203,7 +203,6 @@ protege los datos es RLS y las funciones, no el secreto de la key.
 - [ ] Conseguir teléfono para los 3 que no tienen ninguno: **Abuelito Runy**,
       **Marco Morales** y **Yali Botas** (esta última dejó un correo en la
       columna del celular).
-- [ ] Pegar el link real de la playlist en `CONFIG.spotifyPlaylistUrl`.
 - [ ] Mandarte el link a ti mismo y confirmar de prueba, punta a punta.
 - [ ] Borrar esa confirmación de prueba antes de arrancar en serio.
 - [ ] Probar en iPhone y Android.
