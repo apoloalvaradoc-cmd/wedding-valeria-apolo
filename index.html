@@ -1588,11 +1588,17 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
         <div class="location-address">Ceremonia · cóctel · cena · fiesta · 4:00 p.m.</div>
         <p class="location-note">Te recomendamos llegar 20 minutos antes. Toca el botón para abrir la dirección en tu app de mapas favorita.</p>
         <div class="location-actions">
-          <a class="btn btn-outline" href="https://share.google/N5ZR85dJP5MeSG7DG" target="_blank" rel="noreferrer">
+          <!-- Google Maps por CID del lugar (Eventos San Bernardo). El link corto
+               que se comparte desde la app trae la ubicación de quien lo generó
+               como punto de partida: cada invitado vería la ruta desde ahí y no
+               desde donde está. Por CID abre la ficha del lugar y cada quien
+               traza su propia ruta. -->
+          <a class="btn btn-outline" href="https://maps.google.com/?cid=6803295920120946597" target="_blank" rel="noreferrer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s-8-7.58-8-13a8 8 0 1116 0c0 5.42-8 13-8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
             Google Maps
           </a>
-          <a class="btn btn-filled" href="https://waze.com/ul?q=Eventos%20San%20Bernardo%20Guatemala&navigate=yes" target="_blank" rel="noreferrer">
+          <!-- Waze por venue_id, sin los utm_* de rastreo del link compartido. -->
+          <a class="btn btn-filled" href="https://ul.waze.com/ul?venue_id=176619665.1766458796.3846860&amp;navigate=yes" target="_blank" rel="noreferrer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
             Waze
           </a>
