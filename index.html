@@ -185,6 +185,27 @@ body.locked { overflow: hidden; }
   100% { transform: scale(1.7); opacity: 0; }
 }
 
+.cover-para {
+  position: absolute;
+  bottom: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  max-width: 82vw;
+  text-align: center;
+  font-family: var(--font-script);
+  font-size: 1.7rem;
+  line-height: 1.2;
+  color: var(--wine);
+  text-shadow: 0 1px 10px rgba(241, 240, 234, 0.85);
+  animation: coverParaIn 1.1s ease both 0.5s;
+}
+@keyframes coverParaIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+#cover.opening .cover-para { opacity: 0; transition: opacity 0.45s ease; }
+
 .cover-tap-label {
   position: absolute;
   bottom: 6%;
@@ -1457,6 +1478,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     <span class="cover-tap-pulse delay" aria-hidden="true"></span>
   </button>
 
+  <!-- Nombre del destinatario — solo aparece si se llegó por link personalizado -->
+  <div class="cover-para hidden" id="cover-para"></div>
+
   <!-- Label CTA, fija en la parte baja del cover -->
   <div class="cover-tap-label" aria-hidden="true">Toca para abrir</div>
 </div>
@@ -1606,10 +1630,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           </div>
           <div id="existing-notice" class="alert alert-info hidden"></div>
           <div class="form-group">
-            <label class="rsvp-label">Teléfono</label>
-            <input type="tel" id="f-telefono" class="input" placeholder="+502 0000 0000">
-          </div>
-          <div class="form-group">
             <label class="rsvp-label">¿Nos acompañas?</label>
             <div class="yes-no">
               <button class="choice" data-asis="yes" onclick="pickAsistira(true)">Sí, ahí estaré</button>
@@ -1620,19 +1640,10 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
             <label class="rsvp-label">Nombres de asistentes <span id="attendees-count" style="text-transform:none;letter-spacing:0.05em;color:var(--muted)"></span></label>
             <div id="attendees-list"></div>
           </div>
-          <div id="liquor-block" class="form-group hidden">
-            <label class="rsvp-label">Preferencia de licor</label>
-            <p class="gift-desc" style="margin-bottom:0.6rem">Cuéntanos qué te gustaría tomar.</p>
-            <div class="chips" id="liquor-chips">
-              <button class="chip" data-liquor="Tequila">Tequila</button>
-              <button class="chip" data-liquor="Whisky">Whisky</button>
-              <button class="chip" data-liquor="Ron">Ron</button>
-              <button class="chip" data-liquor="Cerveza">Cerveza</button>
-              <button class="chip" data-liquor="Vino">Vino</button>
-              <button class="chip" data-liquor="Gin">Gin</button>
-              <button class="chip" data-liquor="Vodka">Vodka</button>
-              <button class="chip" data-liquor="No tomo alcohol">No tomo alcohol</button>
-            </div>
+          <div id="email-block" class="form-group hidden">
+            <label class="rsvp-label">Correo electrónico</label>
+            <p class="gift-desc" style="margin-bottom:0.6rem">Por si necesitamos escribirte algún detalle del día.</p>
+            <input type="email" id="f-email" class="input" placeholder="tucorreo@ejemplo.com" autocomplete="email">
           </div>
           <div class="form-group">
             <label class="rsvp-label">Mensaje para los novios</label>
@@ -1845,7 +1856,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       <div class="tabs">
         <button class="tab active" data-tab="dashboard">Dashboard</button>
         <button class="tab" data-tab="invitados">Invitados</button>
-        <button class="tab" data-tab="licor">Licor</button>
+        <button class="tab" data-tab="seguimiento">Seguimiento</button>
       </div>
       <div id="tab-dashboard">
         <div class="stats-grid" id="stats-grid"></div>
@@ -1874,16 +1885,24 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
         <div class="table-wrap">
           <table class="admin-table">
             <thead>
-              <tr><th>Nombre</th><th>Grupo</th><th>Tipo</th><th>Mesa</th><th>Cupos</th><th>Estado</th><th>Asistentes</th><th>Teléfono</th><th>Confirmado</th></tr>
+              <tr><th>Nombre</th><th>Grupo</th><th>Tipo</th><th>Mesa</th><th>Cupos</th><th>Estado</th><th>Asistentes</th><th>Aperturas</th><th>Última apertura</th><th>Confirmado</th></tr>
             </thead>
             <tbody id="inv-table-body"></tbody>
           </table>
         </div>
       </div>
-      <div id="tab-licor" class="hidden">
+      <div id="tab-seguimiento" class="hidden">
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Nunca abrieron la invitación</div>
+          <div id="seg-sin-abrir"></div>
+        </div>
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Abrieron pero no han confirmado</div>
+          <div id="seg-abrio-sin-confirmar"></div>
+        </div>
         <div class="admin-card">
-          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Preferencias recibidas</div>
-          <div id="liquor-results"></div>
+          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Restricciones alimenticias</div>
+          <div id="seg-restricciones"></div>
         </div>
       </div>
     </div>
@@ -1898,7 +1917,6 @@ const CONFIG = {
   brideName: "Valeria",
   groomName: "Apolo",
   weddingDateISO: "2026-11-07T16:00:00-06:00",
-  adminPassword: "valeria07",
   bankAccount: "1591672",
   spotifyPlaylistUrl: "https://open.spotify.com/",
   supabaseUrl: "https://psmaynxnphbfbtayzaeb.supabase.co",
@@ -1914,102 +1932,75 @@ const CONFIG = {
      cupos         — total permitido = titular + acompañantes (o más, si se dejan libres)
      grupo, mesa, tipo (familia|amigo|trabajo|otro), codigo
 ============================================================ */
-const DEFAULT_INVITADOS = [
-  { id: 'INV001', nombre: 'Juan Pérez',       acompanantes: ['María Pérez'],                 cupos: 2, grupo: 'Familia novia', mesa: 1, tipo: 'familia', codigo: 'VA001' },
-  { id: 'INV002', nombre: 'María González',   acompanantes: ['Luis Castillo'],               cupos: 2, grupo: 'Familia novio', mesa: 2, tipo: 'familia', codigo: 'VA002' },
-  { id: 'INV003', nombre: 'Carlos Rodríguez', acompanantes: [],                              cupos: 1, grupo: 'Amigos novia',  mesa: 5, tipo: 'amigo',   codigo: 'VA003' },
-  { id: 'INV004', nombre: 'Ana Martínez',     acompanantes: ['Diego Martínez'],              cupos: 2, grupo: 'Amigos novio',  mesa: 6, tipo: 'amigo',   codigo: 'VA004' },
-  { id: 'INV005', nombre: 'Luis Hernández',   acompanantes: ['Sofía Hernández','Mateo H.','Emma H.'], cupos: 4, grupo: 'Familia novia', mesa: 1, tipo: 'familia', codigo: 'VA005' },
-];
-
 /* ============================================================
-   SUPABASE — persistencia real centralizada
+   SUPABASE — todo el acceso pasa por funciones RPC.
+
+   Las tablas ya no son legibles con la anon key. La lista de
+   invitados (con teléfonos y correos) solo sale por admin_datos(),
+   y solo entregando la clave correcta, que se compara contra un
+   hash bcrypt guardado en la base — ya no viaja en este archivo.
 ============================================================ */
 const SB = {
   url: CONFIG.supabaseUrl,
   key: CONFIG.supabaseKey,
-  headers() { return { apikey: this.key, Authorization: 'Bearer ' + this.key, 'Content-Type': 'application/json' }; },
-  async get(path) {
-    const r = await fetch(`${this.url}/rest/v1/${path}`, { headers: this.headers() });
-    if (!r.ok) throw new Error('Supabase GET ' + path + ' ' + r.status);
-    return r.json();
-  },
-  async upsert(table, body) {
-    const r = await fetch(`${this.url}/rest/v1/${table}`, {
+  async rpc(fn, args = {}) {
+    const r = await fetch(`${this.url}/rest/v1/rpc/${fn}`, {
       method: 'POST',
-      headers: { ...this.headers(), Prefer: 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify(body),
+      headers: {
+        apikey: this.key,
+        Authorization: 'Bearer ' + this.key,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
     });
-    if (!r.ok) throw new Error('Supabase upsert ' + table + ' ' + r.status + ' ' + await r.text());
-    return r.json();
+    const text = await r.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (!r.ok) {
+      const e = new Error((data && data.message) || `RPC ${fn} ${r.status}`);
+      e.code = data && data.code;
+      throw e;
+    }
+    return data;
   },
 };
 
-async function loadInvitadosFromSupabase() {
-  const rows = await SB.get('invitados?select=*&order=nombre.asc');
-  return rows.map(r => ({
-    id: r.id, nombre: r.nombre, acompanantes: r.acompanantes || [],
-    cupos: r.cupos, grupo: r.grupo, mesa: r.mesa, tipo: r.tipo, codigo: r.codigo,
-  }));
-}
+/* Camino del link personalizado (?i=TOKEN). Registra la apertura.
+   Devuelve null si el token no existe. */
+const abrirPorToken = (token) => SB.rpc('abrir_invitacion', {
+  p_token: token,
+  p_user_agent: navigator.userAgent.slice(0, 400),
+  p_referrer: document.referrer ? document.referrer.slice(0, 400) : null,
+});
 
-async function saveRsvp(payload) {
-  const body = {
-    invitado_id:    payload.invitadoId,
-    nombre_titular: payload.nombreTitular,
-    telefono:       payload.telefono || null,
-    asistira:       payload.asistira,
-    asistentes:     payload.asistentes || [],
-    roster:         payload.roster || null,
-    licor:          payload.licor || [],
-    comentarios:    payload.comentarios || null,
-    actualizado_en: new Date().toISOString(),
-  };
-  await SB.upsert('rsvps', body);
-}
+/* Respaldo para quien perdió su link: mínimo 3 letras, máximo 8 resultados. */
+const buscarInvitado = (q) => SB.rpc('buscar_invitado', { q });
 
-async function loadAllRsvps() {
-  const rows = await SB.get('rsvps?select=*');
-  const out = {};
-  rows.forEach(r => {
-    out[r.invitado_id] = {
-      invitadoId: r.invitado_id, nombreTitular: r.nombre_titular, telefono: r.telefono,
-      asistira: r.asistira, asistentes: r.asistentes || [], roster: r.roster || null,
-      licor: r.licor || [], comentarios: r.comentarios, timestamp: r.actualizado_en,
-    };
+/* Segundo paso del buscador. También cuenta como apertura. */
+const cargarInvitado = (id) => SB.rpc('cargar_invitado', {
+  p_id: id,
+  p_user_agent: navigator.userAgent.slice(0, 400),
+});
+
+/* Única vía de escritura del RSVP. Requiere el token del invitado. */
+const guardarRsvp = ({ token, asistira, asistentes, roster, email, comentarios }) =>
+  SB.rpc('guardar_rsvp', {
+    p_token:       token,
+    p_asistira:    asistira,
+    p_asistentes:  asistentes || [],
+    p_roster:      roster || null,
+    p_email:       email || null,
+    p_comentarios: comentarios || null,
   });
-  return out;
-}
 
-async function loadExistingRsvp(invitadoId) {
-  const rows = await SB.get(`rsvps?invitado_id=eq.${encodeURIComponent(invitadoId)}&select=*&limit=1`);
-  if (!rows.length) return null;
-  const r = rows[0];
-  return {
-    invitadoId: r.invitado_id, nombreTitular: r.nombre_titular, telefono: r.telefono,
-    asistira: r.asistira, asistentes: r.asistentes || [], roster: r.roster || null,
-    licor: r.licor || [], comentarios: r.comentarios, timestamp: r.actualizado_en,
-  };
-}
+/* Tablero admin completo (incluye teléfonos y correos). */
+const cargarAdmin = (clave) => SB.rpc('admin_datos', { p_clave: clave });
 
 const state = {
-  invitados: DEFAULT_INVITADOS.slice(), invitadosLoaded: false,
   selected: null, form: null, existingRsvp: null,
   tab: 'dashboard', filter: 'all', tipoFilter: 'all', mesaFilter: 'all',
-  rsvps: {},
+  admin: { invitados: [], rsvps: {}, aperturas: {}, envios: {} },
 };
-
-async function ensureInvitadosLoaded() {
-  if (state.invitadosLoaded) return;
-  try {
-    const rows = await loadInvitadosFromSupabase();
-    if (rows && rows.length) state.invitados = rows;
-    state.invitadosLoaded = true;
-  } catch (e) {
-    console.warn('Fallback a lista local, Supabase no disponible:', e);
-    state.invitadosLoaded = true;
-  }
-}
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -2058,7 +2049,6 @@ function openEnvelope() {
   const env = $('#envelope'); if (env.classList.contains('opening')) return;
   env.classList.add('opening');
   $('#cover').classList.add('opening');
-  ensureInvitadosLoaded();
   // Reproduce el video desde donde está (frame del sello) hacia adelante
   if (coverVideo) {
     try { coverVideo.play(); } catch (e) { /* ignore */ }
@@ -2073,7 +2063,35 @@ function openEnvelope() {
     observeReveal();
   }, 1600);
 }
-ensureInvitadosLoaded();
+/* ============================================================
+   LINK PERSONALIZADO  ·  ?i=TOKEN
+
+   Cada invitado recibe su propio link por WhatsApp. Al abrirlo
+   se registra la apertura (esto es lo que alimenta el panel de
+   seguimiento) y el RSVP queda precargado con su nombre y sus
+   acompañantes, sin que tenga que buscarse.
+
+   Sin token, o con un token que no existe, la invitación sigue
+   funcionando igual: el buscador por nombre queda como respaldo.
+============================================================ */
+async function bootstrapInvitado() {
+  const token = new URLSearchParams(location.search).get('i');
+  if (!token) return;
+  try {
+    const data = await abrirPorToken(token);
+    if (!data) { console.warn('Token no reconocido'); return; }
+    montarInvitado(data);
+    const para = $('#cover-para');
+    if (para && data.nombre) {
+      para.textContent = 'Para ' + data.nombre;
+      para.classList.remove('hidden');
+    }
+  } catch (err) {
+    console.warn('No se pudo abrir con el token', err);
+  }
+}
+bootstrapInvitado();
+
 $('#envelope').addEventListener('click', openEnvelope);
 $('#envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); } });
 
@@ -2192,69 +2210,100 @@ function tickCountdown() {
 setInterval(tickCountdown, 1000); tickCountdown();
 
 /* RSVP */
+let searchTimer = null;
 $('#rsvp-query').addEventListener('input', onSearch);
 function onSearch(e) {
   const q = e.target.value.trim();
   const matches = $('#rsvp-matches'), noRes = $('#rsvp-noresults');
-  if (q.length < 2) { matches.classList.add('hidden'); noRes.classList.add('hidden'); return; }
-  const nq = normalize(q);
-  const found = state.invitados.filter(i => normalize(i.nombre).includes(nq)).slice(0, 6);
-  if (found.length > 0) {
-    matches.innerHTML = found.map(m =>
-      `<button class="match-item" onclick="selectInvitado('${m.id}')"><span>${escapeHtml(m.nombre)}</span><span class="cupos">${m.cupos} cupo${m.cupos > 1 ? 's' : ''}</span></button>`
-    ).join('');
-    matches.classList.remove('hidden'); noRes.classList.add('hidden');
-  } else { matches.classList.add('hidden'); noRes.classList.remove('hidden'); }
+  clearTimeout(searchTimer);
+  // El RPC exige 3 caracteres: así nadie puede vaciar la lista a punta de consultas.
+  if (q.length < 3) { matches.classList.add('hidden'); noRes.classList.add('hidden'); return; }
+  searchTimer = setTimeout(async () => {
+    let found = [];
+    try { found = (await buscarInvitado(q)) || []; }
+    catch (err) { console.warn('Búsqueda falló', err); return; }
+    // Si ya siguió escribiendo, esta respuesta llegó tarde.
+    if ($('#rsvp-query').value.trim() !== q) return;
+    if (found.length > 0) {
+      matches.innerHTML = found.map(m =>
+        `<button class="match-item" onclick="selectInvitado('${m.id}')"><span>${escapeHtml(m.nombre)}</span><span class="cupos">${m.cupos} cupo${m.cupos > 1 ? 's' : ''}</span></button>`
+      ).join('');
+      matches.classList.remove('hidden'); noRes.classList.add('hidden');
+    } else { matches.classList.add('hidden'); noRes.classList.remove('hidden'); }
+  }, 280);
 }
 function buildRoster(inv) {
   const names = [inv.nombre, ...(inv.acompanantes || [])];
   while (names.length < inv.cupos) names.push('');
   return names.slice(0, inv.cupos).map((n, i) => ({
     nombre: n,
-    preset: i === 0,
-    asiste: false, restriccion: ''
+    titular: i === 0,
+    asiste: false, restriccion: '',
   }));
 }
-async function selectInvitado(id) {
-  const inv = state.invitados.find(i => i.id === id); if (!inv) return;
+
+/* Arma el formulario con lo que devolvió el RPC (venga del link o del buscador). */
+function montarInvitado(data) {
+  const inv = {
+    id: data.id, token: data.token, nombre: data.nombre,
+    acompanantes: data.acompanantes || [], cupos: data.cupos,
+    grupo: data.grupo, mesa: data.mesa, tipo: data.tipo,
+  };
   state.selected = inv;
-  let prev = null;
-  try { prev = await loadExistingRsvp(id); } catch (e) { console.warn('No se pudo consultar RSVP previo', e); }
+
+  const prev = (data.rsvp && data.rsvp.actualizado_en) ? data.rsvp : null;
   state.existingRsvp = prev;
+
+  const roster = buildRoster(inv);
   if (prev) {
-    state.form = JSON.parse(JSON.stringify(prev));
-    const roster = buildRoster(inv);
-    roster.forEach((p, i) => {
-      const match = (prev.asistentes || []).find(a => normalize(a.nombre) === normalize(p.nombre));
-      if (match) { p.asiste = true; p.restriccion = match.restriccion || ''; }
-    });
-    state.form.roster = roster;
-    if (prev.asistira === false) state.form.asistira = false;
-    state.form.telefono = prev.telefono || '';
-    state.form.comentarios = prev.comentarios || '';
-    state.form.licor = prev.licor || [];
-  } else {
-    state.form = {
-      invitadoId: inv.id, nombreTitular: inv.nombre, telefono: '', asistira: null,
-      roster: buildRoster(inv),
-      comentarios: '', licor: [], timestamp: null,
-    };
+    if (Array.isArray(prev.roster) && prev.roster.length) {
+      // El roster guardado manda: conserva nombres corregidos y cupos ya llenados.
+      prev.roster.forEach((p, i) => {
+        if (!roster[i]) return;
+        roster[i].nombre     = p.nombre || roster[i].nombre;
+        roster[i].asiste     = !!p.asiste;
+        roster[i].restriccion = p.restriccion || '';
+      });
+    } else {
+      (prev.asistentes || []).forEach(a => {
+        const slot = roster.find(p => normalize(p.nombre) === normalize(a.nombre))
+                  || roster.find(p => !p.nombre.trim());
+        if (slot) { slot.nombre = a.nombre; slot.asiste = true; slot.restriccion = a.restriccion || ''; }
+      });
+    }
   }
+
+  state.form = {
+    asistira:    prev ? prev.asistira : null,
+    roster,
+    email:       prev ? (prev.email || '') : '',
+    comentarios: prev ? (prev.comentarios || '') : '',
+  };
+
   renderForm();
   $('#rsvp-search').classList.add('hidden');
   $('#rsvp-form').classList.remove('hidden');
   $('#rsvp-success').classList.add('hidden');
+}
+
+async function selectInvitado(id) {
+  try {
+    const data = await cargarInvitado(id);
+    if (data) montarInvitado(data);
+  } catch (err) {
+    console.warn('No se pudo cargar el invitado', err);
+  }
 }
 function renderForm() {
   const f = state.form, inv = state.selected;
   $('#form-greet').textContent = state.existingRsvp ? 'Editando tu respuesta' : 'Hola,';
   $('#form-name').textContent = inv.nombre;
   $('#form-cupos').textContent = `Tienes ${inv.cupos} ${inv.cupos === 1 ? 'cupo asignado' : 'cupos asignados'}`;
-  $('#f-telefono').value = f.telefono || '';
+  $('#f-email').value = f.email || '';
   $('#f-comentarios').value = f.comentarios || '';
   const notice = $('#existing-notice');
   if (state.existingRsvp) {
-    notice.textContent = `Ya tenemos tu respuesta del ${formatDateTime(state.existingRsvp.timestamp)}. Puedes editarla abajo.`;
+    notice.textContent = `Ya tenemos tu respuesta del ${formatDateTime(state.existingRsvp.actualizado_en)}. Puedes editarla abajo.`;
     notice.classList.remove('hidden');
     $('#submit-label').textContent = 'Actualizar respuesta';
   } else { notice.classList.add('hidden'); $('#submit-label').textContent = 'Enviar confirmación'; }
@@ -2263,13 +2312,12 @@ function renderForm() {
   if (f.asistira === false) $('.choice[data-asis="no"]').classList.add('active');
   toggleConditionalBlocks();
   renderAttendees();
-  renderLiquorChips();
   $('#form-error').classList.add('hidden');
 }
 function toggleConditionalBlocks() {
   const yes = state.form.asistira === true;
   $('#attendees-block').classList.toggle('hidden', !yes);
-  $('#liquor-block').classList.toggle('hidden', !yes);
+  $('#email-block').classList.toggle('hidden', !yes);
 }
 function pickAsistira(val) {
   state.form.asistira = val;
@@ -2282,16 +2330,16 @@ function renderAttendees() {
   const count = f.roster.filter(p => p.asiste).length;
   $('#attendees-count').textContent = `${count} de ${inv.cupos} confirmados`;
   container.innerHTML = f.roster.map((p, i) => {
-    const nameCell = p.preset
-      ? `<span class="roster-name">${escapeHtml(p.nombre)}</span>`
-      : `<input type="text" class="roster-input" value="${escapeHtml(p.nombre)}" placeholder="Nombre del acompañante" oninput="updateRoster(${i}, 'nombre', this.value)">`;
+    // Todos los nombres son editables: los del Sheet vienen precargados pero
+    // el invitado puede corregir la escritura o cambiar quién viene.
+    const nameCell = `<input type="text" class="roster-input" value="${escapeHtml(p.nombre)}" placeholder="${p.titular ? 'Tu nombre' : 'Nombre del acompañante'}" oninput="updateRoster(${i}, 'nombre', this.value)">`;
     return `
       <label class="roster-row ${p.asiste ? 'asiste' : ''}">
         <input type="checkbox" ${p.asiste ? 'checked' : ''} onchange="toggleRoster(${i}, this.checked)">
         <div class="roster-body">
           <div class="roster-head">
             ${nameCell}
-            ${i === 0 ? '<span class="roster-badge">Titular</span>' : ''}
+            ${p.titular ? '<span class="roster-badge">Titular</span>' : ''}
           </div>
           <input type="text" class="roster-restriction" value="${escapeHtml(p.restriccion || '')}" placeholder="Restricción alimenticia (opcional)" oninput="updateRoster(${i}, 'restriccion', this.value)" ${p.asiste ? '' : 'disabled'}>
         </div>
@@ -2309,40 +2357,39 @@ function updateRoster(i, field, value) {
     $('#attendees-count').textContent = `${count} de ${state.selected.cupos} confirmados`;
   }
 }
-function renderLiquorChips() {
-  $$('.chip').forEach(c => {
-    const liq = c.dataset.liquor;
-    c.classList.toggle('active', state.form.licor.includes(liq));
-    c.onclick = () => {
-      const idx = state.form.licor.indexOf(liq);
-      if (idx >= 0) state.form.licor.splice(idx, 1); else state.form.licor.push(liq);
-      c.classList.toggle('active');
-    };
-  });
-}
 async function submitRsvp() {
   const f = state.form;
-  f.telefono = $('#f-telefono').value; f.comentarios = $('#f-comentarios').value;
+  f.email = $('#f-email').value; f.comentarios = $('#f-comentarios').value;
   const err = $('#form-error'); err.classList.add('hidden');
   const showErr = msg => { err.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h0"/></svg><span>${msg}</span>`; err.classList.remove('hidden'); };
   if (f.asistira === null) return showErr('Por favor indica si asistirás.');
-  if (!f.telefono || f.telefono.trim().length < 6) return showErr('Por favor comparte un teléfono de contacto.');
   let asistentes = [];
   if (f.asistira === true) {
     asistentes = f.roster.filter(p => p.asiste && p.nombre.trim())
-      .map(p => ({ nombre: p.nombre.trim(), restriccion: p.restriccion || '' }));
+      .map(p => ({ nombre: p.nombre.trim(), restriccion: (p.restriccion || '').trim() }));
     if (asistentes.length === 0) return showErr('Marca al menos una persona que asistirá.');
     if (asistentes.length > state.selected.cupos) return showErr(`Solo tienes ${state.selected.cupos} cupos asignados.`);
+    const correo = (f.email || '').trim();
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) {
+      return showErr('Déjanos un correo válido para escribirte los detalles.');
+    }
   }
   const btn = $('#btn-submit'); btn.disabled = true;
   $('#submit-label').textContent = 'Enviando...';
-  const payload = {
-    invitadoId: state.selected.id, nombreTitular: state.selected.nombre,
-    telefono: f.telefono, asistira: f.asistira, asistentes,
-    comentarios: f.comentarios, licor: f.licor || [], roster: f.roster,
-    timestamp: new Date().toISOString(),
-  };
-  try { await saveRsvp(payload); } catch (e) { btn.disabled = false; $('#submit-label').textContent = 'Enviar confirmación'; return showErr('No pudimos guardar tu respuesta. Intenta de nuevo.'); }
+  try {
+    await guardarRsvp({
+      token: state.selected.token,
+      asistira: f.asistira,
+      asistentes,
+      roster: f.roster,
+      email: f.asistira ? (f.email || '').trim() : null,
+      comentarios: f.comentarios,
+    });
+  } catch (e) {
+    btn.disabled = false; $('#submit-label').textContent = 'Enviar confirmación';
+    console.warn('guardar_rsvp falló', e);
+    return showErr(e.code === '23514' ? e.message : 'No pudimos guardar tu respuesta. Intenta de nuevo.');
+  }
   btn.disabled = false; $('#submit-label').textContent = 'Enviar confirmación';
   $('#rsvp-form').classList.add('hidden');
   $('#success-text').textContent = f.asistira
@@ -2380,34 +2427,74 @@ function closeAdmin() {
   document.body.classList.remove('locked');
   if (location.hash === '#admin') location.hash = '';
 }
+/* La clave vive solo en memoria mientras el panel está abierto: se usa
+   para refrescar los datos al cambiar de pestaña. No se guarda en disco
+   ni viaja dentro de este archivo. */
+let adminClave = null;
+
 async function adminLogin() {
   const pass = $('#admin-pass').value;
-  if (pass !== CONFIG.adminPassword) {
-    const err = $('#admin-pass-error');
-    err.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h0"/></svg><span>Contraseña incorrecta.</span>';
-    err.classList.remove('hidden'); return;
+  const err  = $('#admin-pass-error');
+  const btn  = document.querySelector('#admin-login-view .btn-submit');
+  err.classList.add('hidden');
+  if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+  try {
+    await loadAdminData(pass);
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+    const msg = e.code === '28000' ? 'Contraseña incorrecta.' : 'No pudimos conectar. Intenta de nuevo.';
+    err.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h0"/></svg><span>${msg}</span>`;
+    err.classList.remove('hidden');
+    return;
   }
+  if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
   $('#admin-login-view').classList.add('hidden');
   $('#admin-dashboard-view').classList.remove('hidden');
-  await loadAdminData(); renderAdminDashboard();
+  renderAdminDashboard();
 }
-async function loadAdminData() {
-  state.rsvps = await loadAllRsvps();
+
+async function loadAdminData(clave) {
+  if (clave) adminClave = clave;
+  if (!adminClave) throw new Error('Sin clave admin');
+  const d = await cargarAdmin(adminClave);
+  const porId = (arr) => Object.fromEntries((arr || []).map(x => [x.invitado_id, x]));
+  state.admin = {
+    invitados: d.invitados || [],
+    rsvps:     porId(d.rsvps),
+    aperturas: porId(d.aperturas),
+    envios:    porId(d.envios),
+  };
 }
+
+function estadoDe(i) {
+  const r = state.admin.rsvps[i.id];
+  if (r && r.asistira === true)  return { texto: 'Confirmado',  cls: 'status-conf' };
+  if (r && r.asistira === false) return { texto: 'No asistirá', cls: 'status-dec'  };
+  return { texto: 'Pendiente', cls: 'status-pend' };
+}
+
 function computeStats() {
-  const total = state.invitados.length;
-  let confirmed = 0, declined = 0, realAttendees = 0;
-  state.invitados.forEach(i => {
-    const r = state.rsvps[i.id];
+  const inv = state.admin.invitados;
+  let confirmed = 0, declined = 0, realAttendees = 0, abiertas = 0, enviadas = 0;
+  inv.forEach(i => {
+    const r = state.admin.rsvps[i.id];
+    if (state.admin.aperturas[i.id]) abiertas++;
+    if (state.admin.envios[i.id])    enviadas++;
     if (r && r.asistira === true) { confirmed++; realAttendees += (r.asistentes?.length || 0); }
     else if (r && r.asistira === false) { declined++; }
   });
-  return { total, confirmed, declined, pending: total - confirmed - declined, realAttendees };
+  return {
+    total: inv.length, confirmed, declined, realAttendees, abiertas, enviadas,
+    pending: inv.length - confirmed - declined,
+  };
 }
+
 function renderAdminDashboard() {
   const s = computeStats();
   $('#stats-grid').innerHTML = `
     <div class="stat"><div class="stat-label">Invitaciones</div><div class="stat-value">${s.total}</div></div>
+    <div class="stat"><div class="stat-label">Enviadas</div><div class="stat-value">${s.enviadas}</div></div>
+    <div class="stat"><div class="stat-label">Abrieron</div><div class="stat-value">${s.abiertas}</div></div>
     <div class="stat accent-olive"><div class="stat-label">Confirmadas</div><div class="stat-value">${s.confirmed}</div></div>
     <div class="stat accent-rose"><div class="stat-label">No asistirán</div><div class="stat-value">${s.declined}</div></div>
     <div class="stat accent-muted"><div class="stat-label">Pendientes</div><div class="stat-value">${s.pending}</div></div>
@@ -2416,64 +2503,101 @@ function renderAdminDashboard() {
   const responded = s.confirmed + s.declined;
   const pct = s.total ? Math.round((responded / s.total) * 100) : 0;
   $('#response-bar').style.width = pct + '%';
-  $('#response-text').textContent = `${pct}% han respondido (${responded}/${s.total})`;
-  const totalCupos = state.invitados.reduce((a, i) => a + i.cupos, 0);
+  $('#response-text').textContent = `${pct}% han respondido (${responded}/${s.total}) · ${s.abiertas} abrieron la invitación`;
+  const totalCupos = state.admin.invitados.reduce((a, i) => a + i.cupos, 0);
   $('#cupos-text').innerHTML = `${s.realAttendees} <span style="color:var(--muted);font-size:1rem">/ ${totalCupos} cupos</span>`;
 }
+
 function renderInvitados() {
   const body = $('#inv-table-body');
-  const filtered = state.invitados.filter(i => {
-    const r = state.rsvps[i.id];
-    if (state.filter === 'confirmed' && !(r && r.asistira === true)) return false;
+  const filtered = state.admin.invitados.filter(i => {
+    const r = state.admin.rsvps[i.id];
+    if (state.filter === 'confirmed' && !(r && r.asistira === true))  return false;
     if (state.filter === 'declined'  && !(r && r.asistira === false)) return false;
     if (state.filter === 'pending'   && r) return false;
+    if (state.filter === 'sinabrir'  && state.admin.aperturas[i.id])  return false;
+    if (state.filter === 'abrionoconf' && !(state.admin.aperturas[i.id] && !r)) return false;
     if (state.tipoFilter !== 'all' && (i.tipo || 'otro') !== state.tipoFilter) return false;
     if (state.mesaFilter !== 'all' && String(i.mesa ?? '') !== state.mesaFilter) return false;
     return true;
   });
   body.innerHTML = filtered.map(i => {
-    const r = state.rsvps[i.id];
-    let estado = 'Pendiente', cls = 'status-pend';
-    if (r && r.asistira === true)  { estado = 'Confirmado';   cls = 'status-conf'; }
-    if (r && r.asistira === false) { estado = 'No asistirá';  cls = 'status-dec'; }
+    const r = state.admin.rsvps[i.id];
+    const a = state.admin.aperturas[i.id];
+    const e = estadoDe(i);
     return `<tr>
       <td>${escapeHtml(i.nombre)}</td>
       <td>${escapeHtml(i.grupo || '')}</td>
       <td>${escapeHtml(i.tipo || '—')}</td>
       <td>${i.mesa ?? '—'}</td>
       <td>${i.cupos}</td>
-      <td class="${cls}">${estado}</td>
+      <td class="${e.cls}">${e.texto}</td>
       <td>${r && r.asistentes ? r.asistentes.length : '—'}</td>
-      <td>${r ? escapeHtml(r.telefono) : '—'}</td>
-      <td style="font-size:0.75rem;color:var(--muted)">${r ? formatDateTime(r.timestamp) : '—'}</td>
+      <td>${a ? a.veces : '—'}</td>
+      <td style="font-size:0.75rem;color:var(--muted)">${a ? formatDateTime(a.ultima) : '—'}</td>
+      <td style="font-size:0.75rem;color:var(--muted)">${r ? formatDateTime(r.actualizado_en) : '—'}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="9" style="text-align:center;padding:1.5rem;color:var(--muted)">Sin resultados.</td></tr>`;
+  }).join('') || `<tr><td colspan="10" style="text-align:center;padding:1.5rem;color:var(--muted)">Sin resultados.</td></tr>`;
 }
-function renderLiquor() {
-  const counts = {};
-  Object.values(state.rsvps).forEach(r => { if (r.asistira && r.licor) r.licor.forEach(l => counts[l] = (counts[l] || 0) + 1); });
-  const cont = $('#liquor-results');
-  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  if (entries.length === 0) { cont.innerHTML = `<div style="color:var(--muted)">Aún no hay preferencias registradas.</div>`; return; }
-  const max = Math.max(...Object.values(counts));
-  cont.innerHTML = entries.map(([k, v]) => `
-    <div style="margin-bottom:0.8rem">
-      <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:0.25rem"><span>${escapeHtml(k)}</span><strong style="color:var(--wine)">${v}</strong></div>
-      <div style="height:6px;background:rgba(217,167,172,0.25);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--wine);width:${(v/max)*100}%"></div></div>
-    </div>
-  `).join('');
+
+function listaSimple(items, vacio) {
+  if (!items.length) return `<div style="color:var(--muted)">${vacio}</div>`;
+  return items.map(t =>
+    `<div style="padding:0.4rem 0;border-top:1px solid rgba(217,167,172,0.25);font-size:0.88rem">${t}</div>`
+  ).join('');
 }
+
+function renderSeguimiento() {
+  const inv = state.admin.invitados;
+
+  const sinAbrir = inv.filter(i => !state.admin.aperturas[i.id]);
+  $('#seg-sin-abrir').innerHTML = listaSimple(
+    sinAbrir.map(i => {
+      const env = state.admin.envios[i.id];
+      const cuando = env ? `enviada ${formatDateTime(env.ultimo)}` : 'sin enviar todavía';
+      return `${escapeHtml(i.nombre)} <span style="color:var(--muted)">· ${cuando}</span>`;
+    }),
+    'Todos abrieron la invitación.'
+  );
+
+  const abrioSinConfirmar = inv.filter(i => state.admin.aperturas[i.id] && !state.admin.rsvps[i.id]);
+  $('#seg-abrio-sin-confirmar').innerHTML = listaSimple(
+    abrioSinConfirmar.map(i => {
+      const a = state.admin.aperturas[i.id];
+      return `${escapeHtml(i.nombre)} <span style="color:var(--muted)">· ${a.veces} ${a.veces === 1 ? 'vez' : 'veces'}, última ${formatDateTime(a.ultima)}</span>`;
+    }),
+    'Nadie quedó a medias.'
+  );
+
+  const restricciones = [];
+  Object.values(state.admin.rsvps).forEach(r => {
+    (r.asistentes || []).forEach(a => {
+      if (a.restriccion && a.restriccion.trim()) {
+        restricciones.push(`${escapeHtml(a.nombre)} <span style="color:var(--muted)">· ${escapeHtml(a.restriccion)}</span>`);
+      }
+    });
+  });
+  $('#seg-restricciones').innerHTML = listaSimple(restricciones, 'Aún no hay restricciones registradas.');
+}
+
 function renderFilters() {
   const cont = $('#status-filters');
-  const filters = [{k:'all',label:'Todos'},{k:'confirmed',label:'Confirmados'},{k:'pending',label:'Pendientes'},{k:'declined',label:'No asistirán'}];
+  const filters = [
+    { k: 'all',         label: 'Todos' },
+    { k: 'confirmed',   label: 'Confirmados' },
+    { k: 'pending',     label: 'Pendientes' },
+    { k: 'declined',    label: 'No asistirán' },
+    { k: 'sinabrir',    label: 'No abrieron' },
+    { k: 'abrionoconf', label: 'Abrieron sin confirmar' },
+  ];
   cont.innerHTML = filters.map(f => `<button class="filter-chip ${state.filter === f.k ? 'active' : ''}" onclick="setFilter('${f.k}')">${f.label}</button>`).join('');
 
-  const tipos = Array.from(new Set(state.invitados.map(i => i.tipo || 'otro')));
+  const tipos = Array.from(new Set(state.admin.invitados.map(i => i.tipo || 'otro')));
   const tc = $('#tipo-filters');
   tc.innerHTML = `<button class="filter-chip ${state.tipoFilter==='all'?'active':''}" onclick="setTipoFilter('all')">Todo tipo</button>` +
     tipos.map(t => `<button class="filter-chip ${state.tipoFilter===t?'active':''}" onclick="setTipoFilter('${t}')">${escapeHtml(t)}</button>`).join('');
 
-  const mesas = Array.from(new Set(state.invitados.map(i => i.mesa).filter(m => m != null))).sort((a,b)=>a-b);
+  const mesas = Array.from(new Set(state.admin.invitados.map(i => i.mesa).filter(m => m != null))).sort((a,b)=>a-b);
   const mc = $('#mesa-filters');
   mc.innerHTML = `<button class="filter-chip ${state.mesaFilter==='all'?'active':''}" onclick="setMesaFilter('all')">Todas las mesas</button>` +
     mesas.map(m => `<button class="filter-chip ${state.mesaFilter===String(m)?'active':''}" onclick="setMesaFilter('${m}')">Mesa ${m}</button>`).join('');
@@ -2490,25 +2614,34 @@ $('#spotify-link').href = CONFIG.spotifyPlaylistUrl;
 $$('.tab').forEach(t => t.addEventListener('click', async () => {
   const tab = t.dataset.tab; state.tab = tab;
   $$('.tab').forEach(x => x.classList.toggle('active', x === t));
-  ['dashboard','invitados','licor'].forEach(k => $('#tab-' + k).classList.toggle('hidden', k !== tab));
-  await loadAdminData();
-  if (tab === 'dashboard') renderAdminDashboard();
-  if (tab === 'invitados') { renderFilters(); renderInvitados(); }
-  if (tab === 'licor') renderLiquor();
+  ['dashboard','invitados','seguimiento'].forEach(k => $('#tab-' + k).classList.toggle('hidden', k !== tab));
+  try { await loadAdminData(); } catch (e) { console.warn('No se pudo refrescar el panel', e); }
+  if (tab === 'dashboard')   renderAdminDashboard();
+  if (tab === 'invitados')   { renderFilters(); renderInvitados(); }
+  if (tab === 'seguimiento') renderSeguimiento();
 }));
+
 function exportInvitados() {
-  const rows = state.invitados.map(i => {
-    const r = state.rsvps[i.id] || {};
+  const rows = state.admin.invitados.map(i => {
+    const r = state.admin.rsvps[i.id] || {};
+    const a = state.admin.aperturas[i.id];
+    const e = state.admin.envios[i.id];
     return {
       id: i.id, codigo: i.codigo || '', nombre: i.nombre, grupo: i.grupo || '',
       tipo: i.tipo || '', mesa: i.mesa ?? '', cupos_asignados: i.cupos,
+      telefono: i.telefono || '',
       estado: r.asistira === true ? 'Confirmado' : (r.asistira === false ? 'No asistirá' : 'Pendiente'),
       asistentes_reales: r.asistentes ? r.asistentes.length : 0,
-      nombres_asistentes: r.asistentes ? r.asistentes.map(a => a.nombre).join(' | ') : '',
-      restricciones: r.asistentes ? r.asistentes.map(a => a.restriccion).filter(Boolean).join(' | ') : '',
-      telefono: r.telefono || '', licor: (r.licor || []).join(' | '),
+      nombres_asistentes: r.asistentes ? r.asistentes.map(x => x.nombre).join(' | ') : '',
+      restricciones: r.asistentes ? r.asistentes.map(x => x.restriccion).filter(Boolean).join(' | ') : '',
+      correo: r.email || '',
       comentarios: r.comentarios || '',
-      fecha_confirmacion: r.timestamp ? formatDateTime(r.timestamp) : '',
+      invitacion_enviada: e ? formatDateTime(e.ultimo) : '',
+      recordatorios: e ? (e.recordatorios || 0) : 0,
+      aperturas: a ? a.veces : 0,
+      primera_apertura: a ? formatDateTime(a.primera) : '',
+      ultima_apertura: a ? formatDateTime(a.ultima) : '',
+      fecha_confirmacion: r.actualizado_en ? formatDateTime(r.actualizado_en) : '',
     };
   });
   downloadCSV(rows, `invitados_valeria_apolo_${new Date().toISOString().slice(0, 10)}.csv`);

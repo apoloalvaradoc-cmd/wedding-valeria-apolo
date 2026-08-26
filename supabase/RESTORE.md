@@ -1,32 +1,57 @@
 # Restore · wedding-valeria-apolo
 
-Backup hecho el **2026-05-04** antes de pausar el proyecto Supabase
-(plan free no permite estar inactivo indefinidamente sin pausarse).
+## Estado actual (26-ago-2026)
 
-## Estado al momento del backup
-- `invitados`: **0 filas**
-- `rsvps`: **0 filas**
+Proyecto **activo**. El plan free permite 2 proyectos activos por usuario; para
+reactivar este se pausó `agendaflow-beauty`.
 
-No había datos PII que respaldar — la invitación aún no se había
-distribuido. Solo se respaldó el esquema (DDL).
+- `invitados`: **131 filas**, todas con token generado. Teléfonos pendientes de
+  cargar desde el Sheet (ver README, sección 4).
+- `rsvps`, `aperturas`, `envios`: vacías — aún no se distribuye la invitación.
+- `config`: contiene `admin_hash`.
+
+> El RESTORE.md anterior decía "0 filas" en `invitados`. Era incorrecto: la
+> lista sí estaba cargada.
 
 ## Cómo restaurar
 
-### Opción A — Reactivar el mismo proyecto (recomendado)
-1. Login a Supabase Dashboard
-2. Buscar el proyecto pausado `wedding-valeria-apolo` (id `psmaynxnphbfbtayzaeb`)
-3. Click "Restore project" / "Resume"
-4. El esquema se reactiva tal cual estaba — no hace falta correr nada
-5. Verificar que `index.html` siga apuntando al mismo URL/key (no debería haber cambiado)
+### Opción A — Reactivar el mismo proyecto
+1. Supabase Dashboard → proyecto `wedding-valeria-apolo` (`psmaynxnphbfbtayzaeb`).
+2. "Restore project". Si falla por límite de proyectos activos, pausa otro primero.
+3. El esquema y los datos vuelven tal cual. No hace falta correr nada.
 
-### Opción B — Crear un proyecto nuevo
-1. Crear nuevo proyecto en Supabase Dashboard
-2. SQL Editor → New query → pegar el contenido completo de `schema.sql` → Run
-3. Project Settings → API: copiar el nuevo `URL` y `anon key`
-4. Editar `index.html` → buscar `CONFIG.supabaseUrl` y `CONFIG.supabaseKey` y reemplazar
-5. Commit + push (deploy automático vía GitHub Pages)
+### Opción B — Proyecto nuevo desde cero
+1. SQL Editor → correr **en orden**:
+   `schema.sql` → `migrations/002_links_tracking.sql` →
+   `migrations/003_rpcs.sql` → `migrations/004_rpcs_consola_envio.sql`
+2. Sembrar la clave de administración:
+   ```sql
+   insert into public.config (clave, valor)
+   values ('admin_hash', extensions.crypt('TU_CLAVE', extensions.gen_salt('bf', 10)))
+   on conflict (clave) do update set valor = excluded.valor;
+   ```
+3. Cargar los invitados (CSV en el Table Editor, o INSERT).
+4. Generar tokens:
+   ```sql
+   update public.invitados
+   set token = substr(md5(id || gen_random_uuid()::text), 1, 12)
+   where token is null;
+   ```
+5. Actualizar `CONFIG.supabaseUrl` y `CONFIG.supabaseKey` en `index.html`
+   **y** en `consola.html`, más `SUPABASE_URL`/`SUPABASE_KEY` en
+   `importar_telefonos.mjs`.
+6. Commit + push a `main`.
 
-## Cargar la lista de invitados (cuando llegue el momento)
-La lista se carga vía SQL `INSERT` o pegando un CSV en el Table Editor de Supabase.
-Hay un script `parse_guests.mjs` en la raíz del repo que ayuda a transformar
-una lista de invitados en `INSERT INTO invitados ...`.
+> **Ojo:** regenerar tokens invalida todos los links ya enviados. Si la
+> invitación ya circuló, respalda `invitados` con sus tokens antes de tocar nada.
+
+## Respaldo de datos antes de pausar
+
+```sql
+select * from public.invitados;
+select * from public.rsvps;
+select * from public.aperturas;
+select * from public.envios;
+```
+
+O desde la consola: botón **CSV**.

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Consola de envío · Valeria &amp; Apolo</title>
+<style>
+  :root {
+    --cream: #F1F0EA;
+    --paper: #FFFFFF;
+    --wine: #580410;
+    --wine-deep: #390000;
+    --olive: #75763E;
+    --sage: #C4C5A0;
+    --rose: #D9A7AC;
+    --ink: #2A2320;
+    --muted: #8A7F79;
+    --line: rgba(217, 167, 172, 0.4);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cream); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px; line-height: 1.5;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--wine); color: var(--cream);
+    padding: 0.9rem 1.1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  }
+  header h1 { margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 4rem; }
+  .card { background: var(--paper); border: 1px solid var(--line); padding: 1.1rem; margin-bottom: 1rem; }
+  .card h2 { margin: 0 0 0.8rem; font-size: 0.66rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--wine); font-weight: 600; }
+  label { display: block; font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+  input[type=text], input[type=password], input[type=url], textarea, select {
+    width: 100%; padding: 0.6rem 0.7rem; border: 1px solid var(--line);
+    background: var(--paper); color: var(--ink); font: inherit; border-radius: 0;
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--sage); outline-offset: -1px; }
+  textarea { resize: vertical; min-height: 108px; font-size: 0.9rem; }
+  button {
+    font: inherit; cursor: pointer; border: 1px solid var(--wine);
+    background: var(--paper); color: var(--wine); padding: 0.5rem 0.9rem;
+  }
+  button:hover:not(:disabled) { background: var(--wine); color: var(--cream); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.filled { background: var(--wine); color: var(--cream); }
+  button.filled:hover:not(:disabled) { background: var(--wine-deep); }
+  button.small { padding: 0.32rem 0.6rem; font-size: 0.82rem; }
+  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 0.6rem; }
+  .stat { background: var(--paper); border: 1px solid var(--line); padding: 0.7rem 0.8rem; }
+  .stat .n { font-size: 1.6rem; color: var(--wine); line-height: 1.1; }
+  .stat .l { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+  .chip {
+    padding: 0.34rem 0.72rem; font-size: 0.8rem; border: 1px solid var(--line);
+    background: var(--paper); color: var(--muted); cursor: pointer;
+  }
+  .chip.active { background: var(--wine); border-color: var(--wine); color: var(--cream); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--paper); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th {
+    text-align: left; padding: 0.6rem 0.7rem; background: var(--cream);
+    font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+    position: sticky; top: 0;
+  }
+  td { padding: 0.55rem 0.7rem; border-top: 1px solid rgba(217,167,172,0.25); vertical-align: middle; }
+  tr.sent td { background: rgba(196, 197, 160, 0.13); }
+  .badge { display: inline-block; padding: 0.14rem 0.5rem; font-size: 0.72rem; white-space: nowrap; }
+  .b-conf { background: rgba(117,118,62,0.16); color: var(--olive); }
+  .b-dec  { background: rgba(217,167,172,0.26); color: var(--wine); }
+  .b-open { background: rgba(196,197,160,0.3); color: #5c5d2e; }
+  .b-sent { background: rgba(138,127,121,0.15); color: var(--muted); }
+  .b-none { background: rgba(138,127,121,0.1); color: var(--muted); }
+  .b-warn { background: rgba(217,167,172,0.4); color: var(--wine-deep); }
+  .tel-input { border: 1px dashed var(--line); padding: 0.28rem 0.4rem; width: 132px; font-size: 0.84rem; background: transparent; }
+  .muted { color: var(--muted); font-size: 0.8rem; }
+  .login { max-width: 380px; margin: 12vh auto; }
+  .err { background: rgba(217,167,172,0.3); color: var(--wine-deep); padding: 0.55rem 0.7rem; font-size: 0.85rem; margin-top: 0.6rem; }
+  .hidden { display: none !important; }
+  .hint { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.7rem; }
+  .tpl-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .queue-bar {
+    position: sticky; bottom: 0; background: var(--wine); color: var(--cream);
+    padding: 0.7rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+  }
+  .queue-bar button { border-color: var(--cream); background: transparent; color: var(--cream); }
+  .queue-bar button:hover:not(:disabled) { background: var(--cream); color: var(--wine); }
+  @media (max-width: 600px) {
+    .wrap { padding: 0.8rem 0.7rem 4rem; }
+    td, th { padding: 0.45rem 0.5rem; }
+    .tel-input { width: 108px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-view">
+  <div class="wrap">
+    <div class="card login">
+      <h2>Consola de envío</h2>
+      <p class="hint">Valeria &amp; Apolo · 07.11.2026</p>
+      <label for="pass">Clave de administración</label>
+      <input type="password" id="pass" autocomplete="current-password" placeholder="••••••••">
+      <div id="login-err" class="err hidden"></div>
+      <button class="filled" id="btn-login" style="margin-top:0.8rem;width:100%">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONSOLA ============ -->
+<div id="app" class="hidden">
+  <header>
+    <h1>Consola de envío</h1>
+    <div class="row">
+      <button class="small" id="btn-refresh">Actualizar</button>
+      <button class="small" id="btn-export">CSV</button>
+      <button class="small" id="btn-logout">Salir</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+
+    <div class="card" style="margin-top:1rem">
+      <h2>Mensaje</h2>
+      <div class="tpl-tabs" id="tpl-tabs"></div>
+      <p class="hint">
+        Marcadores disponibles: <code>{nombre}</code> · <code>{primer_nombre}</code> ·
+        <code>{cupos}</code> · <code>{link}</code>. El link personalizado de cada invitado se
+        arma solo — no lo escribas a mano.
+      </p>
+      <textarea id="tpl-text"></textarea>
+      <div class="row" style="margin-top:0.6rem">
+        <button class="small" id="btn-tpl-reset">Restaurar texto original</button>
+        <span class="muted" id="tpl-saved"></span>
+      </div>
+      <div style="margin-top:0.9rem">
+        <label for="base-url">Dirección pública de la invitación</label>
+        <input type="url" id="base-url" placeholder="https://usuario.github.io/repo/">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Invitados</h2>
+      <div class="chips" id="filters"></div>
+      <div class="row" style="margin-bottom:0.7rem">
+        <input type="text" id="q" placeholder="Buscar por nombre..." style="max-width:260px">
+        <span class="muted" id="count"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Teléfono</th><th>Cupos</th><th>Estado</th>
+              <th>Aperturas</th><th>Enviados</th><th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="queue-bar">
+    <span id="queue-info">—</span>
+    <div class="row">
+      <button id="btn-queue">Enviar al siguiente pendiente</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Consola de envío por WhatsApp · Valeria & Apolo
+
+   No usa la llave de servicio de Supabase. Todo pasa por RPCs
+   que validan la clave de administración contra un hash bcrypt
+   guardado en la base, así que esta página se puede abrir desde
+   el teléfono sin exponer nada.
+
+   El envío es asistido, no automático: cada botón abre WhatsApp
+   con el número y el mensaje ya escritos, y tú das Enter. Es lo
+   que evita que 131 mensajes seguidos desde un número personal
+   se vean como spam.
+============================================================ */
+
+const CONFIG = {
+  supabaseUrl: "https://psmaynxnphbfbtayzaeb.supabase.co",
+  supabaseKey: "sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-",
+  baseUrlDefault: "https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/",
+  paisPorDefecto: "502",   // Guatemala
+};
+
+const PLANTILLAS = {
+  invitacion: {
+    label: 'Invitación',
+    texto:
+`Hola {primer_nombre}!
+
+Valeria y Apolo se casan el 7 de noviembre y quieren que seas parte de ese día.
+
+Aquí está tu invitación con todos los detalles, y ahí mismo puedes confirmar:
+{link}
+
+Tienes {cupos} reservados a tu nombre. Nos encantaría contar contigo.`
+  },
+  recordatorio_sin_abrir: {
+    label: 'Recordatorio · no abrió',
+    tipo: 'recordatorio',
+    texto:
+`Hola {primer_nombre}, te reenviamos la invitación a la boda de Valeria y Apolo (7 de noviembre) por si no te llegó bien la primera vez:
+
+{link}
+
+Cuando puedas, confírmanos ahí mismo. Gracias!`
+  },
+  recordatorio_sin_confirmar: {
+    label: 'Recordatorio · abrió sin confirmar',
+    tipo: 'recordatorio',
+    texto:
+`Hola {primer_nombre}! Ya casi cerramos la lista con la finca y todavía no tenemos tu confirmación.
+
+Es un minuto, aquí mismo:
+{link}
+
+Gracias!`
+  },
+  recordatorio_final: {
+    label: 'Recordatorio final',
+    tipo: 'recordatorio',
+    texto:
+`Hola {primer_nombre}, mañana damos los números finales al catering.
+
+Si aún puedes confirmarnos, aquí:
+{link}
+
+Si no llegas a alcanzar, no te preocupes — nos avisas y listo.`
+  },
+};
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+let clave = sessionStorage.getItem('va_clave') || null;
+let datos = [];
+let filtro = 'todos';
+let plantillaActiva = 'invitacion';
+
+/* ---------- Supabase RPC ---------- */
+async function rpc(fn, args = {}) {
+  const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      apikey: CONFIG.supabaseKey,
+      Authorization: 'Bearer ' + CONFIG.supabaseKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  });
+  const t = await r.text();
+  let d = null;
+  try { d = t ? JSON.parse(t) : null; } catch { d = t; }
+  if (!r.ok) {
+    const e = new Error((d && d.message) || `RPC ${fn} ${r.status}`);
+    e.code = d && d.code;
+    throw e;
+  }
+  return d;
+}
+
+/* ---------- Teléfono ---------- */
+// Devuelve solo dígitos en formato internacional, o null si no se puede.
+function normalizarTel(raw) {
+  if (!raw) return null;
+  let d = String(raw).replace(/\D/g, '');
+  if (!d) return null;
+  d = d.replace(/^0+/, '');
+  if (d.length === 8) d = CONFIG.paisPorDefecto + d;          // 5555-5555 → +502
+  if (d.startsWith('00')) d = d.slice(2);
+  return d.length >= 10 && d.length <= 15 ? d : null;
+}
+function mostrarTel(raw) {
+  const d = normalizarTel(raw);
+  if (!d) return raw || '';
+  if (d.startsWith(CONFIG.paisPorDefecto) && d.length === 11) {
+    return `+${CONFIG.paisPorDefecto} ${d.slice(3, 7)} ${d.slice(7)}`;
+  }
+  return '+' + d;
+}
+
+/* ---------- Estado de cada invitado ---------- */
+function estado(g) {
+  if (g.asistira === true)  return { k: 'confirmado', label: 'Confirmado', cls: 'b-conf' };
+  if (g.asistira === false) return { k: 'declino',    label: 'No asistirá', cls: 'b-dec' };
+  if (g.aperturas > 0)      return { k: 'abrio',      label: 'Abrió',      cls: 'b-open' };
+  if (g.invitaciones > 0 || g.recordatorios > 0) return { k: 'enviado', label: 'Enviado', cls: 'b-sent' };
+  return { k: 'nuevo', label: 'Sin enviar', cls: 'b-none' };
+}
+
+const FILTROS = [
+  { k: 'todos',        label: 'Todos' },
+  { k: 'nuevo',        label: 'Sin enviar' },
+  { k: 'enviado',      label: 'Enviados, no abrieron' },
+  { k: 'abrio',        label: 'Abrieron sin confirmar' },
+  { k: 'pendientes',   label: 'Falta confirmar' },
+  { k: 'confirmado',   label: 'Confirmados' },
+  { k: 'declino',      label: 'No asistirán' },
+  { k: 'sin_telefono', label: 'Sin teléfono' },
+];
+
+function pasaFiltro(g) {
+  const e = estado(g);
+  if (filtro === 'todos') return true;
+  if (filtro === 'sin_telefono') return !normalizarTel(g.telefono);
+  if (filtro === 'pendientes') return g.asistira === null || g.asistira === undefined;
+  return e.k === filtro;
+}
+
+function visibles() {
+  const q = ($('#q').value || '').trim().toLowerCase();
+  return datos.filter(g =>
+    pasaFiltro(g) && (!q || (g.nombre || '').toLowerCase().includes(q))
+  );
+}
+
+/* ---------- Mensaje ---------- */
+function baseUrl() {
+  let u = ($('#base-url').value || '').trim() || CONFIG.baseUrlDefault;
+  if (!u.endsWith('/') && !u.endsWith('.html')) u += '/';
+  return u;
+}
+function linkDe(g) {
+  return `${baseUrl()}?i=${encodeURIComponent(g.token)}`;
+}
+function mensajeDe(g) {
+  const txt = $('#tpl-text').value || '';
+  const primer = (g.nombre || '').trim().split(/\s+/)[0] || '';
+  const cupos = g.cupos === 1 ? '1 lugar' : `${g.cupos} lugares`;
+  return txt
+    .replaceAll('{nombre}', g.nombre || '')
+    .replaceAll('{primer_nombre}', primer)
+    .replaceAll('{cupos}', cupos)
+    .replaceAll('{link}', linkDe(g));
+}
+
+async function enviar(id) {
+  const g = datos.find(x => x.id === id);
+  if (!g) return;
+  const tel = normalizarTel(g.telefono);
+  if (!tel) { alert(`${g.nombre} no tiene un teléfono válido. Escríbelo en la columna Teléfono.`); return; }
+
+  // Se abre primero: si el navegador bloquea popups, el usuario lo nota
+  // antes de que se registre un envío que en realidad no salió.
+  const url = `https://wa.me/${tel}?text=${encodeURIComponent(mensajeDe(g))}`;
+  const w = window.open(url, '_blank');
+  if (!w) { alert('El navegador bloqueó la ventana de WhatsApp. Permite las ventanas emergentes en este sitio.'); return; }
+
+  const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
+  try {
+    await rpc('admin_registrar_envio', {
+      p_clave: clave, p_invitado_id: id, p_tipo: tipo, p_nota: plantillaActiva,
+    });
+    if (tipo === 'recordatorio') g.recordatorios++; else g.invitaciones++;
+    g.ultimo_envio = new Date().toISOString();
+    render();
+  } catch (e) {
+    alert('WhatsApp se abrió, pero no pudimos registrar el envío: ' + e.message);
+  }
+}
+
+async function guardarTel(id, valor) {
+  try {
+    await rpc('admin_set_telefono', { p_clave: clave, p_invitado_id: id, p_telefono: valor });
+    const g = datos.find(x => x.id === id);
+    if (g) g.telefono = valor;
+    render();
+  } catch (e) { alert('No se pudo guardar el teléfono: ' + e.message); }
+}
+
+function copiarLink(id) {
+  const g = datos.find(x => x.id === id);
+  if (!g) return;
+  navigator.clipboard.writeText(linkDe(g))
+    .then(() => { const b = document.querySelector(`[data-copy="${id}"]`); if (b) { b.textContent = 'Copiado'; setTimeout(() => b.textContent = 'Link', 1400); } })
+    .catch(() => prompt('Copia el link:', linkDe(g)));
+}
+
+/* ---------- Render ---------- */
+function fecha(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('es-GT', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function render() {
+  // Stats
+  const total = datos.length;
+  const enviados = datos.filter(g => g.invitaciones > 0 || g.recordatorios > 0).length;
+  const abiertos = datos.filter(g => g.aperturas > 0).length;
+  const conf = datos.filter(g => g.asistira === true).length;
+  const dec = datos.filter(g => g.asistira === false).length;
+  const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
+  const sinTel = datos.filter(g => !normalizarTel(g.telefono)).length;
+  $('#stats').innerHTML = [
+    ['Invitaciones', total], ['Enviadas', enviados], ['Abrieron', abiertos],
+    ['Confirmadas', conf], ['No asisten', dec], ['Personas', personas],
+    ['Sin teléfono', sinTel],
+  ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+
+  // Filtros
+  $('#filters').innerHTML = FILTROS.map(f =>
+    `<button class="chip ${filtro === f.k ? 'active' : ''}" data-filter="${f.k}">${f.label}</button>`
+  ).join('');
+
+  // Tabla
+  const rows = visibles();
+  $('#count').textContent = `${rows.length} de ${total}`;
+  $('#tbody').innerHTML = rows.map(g => {
+    const e = estado(g);
+    const tel = normalizarTel(g.telefono);
+    const envios = (g.invitaciones || 0) + (g.recordatorios || 0);
+    const yaEnviado = envios > 0;
+    return `<tr class="${yaEnviado ? 'sent' : ''}">
+      <td>
+        ${escapeHtml(g.nombre)}
+        <div class="muted">${escapeHtml(g.grupo || g.tipo || '')}</div>
+      </td>
+      <td>
+        <input class="tel-input" value="${escapeHtml(g.telefono || '')}" placeholder="5555 5555"
+               data-tel="${g.id}" title="${tel ? mostrarTel(g.telefono) : 'Número no válido'}">
+        ${tel ? '' : '<div class="badge b-warn">revisar</div>'}
+      </td>
+      <td>${g.cupos}${g.asistira === true ? ` <span class="muted">→ ${g.asistentes}</span>` : ''}</td>
+      <td><span class="badge ${e.cls}">${e.label}</span></td>
+      <td>${g.aperturas || 0}${g.ultima_apertura ? `<div class="muted">${fecha(g.ultima_apertura)}</div>` : ''}</td>
+      <td>${envios}${g.ultimo_envio ? `<div class="muted">${fecha(g.ultimo_envio)}</div>` : ''}</td>
+      <td>
+        <div class="row">
+          <button class="small ${yaEnviado ? '' : 'filled'}" data-send="${g.id}" ${tel ? '' : 'disabled'}>
+            ${yaEnviado ? 'Reenviar' : 'Enviar'}
+          </button>
+          <button class="small" data-copy="${g.id}">Link</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="7" style="text-align:center;padding:1.4rem;color:var(--muted)">Sin resultados.</td></tr>`;
+
+  // Cola
+  const cola = colaPendiente();
+  $('#queue-info').textContent = cola.length
+    ? `${cola.length} por enviar con este filtro · siguiente: ${cola[0].nombre}`
+    : 'Nada pendiente con el filtro actual.';
+  $('#btn-queue').disabled = cola.length === 0;
+}
+
+// Solo cuenta como pendiente lo que tiene teléfono válido y aún no recibió
+// nada de esta plantilla — así el botón de cola no repite envíos.
+function colaPendiente() {
+  const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
+  return visibles().filter(g => {
+    if (!normalizarTel(g.telefono)) return false;
+    return tipo === 'invitacion' ? (g.invitaciones || 0) === 0 : (g.recordatorios || 0) === 0;
+  });
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+
+/* ---------- Plantillas ---------- */
+function renderTplTabs() {
+  $('#tpl-tabs').innerHTML = Object.entries(PLANTILLAS).map(([k, v]) =>
+    `<button class="chip ${plantillaActiva === k ? 'active' : ''}" data-tpl="${k}">${v.label}</button>`
+  ).join('');
+}
+function cargarPlantilla(k) {
+  plantillaActiva = k;
+  const guardada = localStorage.getItem('va_tpl_' + k);
+  $('#tpl-text').value = guardada != null ? guardada : PLANTILLAS[k].texto;
+  renderTplTabs();
+  render();
+}
+
+/* ---------- Datos ---------- */
+async function cargar() {
+  datos = await rpc('admin_lista_envio', { p_clave: clave });
+  render();
+}
+
+/* ---------- Export ---------- */
+function exportar() {
+  const cols = ['id','nombre','telefono','cupos','tipo','grupo','estado','asistentes','aperturas','ultima_apertura','invitaciones','recordatorios','ultimo_envio','confirmado_en','link'];
+  const esc = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s; };
+  const lineas = [cols.join(',')].concat(datos.map(g => cols.map(c => {
+    if (c === 'estado') return esc(estado(g).label);
+    if (c === 'link') return esc(linkDe(g));
+    return esc(g[c]);
+  }).join(',')));
+  const blob = new Blob(['﻿' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `envios_valeria_apolo_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Eventos ---------- */
+$('#btn-login').addEventListener('click', login);
+$('#pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+async function login() {
+  const p = $('#pass').value;
+  const err = $('#login-err');
+  const btn = $('#btn-login');
+  err.classList.add('hidden');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    clave = p;
+    await cargar();
+    sessionStorage.setItem('va_clave', p);
+    $('#login-view').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+  } catch (e) {
+    clave = null;
+    err.textContent = e.code === '28000' ? 'Clave incorrecta.' : ('No pudimos conectar: ' + e.message);
+    err.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+$('#btn-logout').addEventListener('click', () => {
+  sessionStorage.removeItem('va_clave');
+  location.reload();
+});
+$('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
+$('#btn-export').addEventListener('click', exportar);
+$('#q').addEventListener('input', render);
+
+$('#filters').addEventListener('click', e => {
+  const b = e.target.closest('[data-filter]');
+  if (!b) return;
+  filtro = b.dataset.filter;
+  render();
+});
+
+$('#tpl-tabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-tpl]');
+  if (b) cargarPlantilla(b.dataset.tpl);
+});
+
+$('#tpl-text').addEventListener('input', () => {
+  localStorage.setItem('va_tpl_' + plantillaActiva, $('#tpl-text').value);
+  $('#tpl-saved').textContent = 'Guardado en este dispositivo';
+  setTimeout(() => $('#tpl-saved').textContent = '', 1800);
+});
+$('#btn-tpl-reset').addEventListener('click', () => {
+  localStorage.removeItem('va_tpl_' + plantillaActiva);
+  $('#tpl-text').value = PLANTILLAS[plantillaActiva].texto;
+});
+
+$('#base-url').addEventListener('input', () => {
+  localStorage.setItem('va_base_url', $('#base-url').value);
+  render();
+});
+
+$('#tbody').addEventListener('click', e => {
+  const s = e.target.closest('[data-send]');
+  if (s) { enviar(s.dataset.send); return; }
+  const c = e.target.closest('[data-copy]');
+  if (c) { copiarLink(c.dataset.copy); return; }
+});
+$('#tbody').addEventListener('change', e => {
+  const t = e.target.closest('[data-tel]');
+  if (t) guardarTel(t.dataset.tel, t.value);
+});
+
+$('#btn-queue').addEventListener('click', () => {
+  const cola = colaPendiente();
+  if (cola.length) enviar(cola[0].id);
+});
+
+/* ---------- Arranque ---------- */
+$('#base-url').value = localStorage.getItem('va_base_url') || CONFIG.baseUrlDefault;
+cargarPlantilla('invitacion');
+
+if (clave) {
+  cargar()
+    .then(() => { $('#login-view').classList.add('hidden'); $('#app').classList.remove('hidden'); })
+    .catch(() => { sessionStorage.removeItem('va_clave'); clave = null; });
+}
+</script>
+</body>
+</html>
