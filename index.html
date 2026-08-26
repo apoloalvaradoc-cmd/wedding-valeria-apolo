@@ -1154,7 +1154,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 /* ============================================================
    ADMIN
 ============================================================ */
-#admin { position: fixed; inset: 0; z-index: 80; background: var(--cream); overflow-y: auto; }
+/* Por encima de #cover (z-index 200): si no, entrar directo a #admin
+   deja el panel debajo de la portada y parece que no abrió. */
+#admin { position: fixed; inset: 0; z-index: 300; background: var(--cream); overflow-y: auto; }
 .admin-header { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.2rem; background: var(--wine); color: var(--cream); z-index: 10; }
 .admin-header-title { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-serif); letter-spacing: 0.18em; font-size: 1.05rem; }
 .admin-body { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
@@ -1181,7 +1183,40 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 .admin-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
 
 .table-wrap { overflow-x: auto; background: #fff; border: 1px solid rgba(217, 167, 172, 0.4); }
+.admin-card-title { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rose-deep); margin-bottom: 0.7rem; }
+
+/* Barra de avance por grupo */
+.grupo-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem 0.8rem; align-items: center; margin-bottom: 0.7rem; }
+.grupo-row .g-nombre { font-size: 0.86rem; }
+.grupo-row .g-cifra { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.grupo-row .g-bar { grid-column: 1 / -1; height: 5px; background: rgba(217,167,172,0.25); overflow: hidden; }
+.grupo-row .g-bar span { display: block; height: 100%; background: var(--olive-dark); }
+
+/* Filas de listado simple */
+.lista-row { padding: 0.45rem 0; border-top: 1px solid rgba(217,167,172,0.25); font-size: 0.88rem; display: flex; justify-content: space-between; gap: 0.8rem; }
+.lista-row:first-child { border-top: none; }
+.lista-row .l-meta { color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
+
+/* Detalle de una invitación */
+#admin-detalle { position: fixed; inset: 0; z-index: 310; background: rgba(57, 0, 0, 0.45); display: flex; align-items: flex-end; justify-content: center; }
+@media (min-width: 700px) { #admin-detalle { align-items: center; } }
+.detalle-panel { background: var(--cream); width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; border: 1px solid var(--wine); }
+.detalle-head { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1.1rem 1.2rem; background: var(--cream); border-bottom: 1px solid rgba(217,167,172,0.4); }
+.detalle-eyebrow { font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); }
+.detalle-name { font-family: var(--font-script); color: var(--wine); font-size: 1.9rem; line-height: 1.05; margin: 0.2rem 0 0; font-weight: 400; }
+.detalle-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+.detalle-body { padding: 1.1rem 1.2rem 1.5rem; }
+.detalle-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.1rem; }
+.detalle-meta span { font-size: 0.75rem; padding: 0.2rem 0.55rem; background: #fff; border: 1px solid rgba(217,167,172,0.45); color: var(--muted); }
+.detalle-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+.det-persona { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-top: 1px solid rgba(217,167,172,0.25); }
+.det-persona input[type=checkbox] { margin-top: 0.35rem; flex-shrink: 0; }
+.det-persona .dp-campos { flex: 1; display: grid; gap: 0.35rem; }
+.det-persona input[type=text] { width: 100%; padding: 0.4rem 0.55rem; border: 1px solid rgba(217,167,172,0.5); background: #fff; font: inherit; font-size: 0.88rem; }
+
 .admin-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.admin-table tbody tr.clickable { cursor: pointer; }
+.admin-table tbody tr.clickable:hover { background: rgba(196,197,160,0.16); }
 .admin-table thead th { background: var(--cream); text-align: left; padding: 0.7rem 0.8rem; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
 .admin-table td { padding: 0.65rem 0.8rem; border-top: 1px solid rgba(217, 167, 172, 0.25); }
 .status-conf { color: var(--wine); font-weight: 500; }
@@ -1877,55 +1912,160 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     </div>
     <div class="admin-body">
       <div class="tabs">
-        <button class="tab active" data-tab="dashboard">Dashboard</button>
-        <button class="tab" data-tab="invitados">Invitados</button>
-        <button class="tab" data-tab="seguimiento">Seguimiento</button>
+        <button class="tab active" data-tab="resumen">Resumen</button>
+        <button class="tab" data-tab="invitaciones">Invitaciones</button>
+        <button class="tab" data-tab="confirmados">Confirmados</button>
+        <button class="tab" data-tab="aperturas">Aperturas</button>
       </div>
-      <div id="tab-dashboard">
+
+      <!-- ---------- RESUMEN ---------- -->
+      <div id="tab-resumen">
         <div class="stats-grid" id="stats-grid"></div>
-        <div style="display:grid;grid-template-columns:1fr;gap:1rem">
-          <div class="admin-card">
-            <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:0.5rem">Tasa de respuesta</div>
-            <div class="progress"><div class="progress-bar" id="response-bar" style="width:0%"></div></div>
-            <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)" id="response-text">0% han respondido</div>
-          </div>
-          <div class="admin-card">
-            <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:0.5rem">Aprovechamiento de cupos</div>
-            <div id="cupos-text" style="font-family:var(--font-serif);font-size:1.6rem;color:var(--wine)"></div>
-          </div>
+        <div class="admin-card" style="margin-top:1rem">
+          <div class="admin-card-title">Tasa de respuesta</div>
+          <div class="progress"><div class="progress-bar" id="response-bar" style="width:0%"></div></div>
+          <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)" id="response-text"></div>
+        </div>
+        <div class="admin-card" style="margin-top:1rem">
+          <div class="admin-card-title">Avance por grupo</div>
+          <div id="resumen-grupos"></div>
         </div>
         <div class="admin-actions">
           <button class="btn btn-filled" onclick="exportInvitados()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            Exportar invitados CSV
+            Invitaciones CSV
           </button>
+          <button class="btn btn-outline" onclick="exportConfirmados()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Lista para la finca
+          </button>
+          <button class="btn btn-outline" onclick="refrescarAdmin()">Actualizar</button>
         </div>
       </div>
-      <div id="tab-invitados" class="hidden">
+
+      <!-- ---------- INVITACIONES ---------- -->
+      <div id="tab-invitaciones" class="hidden">
+        <input type="text" id="adm-buscar" class="input" placeholder="Buscar por nombre..." style="max-width:320px;margin-bottom:0.8rem">
         <div class="filters" id="status-filters"></div>
         <div class="filters" id="tipo-filters"></div>
         <div class="filters" id="mesa-filters"></div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.6rem" id="inv-count"></div>
         <div class="table-wrap">
           <table class="admin-table">
             <thead>
-              <tr><th>Nombre</th><th>Grupo</th><th>Tipo</th><th>Mesa</th><th>Cupos</th><th>Estado</th><th>Asistentes</th><th>Aperturas</th><th>Última apertura</th><th>Confirmado</th></tr>
+              <tr><th>Nombre</th><th>Grupo</th><th>Cupos</th><th>Estado</th><th>Vienen</th><th>Aperturas</th><th>Respondió</th><th></th></tr>
             </thead>
             <tbody id="inv-table-body"></tbody>
           </table>
         </div>
       </div>
-      <div id="tab-seguimiento" class="hidden">
+
+      <!-- ---------- CONFIRMADOS ---------- -->
+      <div id="tab-confirmados" class="hidden">
         <div class="admin-card" style="margin-bottom:1rem">
-          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Nunca abrieron la invitación</div>
-          <div id="seg-sin-abrir"></div>
+          <div class="admin-card-title">Cabeza por cabeza</div>
+          <div id="conf-total" style="font-family:var(--font-serif);font-size:1.6rem;color:var(--wine)"></div>
+          <p style="font-size:0.82rem;color:var(--muted);margin-top:0.35rem">
+            Cada persona que confirmó asistencia, con su restricción. Esta es la lista
+            que se le pasa a la finca y al catering.
+          </p>
+        </div>
+        <div class="filters" id="conf-filtros"></div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr><th>#</th><th>Persona</th><th>Restricción</th><th>Invitación</th><th>Grupo</th><th>Mesa</th></tr>
+            </thead>
+            <tbody id="conf-table-body"></tbody>
+          </table>
+        </div>
+        <div class="admin-card" style="margin-top:1rem">
+          <div class="admin-card-title">Restricciones alimenticias</div>
+          <div id="conf-restricciones"></div>
+        </div>
+        <div class="admin-card" style="margin-top:1rem">
+          <div class="admin-card-title">Mensajes de los invitados</div>
+          <div id="conf-mensajes"></div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-filled" onclick="exportConfirmados()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Descargar lista
+          </button>
+        </div>
+      </div>
+
+      <!-- ---------- APERTURAS ---------- -->
+      <div id="tab-aperturas" class="hidden">
+        <div class="stats-grid" id="ap-stats" style="margin-bottom:1rem"></div>
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div class="admin-card-title">Abrieron pero no han confirmado</div>
+          <p style="font-size:0.82rem;color:var(--muted);margin:-0.4rem 0 0.8rem">
+            Vieron la invitación y no respondieron. Son los primeros a quienes conviene recordarles.
+          </p>
+          <div id="ap-sin-confirmar"></div>
         </div>
         <div class="admin-card" style="margin-bottom:1rem">
-          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Abrieron pero no han confirmado</div>
-          <div id="seg-abrio-sin-confirmar"></div>
+          <div class="admin-card-title">Nunca la abrieron</div>
+          <div id="ap-sin-abrir"></div>
         </div>
         <div class="admin-card">
-          <div style="font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:1rem">Restricciones alimenticias</div>
-          <div id="seg-restricciones"></div>
+          <div class="admin-card-title">Últimas aperturas</div>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Nombre</th><th>Veces</th><th>Primera</th><th>Última</th><th>Cómo llegó</th></tr></thead>
+              <tbody id="ap-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- DETALLE / EDICIÓN DE UNA INVITACIÓN ---------- -->
+  <div id="admin-detalle" class="hidden">
+    <div class="detalle-panel">
+      <div class="detalle-head">
+        <div>
+          <div class="detalle-eyebrow" id="det-grupo"></div>
+          <h3 class="detalle-name" id="det-nombre"></h3>
+          <div class="detalle-sub" id="det-sub"></div>
+        </div>
+        <button class="form-close" onclick="cerrarDetalle()" aria-label="Cerrar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="detalle-body">
+        <div id="det-meta" class="detalle-meta"></div>
+
+        <div class="form-group">
+          <label class="rsvp-label">¿Asistirá?</label>
+          <div class="yes-no">
+            <button class="choice" data-det="yes" onclick="detPickAsistira(true)">Sí asiste</button>
+            <button class="choice" data-det="no"  onclick="detPickAsistira(false)">No asiste</button>
+          </div>
+        </div>
+
+        <div id="det-personas-block" class="form-group hidden">
+          <label class="rsvp-label">Quiénes vienen <span id="det-cuenta" style="text-transform:none;letter-spacing:0.05em;color:var(--muted)"></span></label>
+          <div id="det-personas"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="rsvp-label">Mesa</label>
+          <input type="number" id="det-mesa" class="input" min="1" placeholder="Sin asignar" style="max-width:140px">
+        </div>
+
+        <div class="form-group">
+          <label class="rsvp-label">Nota interna / mensaje</label>
+          <textarea id="det-comentarios" class="textarea" rows="2" placeholder="Lo que dijo por WhatsApp, o cualquier detalle"></textarea>
+        </div>
+
+        <div id="det-error" class="alert alert-warn hidden"></div>
+        <div class="detalle-actions">
+          <button class="btn btn-filled" id="det-guardar" onclick="guardarDetalle()">Guardar</button>
+          <button class="btn btn-outline" onclick="copiarLinkInvitado()">Copiar link</button>
+          <button class="btn btn-outline" id="det-borrar" onclick="borrarDetalle()">Volver a pendiente</button>
         </div>
       </div>
     </div>
@@ -2021,7 +2161,8 @@ const cargarAdmin = (clave) => SB.rpc('admin_datos', { p_clave: clave });
 
 const state = {
   selected: null, form: null, existingRsvp: null,
-  tab: 'dashboard', filter: 'all', tipoFilter: 'all', mesaFilter: 'all',
+  tab: 'resumen', filter: 'all', tipoFilter: 'all', mesaFilter: 'all',
+  confFiltro: 'all', detalle: null,
   admin: { invitados: [], rsvps: {}, aperturas: {}, envios: {} },
 };
 
@@ -2490,9 +2631,14 @@ function closeAdmin() {
   document.body.classList.remove('locked');
   if (location.hash === '#admin') location.hash = '';
 }
-/* La clave vive solo en memoria mientras el panel está abierto: se usa
+/* ============================================================
+   PANEL DE ADMINISTRACIÓN
+
+   La clave vive solo en memoria mientras el panel está abierto: se usa
    para refrescar los datos al cambiar de pestaña. No se guarda en disco
-   ni viaja dentro de este archivo. */
+   ni viaja dentro de este archivo — se compara contra un hash bcrypt en
+   la base.
+============================================================ */
 let adminClave = null;
 
 async function adminLogin() {
@@ -2513,7 +2659,7 @@ async function adminLogin() {
   if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
   $('#admin-login-view').classList.add('hidden');
   $('#admin-dashboard-view').classList.remove('hidden');
-  renderAdminDashboard();
+  renderTab();
 }
 
 async function loadAdminData(clave) {
@@ -2529,161 +2675,430 @@ async function loadAdminData(clave) {
   };
 }
 
+async function refrescarAdmin() {
+  try { await loadAdminData(); renderTab(); }
+  catch (e) { alert('No se pudo actualizar: ' + e.message); }
+}
+
+/* ---------- Derivados ---------- */
 function estadoDe(i) {
   const r = state.admin.rsvps[i.id];
-  if (r && r.asistira === true)  return { texto: 'Confirmado',  cls: 'status-conf' };
-  if (r && r.asistira === false) return { texto: 'No asistirá', cls: 'status-dec'  };
-  return { texto: 'Pendiente', cls: 'status-pend' };
+  if (r && r.asistira === true)  return { k: 'confirmado', texto: 'Confirmado',  cls: 'status-conf' };
+  if (r && r.asistira === false) return { k: 'declino',    texto: 'No asistirá', cls: 'status-dec'  };
+  if (state.admin.aperturas[i.id]) return { k: 'abrio',    texto: 'Abrió',       cls: 'status-pend' };
+  return { k: 'pendiente', texto: 'Pendiente', cls: 'status-pend' };
+}
+
+/* Lista plana de cada persona que asiste — es lo que necesita la finca. */
+function personasConfirmadas() {
+  const out = [];
+  state.admin.invitados.forEach(i => {
+    const r = state.admin.rsvps[i.id];
+    if (!r || r.asistira !== true) return;
+    (r.asistentes || []).forEach(a => {
+      if (!a.nombre || !a.nombre.trim()) return;
+      out.push({
+        nombre: a.nombre.trim(),
+        restriccion: (a.restriccion || '').trim(),
+        invitacion: i.nombre,
+        grupo: i.grupo || i.tipo || '',
+        mesa: i.mesa,
+        tipo: i.tipo || 'otro',
+      });
+    });
+  });
+  return out.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
 }
 
 function computeStats() {
   const inv = state.admin.invitados;
-  let confirmed = 0, declined = 0, realAttendees = 0, abiertas = 0, enviadas = 0;
+  let confirmados = 0, declinaron = 0, abiertas = 0, enviadas = 0;
   inv.forEach(i => {
     const r = state.admin.rsvps[i.id];
     if (state.admin.aperturas[i.id]) abiertas++;
     if (state.admin.envios[i.id])    enviadas++;
-    if (r && r.asistira === true) { confirmed++; realAttendees += (r.asistentes?.length || 0); }
-    else if (r && r.asistira === false) { declined++; }
+    if (r && r.asistira === true) confirmados++;
+    else if (r && r.asistira === false) declinaron++;
   });
+  const personas = personasConfirmadas().length;
   return {
-    total: inv.length, confirmed, declined, realAttendees, abiertas, enviadas,
-    pending: inv.length - confirmed - declined,
+    total: inv.length, confirmados, declinaron, abiertas, enviadas, personas,
+    pendientes: inv.length - confirmados - declinaron,
+    cupos: inv.reduce((a, i) => a + i.cupos, 0),
   };
 }
 
-function renderAdminDashboard() {
+/* ---------- Resumen ---------- */
+function renderResumen() {
   const s = computeStats();
   $('#stats-grid').innerHTML = `
     <div class="stat"><div class="stat-label">Invitaciones</div><div class="stat-value">${s.total}</div></div>
     <div class="stat"><div class="stat-label">Enviadas</div><div class="stat-value">${s.enviadas}</div></div>
     <div class="stat"><div class="stat-label">Abrieron</div><div class="stat-value">${s.abiertas}</div></div>
-    <div class="stat accent-olive"><div class="stat-label">Confirmadas</div><div class="stat-value">${s.confirmed}</div></div>
-    <div class="stat accent-rose"><div class="stat-label">No asistirán</div><div class="stat-value">${s.declined}</div></div>
-    <div class="stat accent-muted"><div class="stat-label">Pendientes</div><div class="stat-value">${s.pending}</div></div>
-    <div class="stat"><div class="stat-label">Asistentes reales</div><div class="stat-value">${s.realAttendees}</div></div>
+    <div class="stat accent-olive"><div class="stat-label">Confirmadas</div><div class="stat-value">${s.confirmados}</div></div>
+    <div class="stat accent-rose"><div class="stat-label">No asistirán</div><div class="stat-value">${s.declinaron}</div></div>
+    <div class="stat accent-muted"><div class="stat-label">Pendientes</div><div class="stat-value">${s.pendientes}</div></div>
+    <div class="stat accent-olive"><div class="stat-label">Personas</div><div class="stat-value">${s.personas}</div></div>
   `;
-  const responded = s.confirmed + s.declined;
-  const pct = s.total ? Math.round((responded / s.total) * 100) : 0;
+  const respondieron = s.confirmados + s.declinaron;
+  const pct = s.total ? Math.round((respondieron / s.total) * 100) : 0;
   $('#response-bar').style.width = pct + '%';
-  $('#response-text').textContent = `${pct}% han respondido (${responded}/${s.total}) · ${s.abiertas} abrieron la invitación`;
-  const totalCupos = state.admin.invitados.reduce((a, i) => a + i.cupos, 0);
-  $('#cupos-text').innerHTML = `${s.realAttendees} <span style="color:var(--muted);font-size:1rem">/ ${totalCupos} cupos</span>`;
+  $('#response-text').textContent =
+    `${pct}% respondió (${respondieron} de ${s.total}) · ${s.personas} personas confirmadas de ${s.cupos} cupos`;
+
+  // Avance por grupo: dónde falta empujar.
+  const grupos = {};
+  state.admin.invitados.forEach(i => {
+    const g = i.grupo || i.tipo || 'Sin grupo';
+    grupos[g] = grupos[g] || { total: 0, resp: 0, personas: 0 };
+    grupos[g].total++;
+    const r = state.admin.rsvps[i.id];
+    if (r && (r.asistira === true || r.asistira === false)) grupos[g].resp++;
+    if (r && r.asistira === true) grupos[g].personas += (r.asistentes || []).length;
+  });
+  $('#resumen-grupos').innerHTML = Object.entries(grupos)
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([g, v]) => {
+      const p = v.total ? Math.round((v.resp / v.total) * 100) : 0;
+      return `<div class="grupo-row">
+        <div class="g-nombre">${escapeHtml(g)}</div>
+        <div class="g-cifra">${v.resp}/${v.total} · ${v.personas} pers.</div>
+        <div class="g-bar"><span style="width:${p}%"></span></div>
+      </div>`;
+    }).join('');
 }
 
-function renderInvitados() {
-  const body = $('#inv-table-body');
-  const filtered = state.admin.invitados.filter(i => {
-    const r = state.admin.rsvps[i.id];
-    if (state.filter === 'confirmed' && !(r && r.asistira === true))  return false;
-    if (state.filter === 'declined'  && !(r && r.asistira === false)) return false;
-    if (state.filter === 'pending'   && r) return false;
-    if (state.filter === 'sinabrir'  && state.admin.aperturas[i.id])  return false;
-    if (state.filter === 'abrionoconf' && !(state.admin.aperturas[i.id] && !r)) return false;
+/* ---------- Invitaciones ---------- */
+function invitacionesFiltradas() {
+  const q = normalize(($('#adm-buscar')?.value || '').trim());
+  return state.admin.invitados.filter(i => {
+    const e = estadoDe(i);
+    if (state.filter === 'confirmed' && e.k !== 'confirmado') return false;
+    if (state.filter === 'declined'  && e.k !== 'declino')    return false;
+    if (state.filter === 'pending'   && (e.k === 'confirmado' || e.k === 'declino')) return false;
+    if (state.filter === 'abrio'     && e.k !== 'abrio')      return false;
+    if (state.filter === 'sinabrir'  && state.admin.aperturas[i.id]) return false;
     if (state.tipoFilter !== 'all' && (i.tipo || 'otro') !== state.tipoFilter) return false;
     if (state.mesaFilter !== 'all' && String(i.mesa ?? '') !== state.mesaFilter) return false;
+    if (q && !normalize(i.nombre).includes(q)
+          && !(i.acompanantes || []).some(a => normalize(a).includes(q))) return false;
     return true;
   });
-  body.innerHTML = filtered.map(i => {
+}
+
+function renderInvitaciones() {
+  const filas = invitacionesFiltradas();
+  $('#inv-count').textContent = `${filas.length} de ${state.admin.invitados.length} invitaciones`;
+  $('#inv-table-body').innerHTML = filas.map(i => {
     const r = state.admin.rsvps[i.id];
     const a = state.admin.aperturas[i.id];
     const e = estadoDe(i);
-    return `<tr>
-      <td>${escapeHtml(i.nombre)}</td>
-      <td>${escapeHtml(i.grupo || '')}</td>
-      <td>${escapeHtml(i.tipo || '—')}</td>
-      <td>${i.mesa ?? '—'}</td>
+    const vienen = r && r.asistira === true ? (r.asistentes || []).length : null;
+    return `<tr class="clickable" data-inv="${i.id}">
+      <td>
+        ${escapeHtml(i.nombre)}
+        ${r && r.origen === 'admin' ? '<div style="font-size:0.7rem;color:var(--muted)">registrado a mano</div>' : ''}
+      </td>
+      <td>${escapeHtml(i.grupo || i.tipo || '—')}</td>
       <td>${i.cupos}</td>
       <td class="${e.cls}">${e.texto}</td>
-      <td>${r && r.asistentes ? r.asistentes.length : '—'}</td>
-      <td>${a ? a.veces : '—'}</td>
-      <td style="font-size:0.75rem;color:var(--muted)">${a ? formatDateTime(a.ultima) : '—'}</td>
+      <td>${vienen === null ? '—' : `${vienen}/${i.cupos}`}</td>
+      <td>${a ? a.veces : '—'}${a ? `<div style="font-size:0.7rem;color:var(--muted)">${formatDateTime(a.ultima)}</div>` : ''}</td>
       <td style="font-size:0.75rem;color:var(--muted)">${r ? formatDateTime(r.actualizado_en) : '—'}</td>
+      <td style="color:var(--rose-deep)">›</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="10" style="text-align:center;padding:1.5rem;color:var(--muted)">Sin resultados.</td></tr>`;
-}
-
-function listaSimple(items, vacio) {
-  if (!items.length) return `<div style="color:var(--muted)">${vacio}</div>`;
-  return items.map(t =>
-    `<div style="padding:0.4rem 0;border-top:1px solid rgba(217,167,172,0.25);font-size:0.88rem">${t}</div>`
-  ).join('');
-}
-
-function renderSeguimiento() {
-  const inv = state.admin.invitados;
-
-  const sinAbrir = inv.filter(i => !state.admin.aperturas[i.id]);
-  $('#seg-sin-abrir').innerHTML = listaSimple(
-    sinAbrir.map(i => {
-      const env = state.admin.envios[i.id];
-      const cuando = env ? `enviada ${formatDateTime(env.ultimo)}` : 'sin enviar todavía';
-      return `${escapeHtml(i.nombre)} <span style="color:var(--muted)">· ${cuando}</span>`;
-    }),
-    'Todos abrieron la invitación.'
-  );
-
-  const abrioSinConfirmar = inv.filter(i => state.admin.aperturas[i.id] && !state.admin.rsvps[i.id]);
-  $('#seg-abrio-sin-confirmar').innerHTML = listaSimple(
-    abrioSinConfirmar.map(i => {
-      const a = state.admin.aperturas[i.id];
-      return `${escapeHtml(i.nombre)} <span style="color:var(--muted)">· ${a.veces} ${a.veces === 1 ? 'vez' : 'veces'}, última ${formatDateTime(a.ultima)}</span>`;
-    }),
-    'Nadie quedó a medias.'
-  );
-
-  const restricciones = [];
-  Object.values(state.admin.rsvps).forEach(r => {
-    (r.asistentes || []).forEach(a => {
-      if (a.restriccion && a.restriccion.trim()) {
-        restricciones.push(`${escapeHtml(a.nombre)} <span style="color:var(--muted)">· ${escapeHtml(a.restriccion)}</span>`);
-      }
-    });
-  });
-  $('#seg-restricciones').innerHTML = listaSimple(restricciones, 'Aún no hay restricciones registradas.');
+  }).join('') || `<tr><td colspan="8" style="text-align:center;padding:1.5rem;color:var(--muted)">Sin resultados.</td></tr>`;
 }
 
 function renderFilters() {
-  const cont = $('#status-filters');
-  const filters = [
-    { k: 'all',         label: 'Todos' },
-    { k: 'confirmed',   label: 'Confirmados' },
-    { k: 'pending',     label: 'Pendientes' },
-    { k: 'declined',    label: 'No asistirán' },
-    { k: 'sinabrir',    label: 'No abrieron' },
-    { k: 'abrionoconf', label: 'Abrieron sin confirmar' },
+  const filtros = [
+    { k: 'all',       label: 'Todos' },
+    { k: 'confirmed', label: 'Confirmados' },
+    { k: 'pending',   label: 'Sin responder' },
+    { k: 'abrio',     label: 'Abrieron sin confirmar' },
+    { k: 'sinabrir',  label: 'No abrieron' },
+    { k: 'declined',  label: 'No asistirán' },
   ];
-  cont.innerHTML = filters.map(f => `<button class="filter-chip ${state.filter === f.k ? 'active' : ''}" onclick="setFilter('${f.k}')">${f.label}</button>`).join('');
+  $('#status-filters').innerHTML = filtros.map(f =>
+    `<button class="filter-chip ${state.filter === f.k ? 'active' : ''}" onclick="setFilter('${f.k}')">${f.label}</button>`).join('');
 
   const tipos = Array.from(new Set(state.admin.invitados.map(i => i.tipo || 'otro')));
-  const tc = $('#tipo-filters');
-  tc.innerHTML = `<button class="filter-chip ${state.tipoFilter==='all'?'active':''}" onclick="setTipoFilter('all')">Todo tipo</button>` +
+  $('#tipo-filters').innerHTML =
+    `<button class="filter-chip ${state.tipoFilter==='all'?'active':''}" onclick="setTipoFilter('all')">Todo tipo</button>` +
     tipos.map(t => `<button class="filter-chip ${state.tipoFilter===t?'active':''}" onclick="setTipoFilter('${t}')">${escapeHtml(t)}</button>`).join('');
 
   const mesas = Array.from(new Set(state.admin.invitados.map(i => i.mesa).filter(m => m != null))).sort((a,b)=>a-b);
-  const mc = $('#mesa-filters');
-  mc.innerHTML = `<button class="filter-chip ${state.mesaFilter==='all'?'active':''}" onclick="setMesaFilter('all')">Todas las mesas</button>` +
-    mesas.map(m => `<button class="filter-chip ${state.mesaFilter===String(m)?'active':''}" onclick="setMesaFilter('${m}')">Mesa ${m}</button>`).join('');
+  $('#mesa-filters').innerHTML = mesas.length
+    ? `<button class="filter-chip ${state.mesaFilter==='all'?'active':''}" onclick="setMesaFilter('all')">Todas las mesas</button>` +
+      mesas.map(m => `<button class="filter-chip ${state.mesaFilter===String(m)?'active':''}" onclick="setMesaFilter('${m}')">Mesa ${m}</button>`).join('')
+    : '';
 }
-function setFilter(k) { state.filter = k; renderFilters(); renderInvitados(); }
-function setTipoFilter(k) { state.tipoFilter = k; renderFilters(); renderInvitados(); }
-function setMesaFilter(k) { state.mesaFilter = k; renderFilters(); renderInvitados(); }
+function setFilter(k)     { state.filter = k;     renderFilters(); renderInvitaciones(); }
+function setTipoFilter(k) { state.tipoFilter = k; renderFilters(); renderInvitaciones(); }
+function setMesaFilter(k) { state.mesaFilter = k; renderFilters(); renderInvitaciones(); }
+
+/* ---------- Confirmados ---------- */
+function renderConfirmados() {
+  let personas = personasConfirmadas();
+  if (state.confFiltro && state.confFiltro !== 'all') {
+    if (state.confFiltro === 'restriccion') personas = personas.filter(p => p.restriccion);
+    else personas = personas.filter(p => p.tipo === state.confFiltro);
+  }
+  const todas = personasConfirmadas();
+  $('#conf-total').innerHTML =
+    `${todas.length} <span style="color:var(--muted);font-size:1rem">personas confirmadas</span>`;
+
+  const tipos = Array.from(new Set(todas.map(p => p.tipo)));
+  $('#conf-filtros').innerHTML =
+    `<button class="filter-chip ${!state.confFiltro||state.confFiltro==='all'?'active':''}" onclick="setConfFiltro('all')">Todas</button>` +
+    `<button class="filter-chip ${state.confFiltro==='restriccion'?'active':''}" onclick="setConfFiltro('restriccion')">Con restricción</button>` +
+    tipos.map(t => `<button class="filter-chip ${state.confFiltro===t?'active':''}" onclick="setConfFiltro('${t}')">${escapeHtml(t)}</button>`).join('');
+
+  $('#conf-table-body').innerHTML = personas.map((p, n) => `<tr>
+      <td style="color:var(--muted)">${n + 1}</td>
+      <td>${escapeHtml(p.nombre)}</td>
+      <td>${p.restriccion ? escapeHtml(p.restriccion) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td style="font-size:0.8rem;color:var(--muted)">${escapeHtml(p.invitacion)}</td>
+      <td style="font-size:0.8rem;color:var(--muted)">${escapeHtml(p.grupo)}</td>
+      <td>${p.mesa ?? '—'}</td>
+    </tr>`).join('') || `<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--muted)">Todavía no hay confirmados.</td></tr>`;
+
+  const conRestriccion = todas.filter(p => p.restriccion);
+  $('#conf-restricciones').innerHTML = conRestriccion.length
+    ? conRestriccion.map(p => `<div class="lista-row"><span>${escapeHtml(p.nombre)}</span><span class="l-meta">${escapeHtml(p.restriccion)}</span></div>`).join('')
+    : '<div style="color:var(--muted)">Ninguna registrada.</div>';
+
+  const mensajes = state.admin.invitados
+    .map(i => ({ i, r: state.admin.rsvps[i.id] }))
+    .filter(x => x.r && x.r.comentarios && x.r.comentarios.trim());
+  $('#conf-mensajes').innerHTML = mensajes.length
+    ? mensajes.map(({ i, r }) => `<div class="lista-row" style="display:block">
+        <div style="font-size:0.8rem;color:var(--muted)">${escapeHtml(i.nombre)}</div>
+        <div>${escapeHtml(r.comentarios)}</div>
+      </div>`).join('')
+    : '<div style="color:var(--muted)">Sin mensajes todavía.</div>';
+}
+function setConfFiltro(k) { state.confFiltro = k; renderConfirmados(); }
+
+/* ---------- Aperturas ---------- */
+function renderAperturas() {
+  const inv = state.admin.invitados;
+  const conApertura = inv.filter(i => state.admin.aperturas[i.id]);
+  const sinConfirmar = conApertura.filter(i => !state.admin.rsvps[i.id]);
+  const sinAbrir = inv.filter(i => !state.admin.aperturas[i.id]);
+  const enviadasSinAbrir = sinAbrir.filter(i => state.admin.envios[i.id]);
+
+  $('#ap-stats').innerHTML = `
+    <div class="stat"><div class="stat-label">Abrieron</div><div class="stat-value">${conApertura.length}</div></div>
+    <div class="stat accent-rose"><div class="stat-label">Abrieron sin confirmar</div><div class="stat-value">${sinConfirmar.length}</div></div>
+    <div class="stat accent-muted"><div class="stat-label">No abrieron</div><div class="stat-value">${sinAbrir.length}</div></div>
+    <div class="stat accent-muted"><div class="stat-label">Enviadas sin abrir</div><div class="stat-value">${enviadasSinAbrir.length}</div></div>
+  `;
+
+  const lista = (arr, vacio, meta) => arr.length
+    ? arr.map(i => `<div class="lista-row"><span>${escapeHtml(i.nombre)}</span><span class="l-meta">${meta(i)}</span></div>`).join('')
+    : `<div style="color:var(--muted)">${vacio}</div>`;
+
+  $('#ap-sin-confirmar').innerHTML = lista(sinConfirmar, 'Nadie quedó a medias.', i => {
+    const a = state.admin.aperturas[i.id];
+    return `${a.veces} ${a.veces === 1 ? 'vez' : 'veces'} · ${formatDateTime(a.ultima)}`;
+  });
+
+  $('#ap-sin-abrir').innerHTML = lista(sinAbrir, 'Todos abrieron la invitación.', i => {
+    const e = state.admin.envios[i.id];
+    return e ? `enviada ${formatDateTime(e.ultimo)}` : 'sin enviar';
+  });
+
+  const ordenadas = conApertura
+    .map(i => ({ i, a: state.admin.aperturas[i.id] }))
+    .sort((x, y) => new Date(y.a.ultima) - new Date(x.a.ultima));
+  $('#ap-table-body').innerHTML = ordenadas.map(({ i, a }) => `<tr>
+      <td>${escapeHtml(i.nombre)}</td>
+      <td>${a.veces}</td>
+      <td style="font-size:0.8rem;color:var(--muted)">${formatDateTime(a.primera)}</td>
+      <td style="font-size:0.8rem;color:var(--muted)">${formatDateTime(a.ultima)}</td>
+      <td style="font-size:0.8rem;color:var(--muted)">${a.por_link ? 'link' : ''}${a.por_link && a.por_buscador ? ' + ' : ''}${a.por_buscador ? 'buscador' : ''}</td>
+    </tr>`).join('') || `<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--muted)">Nadie ha abierto todavía.</td></tr>`;
+}
+
+/* ---------- Detalle / edición ---------- */
+function abrirDetalle(id) {
+  const i = state.admin.invitados.find(x => x.id === id);
+  if (!i) return;
+  const r = state.admin.rsvps[id];
+  const a = state.admin.aperturas[id];
+  const e = state.admin.envios[id];
+
+  // Arranca del roster guardado si existe; si no, de los nombres del Sheet.
+  const base = [i.nombre, ...(i.acompanantes || [])];
+  while (base.length < i.cupos) base.push('');
+  const personas = base.slice(0, i.cupos).map((n, idx) => ({
+    nombre: n, titular: idx === 0, asiste: false, restriccion: '',
+  }));
+  if (r && r.asistira === true) {
+    (r.asistentes || []).forEach(x => {
+      const slot = personas.find(p => normalize(p.nombre) === normalize(x.nombre))
+                || personas.find(p => !p.nombre.trim());
+      if (slot) { slot.nombre = x.nombre; slot.asiste = true; slot.restriccion = x.restriccion || ''; }
+    });
+  }
+
+  state.detalle = { id, invitado: i, asistira: r ? r.asistira : null, personas };
+
+  $('#det-grupo').textContent = i.grupo || i.tipo || '';
+  $('#det-nombre').textContent = i.nombre;
+  $('#det-sub').textContent = `${i.cupos} ${i.cupos === 1 ? 'cupo' : 'cupos'}${i.mesa ? ` · mesa ${i.mesa}` : ''}`;
+
+  const chips = [];
+  if (i.telefono) chips.push(`Titular ${escapeHtml(i.telefono)}`);
+  if (i.telefono_alt) chips.push(`${escapeHtml(i.nombre_acompanante || 'Acompañante')} ${escapeHtml(i.telefono_alt)}`);
+  if (e) chips.push(`${e.invitaciones} invitación(es), ${e.recordatorios} recordatorio(s)`);
+  chips.push(a ? `${a.veces} apertura(s) · última ${formatDateTime(a.ultima)}` : 'No ha abierto');
+  if (r && r.email) chips.push(escapeHtml(r.email));
+  if (r) chips.push(r.origen === 'admin' ? 'Registrado a mano' : 'Respondió por la web');
+  $('#det-meta').innerHTML = chips.map(c => `<span>${c}</span>`).join('');
+
+  $('#det-mesa').value = i.mesa ?? '';
+  $('#det-comentarios').value = (r && r.comentarios) || '';
+  $('#det-error').classList.add('hidden');
+  $('#det-borrar').style.display = r ? '' : 'none';
+
+  detRenderAsistira();
+  detRenderPersonas();
+  $('#admin-detalle').classList.remove('hidden');
+}
+
+function cerrarDetalle() { $('#admin-detalle').classList.add('hidden'); state.detalle = null; }
+
+function detRenderAsistira() {
+  const v = state.detalle.asistira;
+  $$('#admin-detalle .choice').forEach(c => c.classList.remove('active'));
+  if (v === true)  $('#admin-detalle .choice[data-det="yes"]').classList.add('active');
+  if (v === false) $('#admin-detalle .choice[data-det="no"]').classList.add('active');
+  $('#det-personas-block').classList.toggle('hidden', v !== true);
+}
+function detPickAsistira(v) {
+  state.detalle.asistira = v;
+  // Al marcar que sí asiste, damos por hecho a los que ya vienen con nombre.
+  if (v === true && !state.detalle.personas.some(p => p.asiste)) {
+    state.detalle.personas.forEach(p => { if (p.nombre.trim()) p.asiste = true; });
+  }
+  detRenderAsistira();
+  detRenderPersonas();
+}
+function detRenderPersonas() {
+  const d = state.detalle;
+  if (!d) return;
+  const n = d.personas.filter(p => p.asiste && p.nombre.trim()).length;
+  $('#det-cuenta').textContent = `${n} de ${d.invitado.cupos}`;
+  $('#det-personas').innerHTML = d.personas.map((p, idx) => `
+    <label class="det-persona">
+      <input type="checkbox" ${p.asiste ? 'checked' : ''} onchange="detToggle(${idx}, this.checked)">
+      <div class="dp-campos">
+        <input type="text" value="${escapeHtml(p.nombre)}" placeholder="${p.titular ? 'Titular' : 'Acompañante'}" oninput="detSet(${idx},'nombre',this.value)">
+        <input type="text" value="${escapeHtml(p.restriccion)}" placeholder="Restricción alimenticia (opcional)" oninput="detSet(${idx},'restriccion',this.value)" ${p.asiste ? '' : 'disabled'}>
+      </div>
+    </label>`).join('');
+}
+function detToggle(i, v) { state.detalle.personas[i].asiste = v; detRenderPersonas(); }
+function detSet(i, campo, v) {
+  state.detalle.personas[i][campo] = v;
+  if (campo === 'nombre') {
+    const n = state.detalle.personas.filter(p => p.asiste && p.nombre.trim()).length;
+    $('#det-cuenta').textContent = `${n} de ${state.detalle.invitado.cupos}`;
+  }
+}
+
+async function guardarDetalle() {
+  const d = state.detalle;
+  if (!d) return;
+  const err = $('#det-error');
+  const mostrarErr = m => { err.textContent = m; err.classList.remove('hidden'); };
+  err.classList.add('hidden');
+
+  if (d.asistira === null) return mostrarErr('Marca si asiste o no.');
+  const asistentes = d.asistira
+    ? d.personas.filter(p => p.asiste && p.nombre.trim())
+        .map(p => ({ nombre: p.nombre.trim(), restriccion: (p.restriccion || '').trim() }))
+    : [];
+  if (d.asistira && asistentes.length === 0) return mostrarErr('Marca al menos una persona.');
+
+  const btn = $('#det-guardar');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    await SB.rpc('admin_guardar_rsvp', {
+      p_clave: adminClave, p_invitado_id: d.id, p_asistira: d.asistira,
+      p_asistentes: asistentes, p_comentarios: $('#det-comentarios').value,
+    });
+    const mesa = $('#det-mesa').value.trim();
+    const mesaNueva = mesa === '' ? null : parseInt(mesa, 10);
+    if (mesaNueva !== (d.invitado.mesa ?? null)) {
+      await SB.rpc('admin_set_mesa', { p_clave: adminClave, p_invitado_id: d.id, p_mesa: mesaNueva });
+    }
+    await loadAdminData();
+    cerrarDetalle();
+    renderTab();
+  } catch (e) {
+    mostrarErr(e.message || 'No se pudo guardar.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar';
+  }
+}
+
+async function borrarDetalle() {
+  const d = state.detalle;
+  if (!d) return;
+  if (!confirm(`¿Volver a "pendiente" la respuesta de ${d.invitado.nombre}? Se borra lo que haya confirmado.`)) return;
+  try {
+    await SB.rpc('admin_borrar_rsvp', { p_clave: adminClave, p_invitado_id: d.id });
+    await loadAdminData();
+    cerrarDetalle();
+    renderTab();
+  } catch (e) { alert('No se pudo borrar: ' + e.message); }
+}
+
+function copiarLinkInvitado() {
+  const d = state.detalle;
+  if (!d || !d.invitado.token) return;
+  const url = `${location.origin}${location.pathname}?i=${encodeURIComponent(d.invitado.token)}`;
+  const btn = document.querySelector('#admin-detalle .detalle-actions .btn-outline');
+  navigator.clipboard.writeText(url)
+    .then(() => { if (btn) { btn.textContent = 'Copiado'; setTimeout(() => btn.textContent = 'Copiar link', 1500); } })
+    .catch(() => prompt(`Link de ${d.invitado.nombre}:`, url));
+}
+
+/* ---------- Tabs ---------- */
+function renderTab() {
+  const t = state.tab || 'resumen';
+  if (t === 'resumen')      renderResumen();
+  if (t === 'invitaciones') { renderFilters(); renderInvitaciones(); }
+  if (t === 'confirmados')  renderConfirmados();
+  if (t === 'aperturas')    renderAperturas();
+}
+
+$$('.tab').forEach(t => t.addEventListener('click', async () => {
+  const tab = t.dataset.tab;
+  state.tab = tab;
+  $$('.tab').forEach(x => x.classList.toggle('active', x === t));
+  ['resumen','invitaciones','confirmados','aperturas'].forEach(k =>
+    $('#tab-' + k).classList.toggle('hidden', k !== tab));
+  try { await loadAdminData(); } catch (e) { console.warn('No se pudo refrescar el panel', e); }
+  renderTab();
+}));
+
+$('#inv-table-body').addEventListener('click', e => {
+  const tr = e.target.closest('[data-inv]');
+  if (tr) abrirDetalle(tr.dataset.inv);
+});
+$('#adm-buscar').addEventListener('input', renderInvitaciones);
+$('#admin-detalle').addEventListener('click', e => { if (e.target.id === 'admin-detalle') cerrarDetalle(); });
 
 /* ============================================================
    PLAYLIST LINK
 ============================================================ */
 $('#spotify-link').href = CONFIG.spotifyPlaylistUrl;
 
-$$('.tab').forEach(t => t.addEventListener('click', async () => {
-  const tab = t.dataset.tab; state.tab = tab;
-  $$('.tab').forEach(x => x.classList.toggle('active', x === t));
-  ['dashboard','invitados','seguimiento'].forEach(k => $('#tab-' + k).classList.toggle('hidden', k !== tab));
-  try { await loadAdminData(); } catch (e) { console.warn('No se pudo refrescar el panel', e); }
-  if (tab === 'dashboard')   renderAdminDashboard();
-  if (tab === 'invitados')   { renderFilters(); renderInvitados(); }
-  if (tab === 'seguimiento') renderSeguimiento();
-}));
-
+/* ---------- Exports ---------- */
 function exportInvitados() {
   const rows = state.admin.invitados.map(i => {
     const r = state.admin.rsvps[i.id] || {};
@@ -2691,24 +3106,33 @@ function exportInvitados() {
     const e = state.admin.envios[i.id];
     return {
       id: i.id, codigo: i.codigo || '', nombre: i.nombre, grupo: i.grupo || '',
-      tipo: i.tipo || '', mesa: i.mesa ?? '', cupos_asignados: i.cupos,
-      telefono: i.telefono || '',
-      estado: r.asistira === true ? 'Confirmado' : (r.asistira === false ? 'No asistirá' : 'Pendiente'),
-      asistentes_reales: r.asistentes ? r.asistentes.length : 0,
-      nombres_asistentes: r.asistentes ? r.asistentes.map(x => x.nombre).join(' | ') : '',
+      tipo: i.tipo || '', mesa: i.mesa ?? '', cupos: i.cupos,
+      telefono: i.telefono || '', telefono_acompanante: i.telefono_alt || '',
+      estado: estadoDe(i).texto,
+      personas: r.asistentes ? r.asistentes.length : 0,
+      nombres: r.asistentes ? r.asistentes.map(x => x.nombre).join(' | ') : '',
       restricciones: r.asistentes ? r.asistentes.map(x => x.restriccion).filter(Boolean).join(' | ') : '',
-      correo: r.email || '',
-      comentarios: r.comentarios || '',
-      invitacion_enviada: e ? formatDateTime(e.ultimo) : '',
-      recordatorios: e ? (e.recordatorios || 0) : 0,
+      correo: r.email || '', mensaje: r.comentarios || '',
+      registrado_por: r.origen || '',
+      invitaciones_enviadas: e ? e.invitaciones : 0,
+      recordatorios: e ? e.recordatorios : 0,
       aperturas: a ? a.veces : 0,
       primera_apertura: a ? formatDateTime(a.primera) : '',
       ultima_apertura: a ? formatDateTime(a.ultima) : '',
-      fecha_confirmacion: r.actualizado_en ? formatDateTime(r.actualizado_en) : '',
+      respondio: r.actualizado_en ? formatDateTime(r.actualizado_en) : '',
     };
   });
-  downloadCSV(rows, `invitados_valeria_apolo_${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadCSV(rows, `invitaciones_valeria_apolo_${new Date().toISOString().slice(0, 10)}.csv`);
 }
+
+function exportConfirmados() {
+  const rows = personasConfirmadas().map((p, n) => ({
+    n: n + 1, persona: p.nombre, restriccion: p.restriccion,
+    invitacion: p.invitacion, grupo: p.grupo, mesa: p.mesa ?? '',
+  }));
+  downloadCSV(rows, `confirmados_valeria_apolo_${new Date().toISOString().slice(0, 10)}.csv`);
+}
+
 window.addEventListener('hashchange', () => { if (location.hash === '#admin') openAdmin(); });
 if (location.hash === '#admin') openAdmin();
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#nav-menu').classList.remove('open'); });

@@ -46,7 +46,10 @@ legítimo pasa por funciones `SECURITY DEFINER`:
 | `buscar_invitado(q)` | invitación | máximo 8 resultados, mínimo 3 letras |
 | `cargar_invitado(id)` | invitación | igual, y registra la apertura |
 | `guardar_rsvp(token, …)` | invitación | valida token y que no se excedan los cupos |
-| `admin_datos(clave)` | panel admin | todo, incluye PII |
+| `admin_datos(clave)` | panel admin | todo, incluye PII y tokens |
+| `admin_guardar_rsvp(clave, …)` | panel admin | registra una confirmación a mano |
+| `admin_borrar_rsvp(clave, …)` | panel admin | devuelve a pendiente |
+| `admin_set_mesa(clave, …)` | panel admin | asigna mesa |
 | `admin_lista_envio(clave)` | consola | todo + teléfono + token |
 | `admin_registrar_envio(clave, …)` | consola | marca un envío |
 | `admin_set_telefono(clave, …)` | consola | corrige un número |
@@ -158,15 +161,42 @@ WhatsApp marca como spam — conviene mandar en tandas de 30 o 40 por día.
 
 ---
 
-## 6. Ver quién confirmó
+## 6. Panel de los novios
 
-Dos caminos, mismos datos:
+Doble clic en los `· · ·` del footer, o `#admin` en la URL. Misma clave que
+la consola. Cuatro pestañas:
 
-- **`consola.html`** — la tabla de siempre, con aperturas y envíos.
-- **Panel dentro de la invitación** — doble clic en los `· · ·` del footer, o
-  `#admin` en la URL. Tres pestañas: Dashboard, Invitados, Seguimiento
-  (no abrieron · abrieron sin confirmar · restricciones alimenticias).
-  Exporta CSV con todo.
+- **Resumen** — invitaciones, enviadas, abrieron, confirmadas, no asistirán,
+  pendientes y personas. Tasa de respuesta y avance por grupo, para ver dónde
+  falta empujar.
+- **Invitaciones** — buscador, filtros (confirmados · sin responder · abrieron
+  sin confirmar · no abrieron · no asistirán · por tipo · por mesa) y la tabla
+  completa. **Toca cualquier fila** para abrir su ficha.
+- **Confirmados** — la lista cabeza por cabeza: cada persona que asiste, con su
+  restricción, de qué invitación viene y su mesa. Es lo que se le pasa a la
+  finca y al catering. Abajo van las restricciones juntas y los mensajes que
+  dejaron los invitados.
+- **Aperturas** — quién abrió y cuándo, cuántas veces, y si llegó por su link o
+  por el buscador. Separa "abrieron sin confirmar" (los que más conviene
+  recordar) de "nunca la abrieron".
+
+### Registrar una confirmación a mano
+
+Muchos van a contestar por WhatsApp en vez de llenar el formulario. En la ficha
+de cada invitado (pestaña Invitaciones → tocar la fila) puedes marcar si asiste,
+elegir quiénes vienen, corregir nombres, anotar restricciones, asignar mesa y
+dejar una nota. Queda guardado igual que una respuesta normal, pero marcado como
+*registrado a mano* para poder distinguirlo.
+
+Desde ahí también se copia el **link personalizado** de esa persona, por si hay
+que reenviárselo, y se puede devolver una respuesta a "pendiente" si se
+registró por error.
+
+### Exports
+
+- **Invitaciones CSV** — una fila por invitación con todo: teléfonos, estado,
+  nombres, restricciones, envíos, aperturas.
+- **Lista para la finca** — una fila por persona confirmada, numerada.
 
 ---
 
@@ -181,6 +211,7 @@ Dos caminos, mismos datos:
 | `003_rpcs.sql` | funciones de la invitación |
 | `004_rpcs_consola_envio.sql` | funciones de la consola |
 | `005_doble_destino_envio.sql` | segundo teléfono y `envios.destino` |
+| `006_admin_gestion_confirmaciones.sql` | registrar confirmaciones a mano, mesas |
 
 Al restaurar en un proyecto nuevo hay que correrlas en orden y después
 sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
