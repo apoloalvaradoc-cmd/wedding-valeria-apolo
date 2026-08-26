@@ -142,7 +142,8 @@ body.locked { overflow: hidden; }
 
 .cover-tap {
   position: absolute;
-  /* Posicionado sobre el sello del video — alineado con el sello cera verde */
+  /* Valores de arranque: posicionarSello() los recalcula sobre el sello real
+     del video en cuanto carga, y en cada resize. Ver el JS más abajo. */
   top: 53%; left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(110px, 26vw, 140px);
@@ -187,7 +188,9 @@ body.locked { overflow: hidden; }
 
 .cover-para {
   position: absolute;
-  bottom: 13%;
+  /* Arriba, en el espacio limpio sobre el sobre: abajo chocaba con
+     el rótulo "Toca para abrir" y quedaba ilegible. */
+  top: 6%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 6;
@@ -201,7 +204,7 @@ body.locked { overflow: hidden; }
   animation: coverParaIn 1.1s ease both 0.5s;
 }
 @keyframes coverParaIn {
-  from { opacity: 0; transform: translate(-50%, 10px); }
+  from { opacity: 0; transform: translate(-50%, -10px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
 #cover.opening .cover-para { opacity: 0; transition: opacity 0.45s ease; }
@@ -1129,6 +1132,9 @@ body.locked { overflow: hidden; }
 .gift-title { font-family: var(--font-serif); color: var(--wine); font-size: 1.25rem; font-weight: 400; }
 .gift-sub { margin-top: 0.3rem; font-size: 0.9rem; color: var(--ink); }
 .gift-desc { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+@media (min-width: 640px) { .gift-card-full { grid-column: 1 / -1; } }
+.registry-links { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.registry-links .btn { flex: 1 1 auto; min-width: 130px; justify-content: center; gap: 0.45rem; }
 .account-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap; }
 .account-row code { flex: 1; padding: 0.55rem 0.8rem; background: var(--cream); color: var(--wine-dark); font-family: monospace; font-size: 0.95rem; min-width: 140px; }
 .btn-copy { padding: 0.55rem 0.7rem; border: 1px solid var(--wine); color: var(--wine); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; }
@@ -1709,17 +1715,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       </div>
       <div class="dress-grid reveal">
         <div class="dress-card">
-          <div class="dress-heading">Tonalidades sugeridas</div>
-          <div class="dress-swatches">
-            <div class="swatch"><span class="swatch-dot" style="background:#1F1F1F"></span><span class="swatch-label">Negro</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#2E3A59"></span><span class="swatch-label">Azul marino</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#5E5B52"></span><span class="swatch-label">Gris</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#4A2E1E"></span><span class="swatch-label">Chocolate</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#0F5132"></span><span class="swatch-label">Esmeralda</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#1E40AF"></span><span class="swatch-label">Azul rey</span></div>
-            <div class="swatch"><span class="swatch-dot" style="background:#4A1B47"></span><span class="swatch-label">Berenjena</span></div>
-          </div>
-          <p class="dress-note">Elegante y atemporal. Tonos neutros, oscuros o joya funcionan perfecto.</p>
+          <div class="dress-heading">Etiqueta</div>
+          <div class="gift-title" style="margin-bottom:0.4rem">Vestido largo y traje completo</div>
+          <p class="dress-note">Vestido largo o de cóctel para ellas, traje completo para ellos. Del color, tú decides.</p>
         </div>
         <div class="dress-card forbidden">
           <div class="dress-heading">Por favor evita</div>
@@ -1762,6 +1760,25 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <div class="gift-title">Sobre de regalo</div>
           <p class="gift-desc">Habrá un espacio reservado para sobres en la recepción.</p>
         </div>
+        <div class="gift-card gift-card-full">
+          <div class="gift-heading">Listas de regalos</div>
+          <div class="gift-title">Estamos en tres tiendas</div>
+          <p class="gift-desc" style="margin-bottom:1rem">Elige la que te quede más cómoda — las tres están a nombre de Valeria &amp; Apolo.</p>
+          <div class="registry-links">
+            <a class="btn btn-outline" href="https://www.cemaco.com/list/BODAALVARADOVARGAS07112026" target="_blank" rel="noreferrer">
+              <span>Cemaco</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+            <a class="btn btn-outline" href="https://www.max.com.gt/bodas-max/bodas/YZGO8B38" target="_blank" rel="noreferrer">
+              <span>Max</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+            <a class="btn btn-outline" href="https://simangiftregistry.web.app/table/20011898" target="_blank" rel="noreferrer">
+              <span>Siman</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1785,7 +1802,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
         </details>
         <details class="faq-item">
           <summary>¿Cuál es el dress code?</summary>
-          <p>Formal. Te recomendamos tonos neutros, oscuros o joya. Por favor evita: blanco, marfil, tonos cremas, dorados, rosa pálido, beige y vino tinto.</p>
+          <p>Formal: vestido largo o de cóctel, y traje completo. Del color eres libre, con una sola excepción — por favor evita blanco, marfil, tonos cremas, dorados, rosa pálido, beige y vino tinto.</p>
         </details>
         <details class="faq-item">
           <summary>¿Habrá parking?</summary>
@@ -2091,6 +2108,46 @@ async function bootstrapInvitado() {
   }
 }
 bootstrapInvitado();
+
+/* ============================================================
+   ALINEAR EL CÍRCULO CON EL SELLO
+
+   El video (720×1280) se muestra con object-fit: cover, así que en
+   cada pantalla se recorta distinto y el sello cambia de sitio. Un
+   `top: 53%` fijo solo queda bien en un tamaño y se desalinea en el
+   resto — por eso lo calculamos.
+
+   Estas fracciones salen de medir el sello dorado sobre el frame:
+   centroide en (355, 683) de 720×1280, diámetro ~117px de alto.
+============================================================ */
+const SELLO = { fx: 0.493, fy: 0.533, d: 0.091 };
+
+function posicionarSello() {
+  const v = $('.cover-video'), btn = $('#envelope');
+  if (!v || !btn || !v.videoWidth) return;
+
+  const cw = v.clientWidth, ch = v.clientHeight;
+  // object-fit: cover ⇒ escala por el lado que sobra; object-position: center ⇒ centrado.
+  const escala = Math.max(cw / v.videoWidth, ch / v.videoHeight);
+  const w = v.videoWidth * escala, h = v.videoHeight * escala;
+  const x0 = (cw - w) / 2, y0 = (ch - h) / 2;
+
+  btn.style.left = (x0 + SELLO.fx * w) + 'px';
+  btn.style.top  = (y0 + SELLO.fy * h) + 'px';
+
+  // El anillo envuelve el sello con un poco de holgura.
+  const diametro = Math.max(96, SELLO.d * h * 1.5);
+  btn.style.width = btn.style.height = diametro + 'px';
+}
+
+(function alinearSello() {
+  const v = $('.cover-video');
+  if (!v) return;
+  if (v.readyState >= 2) posicionarSello();
+  else v.addEventListener('loadeddata', posicionarSello, { once: true });
+  addEventListener('resize', posicionarSello);
+  addEventListener('orientationchange', () => setTimeout(posicionarSello, 120));
+})();
 
 $('#envelope').addEventListener('click', openEnvelope);
 $('#envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); } });
