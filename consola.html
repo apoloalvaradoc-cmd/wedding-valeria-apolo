@@ -92,7 +92,9 @@
   .queue-bar a:hover:not(.apagado) { background: var(--cream); color: var(--wine); }
   .queue-bar a.apagado { opacity: 0.45; pointer-events: none; }
   .btn-wa { display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;
-    border: 1px solid var(--wine); color: var(--wine); background: var(--paper); }
+    border: 1px solid var(--wine); color: var(--wine); background: var(--paper);
+    max-width: 100%; }
+  .btn-wa span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .btn-wa.filled { background: var(--wine); color: var(--cream); }
   .btn-wa:hover { background: var(--wine); color: var(--cream); }
   @media (max-width: 600px) {
@@ -207,7 +209,7 @@ const PLANTILLAS = {
   invitacion: {
     label: 'Invitación',
     texto:
-`Hola {primer_nombre}!
+`Hola {nombre}!
 
 Valeria y Apolo se casan el 7 de noviembre y quieren que seas parte de ese día.
 
@@ -220,7 +222,7 @@ La invitación es para {cupos}. Nos encantaría contar contigo.`
     label: 'Recordatorio · no abrió',
     tipo: 'recordatorio',
     texto:
-`Hola {primer_nombre}, te reenviamos la invitación a la boda de Valeria y Apolo (7 de noviembre) por si no te llegó bien la primera vez:
+`Hola {nombre}, te reenviamos la invitación a la boda de Valeria y Apolo (7 de noviembre) por si no te llegó bien la primera vez:
 
 {link}
 
@@ -230,7 +232,7 @@ Cuando puedas, confírmanos ahí mismo. Gracias!`
     label: 'Recordatorio · abrió sin confirmar',
     tipo: 'recordatorio',
     texto:
-`Hola {primer_nombre}! Ya casi cerramos la lista con la finca y todavía no tenemos tu confirmación.
+`Hola {nombre}! Ya casi cerramos la lista con la finca y todavía no tenemos tu confirmación.
 
 Es un minuto, aquí mismo:
 {link}
@@ -241,7 +243,7 @@ Gracias!`
     label: 'Recordatorio final',
     tipo: 'recordatorio',
     texto:
-`Hola {primer_nombre}, mañana damos los números finales al catering.
+`Hola {nombre}, mañana damos los números finales al catering.
 
 Si aún puedes confirmarnos, aquí:
 {link}
@@ -253,7 +255,7 @@ Si no llegas a alcanzar, no te preocupes — nos avisas y listo.`
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
-let clave = sessionStorage.getItem('va_clave') || null;
+let clave = localStorage.getItem('va_clave') || null;
 let datos = [];
 let filtro = 'todos';
 let plantillaActiva = 'invitacion';
@@ -486,7 +488,7 @@ function render() {
         ${tel
           ? `<a class="small btn-wa ${ya ? '' : 'filled'}" data-send="${g.id}" data-destino="${destino}"
                 href="${escapeHtml(waLink(g, destino))}" target="_blank" rel="noopener">
-               ${ICONO_WA}<span>${ya ? 'Reenviar' : 'Enviar'}</span>
+               ${ICONO_WA}<span>${ya ? 'Reenviar a' : 'Enviar a'} ${escapeHtml(nombre || g.nombre)}</span>
              </a>`
           : `<button class="small" disabled>Enviar</button>`}
         ${crudo && !tel ? '<span class="badge b-warn">revisar</span>' : ''}
@@ -548,7 +550,7 @@ function renderTplTabs() {
 }
 function cargarPlantilla(k) {
   plantillaActiva = k;
-  const guardada = localStorage.getItem('va_tpl_' + k);
+  const guardada = localStorage.getItem('va_tpl2_' + k);
   $('#tpl-text').value = guardada != null ? guardada : PLANTILLAS[k].texto;
   renderTplTabs();
   render();
@@ -592,7 +594,7 @@ async function login() {
   try {
     clave = p;
     await cargar();
-    sessionStorage.setItem('va_clave', p);
+    localStorage.setItem('va_clave', p);
     $('#login-view').classList.add('hidden');
     $('#app').classList.remove('hidden');
   } catch (e) {
@@ -605,7 +607,7 @@ async function login() {
 }
 
 $('#btn-logout').addEventListener('click', () => {
-  sessionStorage.removeItem('va_clave');
+  localStorage.removeItem('va_clave');
   location.reload();
 });
 $('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
@@ -625,13 +627,13 @@ $('#tpl-tabs').addEventListener('click', e => {
 });
 
 $('#tpl-text').addEventListener('input', () => {
-  localStorage.setItem('va_tpl_' + plantillaActiva, $('#tpl-text').value);
+  localStorage.setItem('va_tpl2_' + plantillaActiva, $('#tpl-text').value);
   $('#tpl-saved').textContent = 'Guardado en este dispositivo';
   setTimeout(() => $('#tpl-saved').textContent = '', 1800);
   render();   // los href llevan el mensaje dentro: hay que rearmarlos
 });
 $('#btn-tpl-reset').addEventListener('click', () => {
-  localStorage.removeItem('va_tpl_' + plantillaActiva);
+  localStorage.removeItem('va_tpl2_' + plantillaActiva);
   $('#tpl-text').value = PLANTILLAS[plantillaActiva].texto;
 });
 
@@ -665,7 +667,7 @@ cargarPlantilla('invitacion');
 if (clave) {
   cargar()
     .then(() => { $('#login-view').classList.add('hidden'); $('#app').classList.remove('hidden'); })
-    .catch(() => { sessionStorage.removeItem('va_clave'); clave = null; });
+    .catch(() => { localStorage.removeItem('va_clave'); clave = null; });
 }
 </script>
 </body>

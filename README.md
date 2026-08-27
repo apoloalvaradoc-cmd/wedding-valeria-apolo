@@ -142,7 +142,8 @@ entra con la clave.
 
 - **Plantillas**: invitación, recordatorio para quien no abrió, recordatorio
   para quien abrió sin confirmar, y recordatorio final. Editables — se guardan
-  en el navegador. Marcadores: `{nombre}`, `{primer_nombre}`, `{cupos}`, `{link}`.
+  en el navegador. Marcadores: `{nombre}` (nombre y apellido, el que usan las
+  plantillas), `{primer_nombre}`, `{cupos}`, `{link}`.
 - **Dos destinos por invitación**: cada fila tiene la columna del titular y la
   del acompañante, cada una con su número editable y su botón. El link es el
   mismo para los dos — la invitación es una sola — pero el saludo usa el nombre
@@ -166,7 +167,8 @@ WhatsApp marca como spam — conviene mandar en tandas de 30 o 40 por día.
 ## 6. Panel de los novios
 
 Doble clic en los `· · ·` del footer, o `#admin` en la URL. Misma clave que
-la consola. **El panel es para ver y administrar; los botones de envío en tanda
+la consola, y **solo la pide una vez por dispositivo** — queda guardada en el
+navegador hasta que se toque "Salir". **El panel es para ver y administrar; los botones de envío en tanda
 están en `consola.html`** — hay un enlace directo en el encabezado del panel.
 Cuatro pestañas:
 
@@ -177,9 +179,9 @@ Cuatro pestañas:
   sin confirmar · no abrieron · no asistirán · por tipo · por mesa) y la tabla
   completa. **Toca cualquier fila** para abrir su ficha.
 - **Confirmados** — la lista cabeza por cabeza: cada persona que asiste, con su
-  restricción, de qué invitación viene y su mesa. Es lo que se le pasa a la
-  finca y al catering. Abajo van las restricciones juntas y los mensajes que
-  dejaron los invitados.
+  restricción, de qué invitación viene y su mesa. Es la lista de invitados
+  confirmados que se entrega el día del evento. Abajo van las restricciones
+  juntas y los mensajes que dejaron los invitados.
 - **Aperturas** — quién abrió y cuándo, cuántas veces, y si llegó por su link o
   por el buscador. Separa "abrieron sin confirmar" (los que más conviene
   recordar) de "nunca la abrieron".
@@ -201,7 +203,7 @@ error.
 
 - **Invitaciones CSV** — una fila por invitación con todo: teléfonos, estado,
   nombres, restricciones, envíos, aperturas.
-- **Lista para la finca** — una fila por persona confirmada, numerada.
+- **Lista de confirmados** — una fila por persona confirmada, numerada.
 
 ---
 
