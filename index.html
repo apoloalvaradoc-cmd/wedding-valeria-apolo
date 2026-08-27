@@ -5,6 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#5C1525">
 <title>Valeria & Apolo · 07.11.2026</title>
+
+<!-- ============================================================
+     VISTA PREVIA EN WHATSAPP
+
+     WhatsApp no deja adjuntar una foto a un mensaje pre-escrito
+     (wa.me es solo texto). Lo que sí hace es leer estas etiquetas
+     del link y armar una tarjeta con la foto, el título y la
+     descripción. Por eso la foto de Valeria y Apolo aparece en el
+     mensaje aunque el texto vaya solo.
+
+     La URL de la imagen tiene que ser absoluta: el robot de
+     WhatsApp no resuelve rutas relativas ni ejecuta JavaScript.
+============================================================ -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="Valeria &amp; Apolo">
+<meta property="og:locale"      content="es_GT">
+<meta property="og:url"         content="https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/">
+<meta property="og:title"       content="Valeria &amp; Apolo · 7 de noviembre 2026">
+<meta property="og:description" content="Nos casamos y queremos que seas parte. Abre tu invitación y confirma tu asistencia.">
+<meta property="og:image"       content="https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/og-preview.jpg">
+<meta property="og:image:type"  content="image/jpeg">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt"   content="Valeria y Apolo bailando en un muelle del lago de Atitlán">
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Valeria &amp; Apolo · 7 de noviembre 2026">
+<meta name="twitter:description" content="Nos casamos y queremos que seas parte. Abre tu invitación y confirma tu asistencia.">
+<meta name="twitter:image"       content="https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/og-preview.jpg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Italianno&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -1222,6 +1251,9 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 .detalle-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.1rem; }
 .detalle-meta span { font-size: 0.75rem; padding: 0.2rem 0.55rem; background: #fff; border: 1px solid rgba(217,167,172,0.45); color: var(--muted); }
 .detalle-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+.det-grid2 { display: grid; grid-template-columns: 1fr; gap: 0 0.7rem; }
+@media (min-width: 460px) { .det-grid2 { grid-template-columns: 1fr 1fr; } }
+
 .det-persona { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-top: 1px solid rgba(217,167,172,0.25); }
 .det-persona input[type=checkbox] { margin-top: 0.35rem; flex-shrink: 0; }
 .det-persona .dp-campos { flex: 1; display: grid; gap: 0.35rem; }
@@ -2073,9 +2105,31 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <div id="det-personas"></div>
         </div>
 
+        <!-- Datos de la invitación. Se editan aquí para no tener que ir a
+             la consola solo por corregir un número mal escrito. -->
         <div class="form-group">
-          <label class="rsvp-label">Mesa</label>
-          <input type="number" id="det-mesa" class="input" min="1" placeholder="Sin asignar" style="max-width:140px">
+          <label class="rsvp-label">Nombre del titular</label>
+          <input type="text" id="det-nombre-edit" class="input" placeholder="Nombre y apellido">
+        </div>
+        <div class="det-grid2">
+          <div class="form-group">
+            <label class="rsvp-label">Teléfono del titular</label>
+            <input type="tel" id="det-tel" class="input" placeholder="5555 5555">
+          </div>
+          <div class="form-group">
+            <label class="rsvp-label">Mesa</label>
+            <input type="number" id="det-mesa" class="input" min="1" placeholder="Sin asignar">
+          </div>
+        </div>
+        <div class="det-grid2">
+          <div class="form-group">
+            <label class="rsvp-label">Nombre del acompañante</label>
+            <input type="text" id="det-nombre-acomp" class="input" placeholder="Opcional">
+          </div>
+          <div class="form-group">
+            <label class="rsvp-label">Su teléfono</label>
+            <input type="tel" id="det-tel-alt" class="input" placeholder="5555 5555">
+          </div>
         </div>
 
         <div class="form-group">
@@ -2195,6 +2249,17 @@ const $$ = (s) => document.querySelectorAll(s);
 const normalize = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 const pad = (n) => String(n).padStart(2, '0');
 function formatDateTime(iso) { if (!iso) return ''; return new Date(iso).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short' }); }
+/* Deja el teléfono en formato internacional. 8 dígitos ⇒ Guatemala. */
+function normalizarTelefono(raw) {
+  if (!raw) return null;
+  if (/@/.test(raw)) return null;
+  let d = String(raw).replace(/\D/g, '');
+  if (!d) return null;
+  if (d.startsWith('00')) d = d.slice(2);
+  d = d.replace(/^0+/, '');
+  if (d.length === 8) d = '502' + d;
+  return (d.length >= 10 && d.length <= 15) ? '+' + d : String(raw).trim();
+}
 function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function scrollTo(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); }
 
@@ -3009,8 +3074,12 @@ function abrirDetalle(id) {
 
   renderDetalleWhatsApp(i, e);
 
-  $('#det-mesa').value = i.mesa ?? '';
-  $('#det-comentarios').value = (r && r.comentarios) || '';
+  $('#det-nombre-edit').value  = i.nombre || '';
+  $('#det-tel').value          = i.telefono || '';
+  $('#det-tel-alt').value      = i.telefono_alt || '';
+  $('#det-nombre-acomp').value = i.nombre_acompanante || '';
+  $('#det-mesa').value         = i.mesa ?? '';
+  $('#det-comentarios').value  = (r && r.comentarios) || '';
   $('#det-error').classList.add('hidden');
   $('#det-borrar').style.display = r ? '' : 'none';
 
@@ -3095,6 +3164,7 @@ async function guardarDetalle() {
   const mostrarErr = m => { err.textContent = m; err.classList.remove('hidden'); };
   err.classList.add('hidden');
 
+  if (!$('#det-nombre-edit').value.trim()) return mostrarErr('El nombre no puede quedar vacío.');
   if (d.asistira === null) return mostrarErr('Marca si asiste o no.');
   const asistentes = d.asistira
     ? d.personas.filter(p => p.asiste && p.nombre.trim())
@@ -3110,10 +3180,14 @@ async function guardarDetalle() {
       p_asistentes: asistentes, p_comentarios: $('#det-comentarios').value,
     });
     const mesa = $('#det-mesa').value.trim();
-    const mesaNueva = mesa === '' ? null : parseInt(mesa, 10);
-    if (mesaNueva !== (d.invitado.mesa ?? null)) {
-      await SB.rpc('admin_set_mesa', { p_clave: adminClave, p_invitado_id: d.id, p_mesa: mesaNueva });
-    }
+    await SB.rpc('admin_actualizar_invitado', {
+      p_clave: adminClave, p_invitado_id: d.id,
+      p_nombre:             $('#det-nombre-edit').value,
+      p_telefono:           normalizarTelefono($('#det-tel').value),
+      p_telefono_alt:       normalizarTelefono($('#det-tel-alt').value),
+      p_nombre_acompanante: $('#det-nombre-acomp').value,
+      p_mesa:               mesa === '' ? null : parseInt(mesa, 10),
+    });
     await loadAdminData();
     cerrarDetalle();
     renderTab();

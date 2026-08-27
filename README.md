@@ -49,7 +49,7 @@ legítimo pasa por funciones `SECURITY DEFINER`:
 | `admin_datos(clave)` | panel admin | todo, incluye PII y tokens |
 | `admin_guardar_rsvp(clave, …)` | panel admin | registra una confirmación a mano |
 | `admin_borrar_rsvp(clave, …)` | panel admin | devuelve a pendiente |
-| `admin_set_mesa(clave, …)` | panel admin | asigna mesa |
+| `admin_actualizar_invitado(clave, …)` | panel admin | nombre, teléfonos y mesa |
 | `admin_lista_envio(clave)` | consola | todo + teléfono + token |
 | `admin_registrar_envio(clave, …)` | consola | marca un envío |
 | `admin_set_telefono(clave, …)` | consola | corrige un número |
@@ -66,6 +66,15 @@ on conflict (clave) do update set valor = excluded.valor;
 
 Los tres links salientes (Maps, Waze, Spotify) llevan `rel="noreferrer"` para
 que el token no se filtre al navegar fuera.
+
+### Vista previa en WhatsApp
+
+`wa.me` solo acepta texto: no se puede adjuntar una foto al mensaje pre-escrito.
+Lo que sí funciona son las etiquetas Open Graph del `<head>` de `index.html`,
+que WhatsApp lee del link para armar la tarjeta con `og-preview.jpg` (1200×630,
+recorte de la foto del lago). La URL de la imagen debe ser **absoluta** — el
+robot de WhatsApp no resuelve rutas relativas ni ejecuta JavaScript, que es
+además la razón por la que no genera aperturas falsas.
 
 ---
 
@@ -190,8 +199,8 @@ Cuatro pestañas:
 
 Muchos van a contestar por WhatsApp en vez de llenar el formulario. En la ficha
 de cada invitado (pestaña Invitaciones → tocar la fila) puedes marcar si asiste,
-elegir quiénes vienen, corregir nombres, anotar restricciones, asignar mesa y
-dejar una nota. Queda guardado igual que una respuesta normal, pero marcado como
+elegir quiénes vienen, corregir el nombre del titular y del acompañante, ambos
+teléfonos, anotar restricciones, asignar mesa y dejar una nota. Queda guardado igual que una respuesta normal, pero marcado como
 *registrado a mano* para poder distinguirlo.
 
 Desde ahí también se copia el **link personalizado** de esa persona, se le puede
@@ -219,6 +228,7 @@ error.
 | `004_rpcs_consola_envio.sql` | funciones de la consola |
 | `005_doble_destino_envio.sql` | segundo teléfono y `envios.destino` |
 | `006_admin_gestion_confirmaciones.sql` | registrar confirmaciones a mano, mesas |
+| `007_admin_editar_invitado.sql` | editar nombre y teléfonos desde la ficha |
 
 Al restaurar en un proyecto nuevo hay que correrlas en orden y después
 sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
