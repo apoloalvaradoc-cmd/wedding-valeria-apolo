@@ -3095,12 +3095,15 @@ function abrirDetalle(id) {
 function renderDetalleWhatsApp(i, envios) {
   const cont = $('#det-wa');
   const soloDigitos = t => (t || '').replace(/\D/g, '');
+  // Mismo texto que la plantilla "Invitación" de la consola.
   const mensaje = (nombre) =>
-    `Hola ${(nombre || '').trim()}!\n\n` +
-    `Valeria y Apolo se casan el 7 de noviembre y quieren que seas parte de ese día.\n\n` +
-    `Aquí está tu invitación con todos los detalles, y ahí mismo puedes confirmar:\n` +
+    `Hola ${(nombre || '').trim()},\n\n` +
+    `Con mucho cariño queremos compartir con ustedes un momento muy especial para nosotros.\n\n` +
+    `El próximo 7 de noviembre celebraremos nuestro matrimonio, y nos encantaría contar con su presencia para compartir este día tan importante.\n\n` +
+    `En el siguiente enlace encontrarán nuestra invitación con todos los detalles y les agradeceremos confirmar su asistencia:\n\n` +
     `${location.origin}${location.pathname}?i=${i.token}\n\n` +
-    `La invitación es para ${i.cupos === 1 ? '1 persona' : i.cupos + ' personas'}. Nos encantaría contar contigo.`;
+    `Invitación para ${i.cupos === 1 ? '1 persona' : i.cupos + ' personas'}.\n\n` +
+    `Con mucho cariño,\nValeria & Apolo 🤍`;
 
   const destinos = [];
   const t = soloDigitos(i.telefono);

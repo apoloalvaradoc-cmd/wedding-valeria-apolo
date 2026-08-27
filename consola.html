@@ -201,7 +201,10 @@
 const CONFIG = {
   supabaseUrl: "https://psmaynxnphbfbtayzaeb.supabase.co",
   supabaseKey: "sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-",
-  baseUrlDefault: "https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/",
+  // Se deduce de dónde está servida esta misma página, así el link de los
+  // invitados sale correcto sin importar el dominio (GitHub Pages, Netlify,
+  // dominio propio). Antes iba escrita a mano y había que recordar cambiarla.
+  baseUrlDefault: location.origin + location.pathname.replace(/[^/]*$/, ''),
   paisPorDefecto: "502",   // Guatemala
 };
 
@@ -209,46 +212,67 @@ const PLANTILLAS = {
   invitacion: {
     label: 'Invitación',
     texto:
-`Hola {nombre}!
+`Hola {nombre},
 
-Valeria y Apolo se casan el 7 de noviembre y quieren que seas parte de ese día.
+Con mucho cariño queremos compartir con ustedes un momento muy especial para nosotros.
 
-Aquí está tu invitación con todos los detalles, y ahí mismo puedes confirmar:
+El próximo 7 de noviembre celebraremos nuestro matrimonio, y nos encantaría contar con su presencia para compartir este día tan importante.
+
+En el siguiente enlace encontrarán nuestra invitación con todos los detalles y les agradeceremos confirmar su asistencia:
+
 {link}
 
-La invitación es para {cupos}. Nos encantaría contar contigo.`
+Invitación para {cupos}.
+
+Con mucho cariño,
+Valeria & Apolo 🤍`
   },
   recordatorio_sin_abrir: {
     label: 'Recordatorio · no abrió',
     tipo: 'recordatorio',
     texto:
-`Hola {nombre}, te reenviamos la invitación a la boda de Valeria y Apolo (7 de noviembre) por si no te llegó bien la primera vez:
+`Hola {nombre},
+
+Queremos asegurarnos de que les haya llegado bien nuestra invitación. Se las compartimos de nuevo por aquí:
 
 {link}
 
-Cuando puedas, confírmanos ahí mismo. Gracias!`
+Invitación para {cupos}. Les agradeceremos confirmar su asistencia cuando puedan.
+
+Con mucho cariño,
+Valeria & Apolo 🤍`
   },
   recordatorio_sin_confirmar: {
     label: 'Recordatorio · abrió sin confirmar',
     tipo: 'recordatorio',
     texto:
-`Hola {nombre}! Ya casi cerramos la lista con la finca y todavía no tenemos tu confirmación.
+`Hola {nombre},
 
-Es un minuto, aquí mismo:
+Nos encantaría contar con ustedes. Estamos cerrando la lista de invitados y aún no tenemos su confirmación.
+
+Es rápido, aquí mismo:
+
 {link}
 
-Gracias!`
+Invitación para {cupos}.
+
+Con mucho cariño,
+Valeria & Apolo 🤍`
   },
   recordatorio_final: {
     label: 'Recordatorio final',
     tipo: 'recordatorio',
     texto:
-`Hola {nombre}, mañana damos los números finales al catering.
+`Hola {nombre},
 
-Si aún puedes confirmarnos, aquí:
+Mañana entregamos los números finales al salón, así que esta es la última oportunidad para confirmar:
+
 {link}
 
-Si no llegas a alcanzar, no te preocupes — nos avisas y listo.`
+Invitación para {cupos}. Si ya no alcanzan a responder, no se preocupen — solo avísennos.
+
+Con mucho cariño,
+Valeria & Apolo 🤍`
   },
 };
 
@@ -550,7 +574,7 @@ function renderTplTabs() {
 }
 function cargarPlantilla(k) {
   plantillaActiva = k;
-  const guardada = localStorage.getItem('va_tpl2_' + k);
+  const guardada = localStorage.getItem('va_tpl3_' + k);
   $('#tpl-text').value = guardada != null ? guardada : PLANTILLAS[k].texto;
   renderTplTabs();
   render();
@@ -627,13 +651,13 @@ $('#tpl-tabs').addEventListener('click', e => {
 });
 
 $('#tpl-text').addEventListener('input', () => {
-  localStorage.setItem('va_tpl2_' + plantillaActiva, $('#tpl-text').value);
+  localStorage.setItem('va_tpl3_' + plantillaActiva, $('#tpl-text').value);
   $('#tpl-saved').textContent = 'Guardado en este dispositivo';
   setTimeout(() => $('#tpl-saved').textContent = '', 1800);
   render();   // los href llevan el mensaje dentro: hay que rearmarlos
 });
 $('#btn-tpl-reset').addEventListener('click', () => {
-  localStorage.removeItem('va_tpl2_' + plantillaActiva);
+  localStorage.removeItem('va_tpl3_' + plantillaActiva);
   $('#tpl-text').value = PLANTILLAS[plantillaActiva].texto;
 });
 
@@ -661,7 +685,10 @@ $('#btn-queue').addEventListener('click', () => {
 });
 
 /* ---------- Arranque ---------- */
-$('#base-url').value = localStorage.getItem('va_base_url') || CONFIG.baseUrlDefault;
+const baseGuardada = localStorage.getItem('va_base_url');
+$('#base-url').value = (baseGuardada && baseGuardada.startsWith(location.origin))
+  ? baseGuardada
+  : CONFIG.baseUrlDefault;
 cargarPlantilla('invitacion');
 
 if (clave) {
