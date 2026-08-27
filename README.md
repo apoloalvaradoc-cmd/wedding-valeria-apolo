@@ -147,8 +147,10 @@ entra con la clave.
   del acompañante, cada una con su número editable y su botón. El link es el
   mismo para los dos — la invitación es una sola — pero el saludo usa el nombre
   de quien recibe el mensaje.
-- **Enviar**: abre WhatsApp con el número y el mensaje ya escritos. Tú das
-  Enter. El envío queda registrado al volver, anotando a cuál de los dos fue.
+- **Enviar**: los botones son enlaces reales a `wa.me`, no ventanas emergentes
+  — en el celular abren la app de WhatsApp directo, con el número y el mensaje
+  ya escritos. Tú das Enter. El envío queda registrado al tocar el botón,
+  anotando a cuál de los dos números fue.
 - **Cola**: va por número, no por invitación. Un invitado con dos teléfonos
   aparece dos veces hasta que ambos reciban esa plantilla.
 - **Filtros**: sin enviar · enviados que no abrieron · abrieron sin confirmar ·
@@ -164,7 +166,9 @@ WhatsApp marca como spam — conviene mandar en tandas de 30 o 40 por día.
 ## 6. Panel de los novios
 
 Doble clic en los `· · ·` del footer, o `#admin` en la URL. Misma clave que
-la consola. Cuatro pestañas:
+la consola. **El panel es para ver y administrar; los botones de envío en tanda
+están en `consola.html`** — hay un enlace directo en el encabezado del panel.
+Cuatro pestañas:
 
 - **Resumen** — invitaciones, enviadas, abrieron, confirmadas, no asistirán,
   pendientes y personas. Tasa de respuesta y avance por grupo, para ver dónde
@@ -188,9 +192,10 @@ elegir quiénes vienen, corregir nombres, anotar restricciones, asignar mesa y
 dejar una nota. Queda guardado igual que una respuesta normal, pero marcado como
 *registrado a mano* para poder distinguirlo.
 
-Desde ahí también se copia el **link personalizado** de esa persona, por si hay
-que reenviárselo, y se puede devolver una respuesta a "pendiente" si se
-registró por error.
+Desde ahí también se copia el **link personalizado** de esa persona, se le puede
+**mandar la invitación por WhatsApp** con un botón por cada uno de sus dos
+números, y se puede devolver una respuesta a "pendiente" si se registró por
+error.
 
 ### Exports
 

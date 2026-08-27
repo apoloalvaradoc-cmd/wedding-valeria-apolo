@@ -87,8 +87,14 @@
     position: sticky; bottom: 0; background: var(--wine); color: var(--cream);
     padding: 0.7rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;
   }
-  .queue-bar button { border-color: var(--cream); background: transparent; color: var(--cream); }
-  .queue-bar button:hover:not(:disabled) { background: var(--cream); color: var(--wine); }
+  .queue-bar a { border: 1px solid var(--cream); background: transparent; color: var(--cream);
+    padding: 0.5rem 0.9rem; text-decoration: none; cursor: pointer; display: inline-block; }
+  .queue-bar a:hover:not(.apagado) { background: var(--cream); color: var(--wine); }
+  .queue-bar a.apagado { opacity: 0.45; pointer-events: none; }
+  .btn-wa { display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;
+    border: 1px solid var(--wine); color: var(--wine); background: var(--paper); }
+  .btn-wa.filled { background: var(--wine); color: var(--cream); }
+  .btn-wa:hover { background: var(--wine); color: var(--cream); }
   @media (max-width: 600px) {
     .wrap { padding: 0.8rem 0.7rem 4rem; }
     td, th { padding: 0.45rem 0.5rem; }
@@ -170,7 +176,7 @@
   <div class="queue-bar">
     <span id="queue-info">—</span>
     <div class="row">
-      <button id="btn-queue">Enviar al siguiente pendiente</button>
+      <a id="btn-queue" target="_blank" rel="noopener">Enviar al siguiente pendiente</a>
     </div>
   </div>
 </div>
@@ -382,18 +388,23 @@ function mensajeDe(g, nombreDestino) {
     .replaceAll('{link}', linkDe(g));
 }
 
-async function enviar(id, destino = 'titular') {
+const ICONO_WA = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.16c-.24.68-1.2 1.26-1.97 1.42-.53.11-1.21.2-3.51-.75-2.95-1.22-4.85-4.21-5-4.41-.14-.2-1.19-1.58-1.19-3.02s.75-2.14 1.02-2.43c.27-.29.59-.37.79-.37l.57.01c.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.09.2-.14.32-.28.49l-.42.49c-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.27.14.43.12.59-.07.16-.2.68-.79.86-1.06.18-.28.36-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.34z"/></svg>';
+
+/* Arma el link de WhatsApp de un destino. Se calcula en el render y va
+   directo en el href del botón: en el celular, un enlace real abre la app
+   de WhatsApp, mientras que window.open termina bloqueado o en una
+   pestaña en blanco. */
+function waLink(g, destino) {
+  const d = destinos(g).find(x => x.destino === destino);
+  if (!d) return '';
+  return `https://wa.me/${d.tel}?text=${encodeURIComponent(mensajeDe(g, d.nombre))}`;
+}
+
+/* Solo registra el envío. La navegación a WhatsApp la hace el propio
+   enlace, así que esto corre en paralelo y no la estorba. */
+async function marcarEnviado(id, destino = 'titular') {
   const g = datos.find(x => x.id === id);
   if (!g) return;
-  const d = destinos(g).find(x => x.destino === destino);
-  if (!d) { alert(`${g.nombre} no tiene un teléfono válido para ese destino.`); return; }
-
-  // Se abre primero: si el navegador bloquea popups, el usuario lo nota
-  // antes de que se registre un envío que en realidad no salió.
-  const url = `https://wa.me/${d.tel}?text=${encodeURIComponent(mensajeDe(g, d.nombre))}`;
-  const w = window.open(url, '_blank');
-  if (!w) { alert('El navegador bloqueó la ventana de WhatsApp. Permite las ventanas emergentes en este sitio.'); return; }
-
   const tipo = PLANTILLAS[plantillaActiva].tipo || 'invitacion';
   try {
     await rpc('admin_registrar_envio', {
@@ -472,9 +483,12 @@ function render() {
              data-tel="${g.id}" data-campo="${campo}"
              title="${tel ? mostrarTel(crudo) : 'Número no válido'}">
       <div class="row" style="margin-top:0.25rem">
-        <button class="small ${ya ? '' : 'filled'}" data-send="${g.id}" data-destino="${destino}" ${tel ? '' : 'disabled'}>
-          ${ya ? 'Reenviar' : 'Enviar'}
-        </button>
+        ${tel
+          ? `<a class="small btn-wa ${ya ? '' : 'filled'}" data-send="${g.id}" data-destino="${destino}"
+                href="${escapeHtml(waLink(g, destino))}" target="_blank" rel="noopener">
+               ${ICONO_WA}<span>${ya ? 'Reenviar' : 'Enviar'}</span>
+             </a>`
+          : `<button class="small" disabled>Enviar</button>`}
         ${crudo && !tel ? '<span class="badge b-warn">revisar</span>' : ''}
       </div>
     </td>`;
@@ -501,7 +515,14 @@ function render() {
   $('#queue-info').textContent = cola.length
     ? `${cola.length} número${cola.length === 1 ? '' : 's'} por escribir con este filtro · siguiente: ${cola[0].nombre} (${cola[0].destino === 'titular' ? 'titular' : 'acompañante'})`
     : 'Nada pendiente con el filtro actual.';
-  $('#btn-queue').disabled = cola.length === 0;
+  const bq = $('#btn-queue');
+  if (cola.length) {
+    bq.href = waLink(datos.find(g => g.id === cola[0].id), cola[0].destino);
+    bq.classList.remove('apagado');
+  } else {
+    bq.removeAttribute('href');
+    bq.classList.add('apagado');
+  }
 }
 
 /* La cola va por NÚMERO, no por invitación: un invitado con dos teléfonos
@@ -607,6 +628,7 @@ $('#tpl-text').addEventListener('input', () => {
   localStorage.setItem('va_tpl_' + plantillaActiva, $('#tpl-text').value);
   $('#tpl-saved').textContent = 'Guardado en este dispositivo';
   setTimeout(() => $('#tpl-saved').textContent = '', 1800);
+  render();   // los href llevan el mensaje dentro: hay que rearmarlos
 });
 $('#btn-tpl-reset').addEventListener('click', () => {
   localStorage.removeItem('va_tpl_' + plantillaActiva);
@@ -620,7 +642,9 @@ $('#base-url').addEventListener('input', () => {
 
 $('#tbody').addEventListener('click', e => {
   const s = e.target.closest('[data-send]');
-  if (s) { enviar(s.dataset.send, s.dataset.destino); return; }
+  // Sin preventDefault: el enlace navega a WhatsApp por su cuenta y el
+  // registro del envío viaja en paralelo.
+  if (s) { marcarEnviado(s.dataset.send, s.dataset.destino); return; }
   const c = e.target.closest('[data-copy]');
   if (c) { copiarLink(c.dataset.copy); return; }
 });
@@ -631,7 +655,7 @@ $('#tbody').addEventListener('change', e => {
 
 $('#btn-queue').addEventListener('click', () => {
   const cola = colaPendiente();
-  if (cola.length) enviar(cola[0].id, cola[0].destino);
+  if (cola.length) marcarEnviado(cola[0].id, cola[0].destino);
 });
 
 /* ---------- Arranque ---------- */
