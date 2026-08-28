@@ -2035,11 +2035,22 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   <!-- 13. CIERRE CON BOTÓN DE CONFIRMACIÓN -->
   <section class="section" id="closing-cta">
     <div class="section-inner">
-      <div class="closing-card reveal">
+      <!-- Dos versiones del cierre. Antes había una sola que le decía "si aún
+           no has confirmado" a todo el mundo, incluido a quien acababa de
+           confirmar — justo la duda que no queremos sembrar. Cuál se muestra
+           lo decide pintarCierre(), según si ya tenemos su respuesta. -->
+      <div class="closing-card reveal" id="cierre-pendiente">
         <div class="closing-eyebrow">Te esperamos</div>
         <h2 class="closing-title">Tu confirmación nos importa</h2>
         <p class="closing-message">Tu respuesta nos ayuda a cuidar cada detalle del día. Si aún no has confirmado, este es el momento.</p>
         <button class="hero-rsvp-btn" onclick="scrollTo('rsvp')">Confirma tu asistencia</button>
+      </div>
+
+      <div class="closing-card reveal hidden" id="cierre-confirmado">
+        <div class="closing-eyebrow" id="cierre-confirmado-eyebrow">Nos vemos el 7 de noviembre</div>
+        <h2 class="closing-title" id="cierre-confirmado-titulo">Ya te esperamos</h2>
+        <p class="closing-message" id="cierre-confirmado-texto">Tu confirmación quedó registrada. Gracias por acompañarnos en este día.</p>
+        <button class="hero-rsvp-btn" onclick="scrollTo('rsvp')">Cambiar mi respuesta</button>
       </div>
     </div>
   </section>
@@ -2787,6 +2798,8 @@ function montarInvitado(data) {
     }
   }
 
+  pintarCierre(prev);
+
   state.form = {
     asistira:    prev ? prev.asistira : null,
     roster,
@@ -2944,9 +2957,38 @@ async function submitRsvp() {
   $('#success-text').textContent = f.asistira
     ? `Confirmamos ${asistentes.length} ${asistentes.length === 1 ? 'asistente' : 'asistentes'}. Te esperamos con mucha ilusión.`
     : 'Gracias por avisarnos. Te tendremos en el corazón ese día.';
+  pintarCierre({ asistira: f.asistira, asistentes });
   $('#success-next').classList.toggle('hidden', f.asistira !== true);
   $('#rsvp-success').classList.remove('hidden');
 }
+/* Elige qué cierre mostrar al final de la página.
+   Se llama al abrir con token (que ya trae la respuesta previa) y otra vez
+   al confirmar, para que el final de la página no siga pidiendo algo que
+   la persona acaba de hacer. */
+function pintarCierre(rsvp) {
+  const pendiente = $('#cierre-pendiente'), confirmado = $('#cierre-confirmado');
+  if (!pendiente || !confirmado) return;
+
+  const respondio = rsvp && (rsvp.asistira === true || rsvp.asistira === false);
+  pendiente.classList.toggle('hidden', !!respondio);
+  confirmado.classList.toggle('hidden', !respondio);
+  if (!respondio) return;
+
+  if (rsvp.asistira === true) {
+    const n = (rsvp.asistentes || []).length;
+    $('#cierre-confirmado-eyebrow').textContent = 'Nos vemos el 7 de noviembre';
+    $('#cierre-confirmado-titulo').textContent = 'Ya te esperamos';
+    $('#cierre-confirmado-texto').textContent =
+      `Tenemos registrad${n === 1 ? 'o' : 'os'} a ${n} ${n === 1 ? 'asistente' : 'asistentes'}. Gracias por acompañarnos en este día.`;
+  } else {
+    // A quien no puede venir no se le despide con "nos vemos".
+    $('#cierre-confirmado-eyebrow').textContent = 'Con cariño';
+    $('#cierre-confirmado-titulo').textContent = 'Gracias por avisarnos';
+    $('#cierre-confirmado-texto').textContent =
+      'Sabemos que no podrás acompañarnos. Te vamos a tener en el corazón ese día.';
+  }
+}
+
 /* Lleva a la sección elegida sin perder el "gracias": si vuelven arriba,
    su confirmación sigue ahí. */
 function irADespuesDeConfirmar(id) {
