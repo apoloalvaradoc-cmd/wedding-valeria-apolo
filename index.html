@@ -117,6 +117,7 @@ body.locked { overflow: hidden; }
 ============================================================ */
 #cover {
   position: fixed; inset: 0; z-index: 200;
+  cursor: pointer;
   /* Tilt parallax variables (set by JS) */
   --tilt-x: 0deg;
   --tilt-y: 0deg;
@@ -217,6 +218,7 @@ body.locked { overflow: hidden; }
 
 .cover-tap-label {
   position: absolute;
+  cursor: pointer;
   bottom: 6%;
   left: 50%;
   transform: translateX(-50%);
@@ -1032,7 +1034,6 @@ body.locked { overflow: hidden; }
 #location { background: transparent; }
 .location-card { text-align: center; max-width: 460px; margin: 0 auto; padding: 2rem 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.13), 0 18px 32px rgba(85, 45, 15, 0.12); }
 .location-name { font-family: var(--font-serif); font-weight: 400; color: var(--wine); font-size: 1.8rem; }
-.location-address { margin-top: 0.5rem; color: var(--ink); font-size: 0.95rem; }
 .location-note { margin-top: 1.2rem; font-style: italic; color: var(--muted); font-size: 0.85rem; }
 .location-actions { margin-top: 2rem; display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
 
@@ -1542,7 +1543,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
   </button>
 
   <!-- Label CTA, fija en la parte baja del cover -->
-  <div class="cover-tap-label" aria-hidden="true">Toca para abrir</div>
+  <div class="cover-tap-label">Toca para abrir</div>
 </div>
 
 <!-- ================= NAV ================= -->
@@ -1639,7 +1640,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       </div>
       <div class="location-card reveal">
         <div class="location-name">Finca San Bernardo</div>
-        <div class="location-address">Ceremonia · cóctel · cena · fiesta · 4:00 p.m.</div>
         <p class="location-note">Te recomendamos llegar 20 minutos antes. Toca el botón para abrir la dirección en tu app de mapas favorita.</p>
         <div class="location-actions">
           <!-- Google Maps por CID del lugar (Eventos San Bernardo). El link corto
@@ -2399,6 +2399,12 @@ function posicionarSello() {
 
 $('#envelope').addEventListener('click', openEnvelope);
 $('#envelope').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); } });
+
+/* Toda la portada abre, no solo el sello. El rótulo "Toca para abrir" dice
+   que se toque, así que tocarlo tiene que funcionar; y quien apunte al
+   sobre en vez de al sello tampoco se queda esperando. openEnvelope ya se
+   protege de dispararse dos veces. */
+$('#cover').addEventListener('click', openEnvelope);
 
 /* Tilt parallax — paper responds to mouse / device orientation as if real */
 (function setupCoverParallax() {
