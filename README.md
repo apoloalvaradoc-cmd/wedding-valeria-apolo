@@ -44,7 +44,7 @@ legítimo pasa por funciones `SECURITY DEFINER`:
 |---|---|---|
 | `abrir_invitacion(token)` | invitación | datos del invitado, **sin** teléfono ni correo |
 | `buscar_invitado(q)` | invitación | máximo 8 resultados, mínimo 3 letras |
-| `cargar_invitado(id)` | invitación | igual, y registra la apertura |
+| `cargar_invitado(id)` | invitación | **sin token** (ver seguridad), registra apertura |
 | `guardar_rsvp(token, …)` | invitación | valida token y que no se excedan los cupos |
 | `admin_datos(clave)` | panel admin | todo, incluye PII y tokens |
 | `admin_guardar_rsvp(clave, …)` | panel admin | registra una confirmación a mano |
@@ -66,6 +66,16 @@ on conflict (clave) do update set valor = excluded.valor;
 
 Los tres links salientes (Maps, Waze, Spotify) llevan `rel="noreferrer"` para
 que el token no se filtre al navegar fuera.
+
+**El buscador de respaldo no entrega el token.** Los ids son secuenciales
+(`INV001`…), así que si `cargar_invitado` lo devolviera, cualquiera podría
+enumerarlos y bajarse los 181 tokens — y con un token, confirmar o cancelar
+por otra persona. El buscador precarga los datos para *ver* la invitación,
+pero para *guardar* hace falta el token, que solo tiene quien recibió su
+link. Un índice único `(invitado, minuto)` en `aperturas` impide inflar el
+contador de "abrieron" con un bucle. La clave admin registra los intentos
+fallidos y el castigo crece con la ráfaga. Auditado el 28-ago-2026
+(migración 010).
 
 ### Vista previa en WhatsApp
 

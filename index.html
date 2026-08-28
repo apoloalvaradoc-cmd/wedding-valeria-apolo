@@ -3018,11 +3018,14 @@ function buildRoster(inv) {
 /* Arma el formulario con lo que devolvió el RPC (venga del link o del buscador). */
 function montarInvitado(data) {
   const inv = {
-    id: data.id, token: data.token, nombre: data.nombre,
+    id: data.id, token: data.token || null, nombre: data.nombre,
     acompanantes: data.acompanantes || [], cupos: data.cupos,
     grupo: data.grupo, mesa: data.mesa, tipo: data.tipo,
   };
   state.selected = inv;
+  // El buscador ya no entrega token (evita que enumerando los ids alguien
+  // confirme por otro). Sin token se puede ver, no guardar.
+  state.puedeGuardar = !!inv.token;
 
   const prev = (data.rsvp && data.rsvp.actualizado_en) ? data.rsvp : null;
   state.existingRsvp = prev;
@@ -3183,6 +3186,9 @@ async function submitRsvp() {
   const correo = (f.email || '').trim();
   if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) {
     return showErr('Ese correo parece incompleto. Puedes corregirlo o dejarlo en blanco.');
+  }
+  if (!state.selected.token) {
+    return showErr('Para confirmar, abre el enlace personal que te llegó por WhatsApp. Si no lo encuentras, escríbenos y te lo reenviamos.');
   }
   const btn = $('#btn-submit'); btn.disabled = true;
   $('#submit-label').textContent = 'Enviando...';
