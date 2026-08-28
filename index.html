@@ -2252,7 +2252,15 @@ function downloadCSV(rows, filename) {
 }
 
 /* COVER · video pausado en frame del sello → click → play → fade transition */
-const SEAL_FRAME_TIME = 1.5; // segundos en el video donde aparece el sello (envelope frame)
+/* Segundo del video en el que se queda pausada la portada, y desde donde
+   arranca la animación al tocar el sello.
+
+   Estaba en 1.5 porque ahí ya está el sobre bien plantado, pero los
+   primeros 1.5 s no son tiempo muerto: el sobre ya está en cuadro y la luz
+   sube poco a poco (brillo 191 → 203). Poniéndolo en 0 se ve esa entrada
+   completa. El sobre no se mueve en ese tramo, así que el círculo del
+   sello sigue alineado. */
+const SEAL_FRAME_TIME = 0;
 
 /* Velocidad del video de la portada.
      1    = original
@@ -2294,21 +2302,33 @@ function openEnvelope() {
   const env = $('#envelope'); if (env.classList.contains('opening')) return;
   env.classList.add('opening');
   $('#cover').classList.add('opening');
-  // Reproduce el video desde donde está (frame del sello) hacia adelante
-  if (coverVideo) {
-    coverVideo.playbackRate = VELOCIDAD_PORTADA;
-    try { coverVideo.play(); } catch (e) { /* ignore */ }
-  }
-  // 1.6s de video antes del fade. Se escala con la velocidad: si no, al
-  // ralentizar el video se vería MENOS animación, no más lenta.
-  setTimeout(() => {
+  const revelar = () => {
+    if ($('#cover').classList.contains('dismissed')) return;   // una sola vez
     $('#cover').classList.add('dismissed');
     document.body.classList.remove('locked');
     $('#invitation').classList.add('visible');
     $('#invitation').setAttribute('aria-hidden', 'false');
     $('#nav').classList.add('visible');
     observeReveal();
-  }, 1600 / VELOCIDAD_PORTADA);
+  };
+
+  if (coverVideo) {
+    coverVideo.playbackRate = VELOCIDAD_PORTADA;
+    try { coverVideo.play(); } catch (e) { /* ignore */ }
+
+    /* La invitación se revela cuando el video TERMINA, no a un tiempo fijo.
+       Con un temporizador había que recalcularlo cada vez que cambiaba la
+       velocidad o el punto de inicio, y si quedaba corto se cortaba la
+       apertura del sobre justo antes de verla. */
+    coverVideo.addEventListener('ended', revelar, { once: true });
+
+    // Red de seguridad: si el video no carga o el navegador no dispara
+    // 'ended', igual hay que dejar entrar a la gente.
+    const restante = Math.max(0, (coverVideo.duration || 5) - SEAL_FRAME_TIME);
+    setTimeout(revelar, (restante / VELOCIDAD_PORTADA) * 1000 + 900);
+  } else {
+    setTimeout(revelar, 1600);
+  }
 }
 /* ============================================================
    LINK PERSONALIZADO  ·  ?i=TOKEN
