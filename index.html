@@ -255,6 +255,15 @@ body.locked { overflow: hidden; }
 }
 
 /* Cuando está abriendo, esconder el botón inmediatamente */
+/* Mientras el video termina de cargar tras el toque, los anillos laten más
+   rápido: sin esto la portada parece congelada y se vuelve a tocar. */
+#cover.cargando .cover-tap-pulse { animation-duration: 0.9s; }
+#cover.cargando .cover-tap { animation: coverEsperando 1.2s ease-in-out infinite; }
+@keyframes coverEsperando {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.06); }
+}
+
 #cover.opening .cover-tap,
 #cover.opening .cover-tap-pulse,
 #cover.opening .cover-tap-label { opacity: 0; transition: opacity 0.45s ease; pointer-events: none; }
@@ -1142,6 +1151,14 @@ body.locked { overflow: hidden; }
    GIFTS
 ============================================================ */
 #gifts { background: transparent; }
+.regalo-art { text-align: center; margin: 0 auto 1.5rem; max-width: 300px; }
+.regalo-art img { width: 100%; height: auto; display: block;
+  /* drop-shadow sigue la silueta del PNG transparente, a diferencia de
+     box-shadow que dibujaría un rectángulo. */
+  filter: drop-shadow(0 14px 28px rgba(95, 55, 20, 0.22)); }
+.regalo-mensaje { max-width: 560px; margin: 0 auto 2rem; text-align: center;
+  color: var(--ink); font-size: 1.02rem; line-height: 1.7; }
+@media (min-width: 640px) { .regalo-art { max-width: 340px; } }
 .gifts-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .gifts-grid { grid-template-columns: 1fr 1fr; } }
 .gift-card { padding: 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
@@ -1799,7 +1816,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
             <div class="swatch forbidden"><span class="swatch-dot" style="background:#FFFFFF"></span><span class="swatch-label">Blanco</span></div>
             <div class="swatch forbidden"><span class="swatch-dot" style="background:#F3EEE6"></span><span class="swatch-label">Marfil</span></div>
             <div class="swatch forbidden"><span class="swatch-dot" style="background:#EDE3D2"></span><span class="swatch-label">Crema</span></div>
-            <div class="swatch forbidden"><span class="swatch-dot" style="background:#C9A14A"></span><span class="swatch-label">Dorado</span></div>
             <div class="swatch forbidden"><span class="swatch-dot" style="background:#F2D6D6"></span><span class="swatch-label">Rosa muy pálido</span></div>
             <div class="swatch forbidden"><span class="swatch-dot" style="background:#5C1525"></span><span class="swatch-label">Vino tinto</span></div>
           </div>
@@ -1815,9 +1831,29 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
       <div class="section-title-block reveal">
         <div class="section-eyebrow">Regalos</div>
         <h2 class="section-title">Un detalle con nosotros</h2>
-        <p class="section-subtitle">Tu presencia es nuestro mejor regalo. Si deseas consentirnos, aquí te dejamos algunas opciones.</p>
         <div class="section-divider"></div>
       </div>
+
+      <!-- Si el archivo todavía no está, la imagen se oculta sola en vez de
+           dejar el ícono de imagen rota. -->
+      <div class="regalo-art reveal">
+        <picture>
+          <!-- WebP pesa 154 KB contra 876 del PNG, y conserva la
+               transparencia. El PNG solo lo baja quien no soporte WebP. -->
+          <source srcset="regalo-art.webp" type="image/webp">
+          <img src="regalo-art.png" alt="Caja de regalo con listón burdeos, flores y follaje"
+               loading="lazy" draggable="false" onerror="this.closest('.regalo-art').remove()">
+        </picture>
+      </div>
+
+      <p class="regalo-mensaje reveal">
+        Lo más importante para nosotros es tenerlos ese día: su presencia es,
+        de verdad, nuestro mejor regalo.<br><br>
+        Si además quieren acompañarnos con un detalle, aquí les dejamos
+        algunas opciones. Cualquiera que elijan la recibiremos con muchísimo
+        cariño. 🤍
+      </p>
+
       <div class="gifts-grid reveal">
         <div class="gift-card">
           <div class="gift-heading">Transferencia</div>
@@ -1875,7 +1911,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
         </details>
         <details class="faq-item">
           <summary>¿Cuál es el dress code?</summary>
-          <p>Gala formal. Damas: vestido largo o de gala. Caballeros: traje completo. Del color, tú decides — solo te pedimos evitar blanco, marfil, crema, dorado, rosa muy pálido y vino tinto, que forman parte de nuestra paleta.</p>
+          <p>Gala formal. Damas: vestido largo o de gala. Caballeros: traje completo. Del color, tú decides — solo te pedimos evitar blanco, marfil, crema, rosa muy pálido y vino tinto, que forman parte de nuestra paleta.</p>
         </details>
         <details class="faq-item">
           <summary>¿Habrá parking?</summary>
@@ -2288,6 +2324,16 @@ const VELOCIDAD_PORTADA = (() => {
   return (v > 0 && v <= 4) ? v : VELOCIDAD_PORTADA_DEFECTO;
 })();
 
+/* iOS suele ignorar preload="auto" para ahorrar datos: el video no empieza
+   a bajar hasta que se llama play(), y entonces se tocaba el sello y no
+   pasaba nada durante segundos. Pedirlo con fetch fuerza la descarga y la
+   deja en caché, así que al tocar ya está listo. Si falla, no importa: el
+   <video> lo pedirá igual por su cuenta. */
+(function precargarVideoPortada() {
+  try { fetch('portada-video.mp4', { cache: 'force-cache' }).catch(() => {}); }
+  catch (e) { /* da igual */ }
+})();
+
 const coverVideo = document.querySelector('.cover-video');
 if (coverVideo) {
   coverVideo.playbackRate = VELOCIDAD_PORTADA;
@@ -2324,22 +2370,36 @@ function openEnvelope() {
     observeReveal();
   };
 
-  if (coverVideo) {
+  if (!coverVideo) { setTimeout(revelar, 1600); return; }
+
+  /* La invitación se revela cuando el video TERMINA, no a un tiempo fijo:
+     así se ve completa sin importar la velocidad ni desde dónde arranque. */
+  coverVideo.addEventListener('ended', revelar, { once: true });
+
+  let respaldo = null;
+
+  const arrancar = () => {
     coverVideo.playbackRate = VELOCIDAD_PORTADA;
-    try { coverVideo.play(); } catch (e) { /* ignore */ }
+    const p = coverVideo.play();
+    if (p && p.catch) p.catch(revelar);   // si el navegador lo bloquea, entra igual
 
-    /* La invitación se revela cuando el video TERMINA, no a un tiempo fijo.
-       Con un temporizador había que recalcularlo cada vez que cambiaba la
-       velocidad o el punto de inicio, y si quedaba corto se cortaba la
-       apertura del sobre justo antes de verla. */
-    coverVideo.addEventListener('ended', revelar, { once: true });
+    /* El respaldo se cuenta desde que el video EMPIEZA a correr, no desde el
+       toque. Midiéndolo desde el toque, un video que tarda en arrancar hacía
+       que el temporizador venciera a media animación y la cortara. */
+    clearTimeout(respaldo);
+    const restante = Math.max(0, (coverVideo.duration || 5) - coverVideo.currentTime);
+    respaldo = setTimeout(revelar, (restante / VELOCIDAD_PORTADA) * 1000 + 900);
+  };
 
-    // Red de seguridad: si el video no carga o el navegador no dispara
-    // 'ended', igual hay que dejar entrar a la gente.
-    const restante = Math.max(0, (coverVideo.duration || 5) - SEAL_FRAME_TIME);
-    setTimeout(revelar, (restante / VELOCIDAD_PORTADA) * 1000 + 900);
+  if (coverVideo.readyState >= 3) {
+    arrancar();                                   // ya está listo: sin espera
   } else {
-    setTimeout(revelar, 1600);
+    /* Todavía descargando. En el teléfono es lo normal: iOS suele ignorar
+       preload y no baja el video hasta este momento. Se arranca en cuanto
+       pueda, pero nadie se queda más de 6 s mirando una pantalla quieta. */
+    coverVideo.addEventListener('canplay', arrancar, { once: true });
+    $('#cover').classList.add('cargando');
+    respaldo = setTimeout(revelar, 6000);
   }
 }
 /* ============================================================
