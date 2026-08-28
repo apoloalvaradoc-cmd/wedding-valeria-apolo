@@ -2254,8 +2254,25 @@ function downloadCSV(rows, filename) {
 /* COVER · video pausado en frame del sello → click → play → fade transition */
 const SEAL_FRAME_TIME = 1.5; // segundos en el video donde aparece el sello (envelope frame)
 
+/* Velocidad del video de la portada.
+     1    = original
+     0.5  = mitad de velocidad (lo que está puesto)
+
+   No se re-codificó el archivo: portada-video.mp4 sigue intacto, esto solo
+   cambia a qué ritmo lo reproduce el navegador. Volver al 100% es poner 1
+   aquí. Para comparar sin tocar el código, se puede abrir la invitación con
+   ?velocidad=1 en la URL. */
+const VELOCIDAD_PORTADA_DEFECTO = 0.5;
+const VELOCIDAD_PORTADA = (() => {
+  const v = parseFloat(new URLSearchParams(location.search).get('velocidad'));
+  return (v > 0 && v <= 4) ? v : VELOCIDAD_PORTADA_DEFECTO;
+})();
+
 const coverVideo = document.querySelector('.cover-video');
 if (coverVideo) {
+  coverVideo.playbackRate = VELOCIDAD_PORTADA;
+  // Algunos navegadores reinician playbackRate al cargar metadata.
+  coverVideo.addEventListener('loadedmetadata', () => { coverVideo.playbackRate = VELOCIDAD_PORTADA; });
   // Cuando carga, salta al frame del sello y pausa
   const seekToSeal = () => {
     try {
@@ -2279,9 +2296,11 @@ function openEnvelope() {
   $('#cover').classList.add('opening');
   // Reproduce el video desde donde está (frame del sello) hacia adelante
   if (coverVideo) {
+    coverVideo.playbackRate = VELOCIDAD_PORTADA;
     try { coverVideo.play(); } catch (e) { /* ignore */ }
   }
-  // 1.6s para dejar que el video corra un poco antes del fade
+  // 1.6s de video antes del fade. Se escala con la velocidad: si no, al
+  // ralentizar el video se vería MENOS animación, no más lenta.
   setTimeout(() => {
     $('#cover').classList.add('dismissed');
     document.body.classList.remove('locked');
@@ -2289,7 +2308,7 @@ function openEnvelope() {
     $('#invitation').setAttribute('aria-hidden', 'false');
     $('#nav').classList.add('visible');
     observeReveal();
-  }, 1600);
+  }, 1600 / VELOCIDAD_PORTADA);
 }
 /* ============================================================
    LINK PERSONALIZADO  ·  ?i=TOKEN
