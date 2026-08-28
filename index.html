@@ -1079,15 +1079,20 @@ body.locked { overflow: hidden; }
   animation: scrollHintFlota 2.4s ease-in-out infinite, scrollHintEntra 0.9s ease both;
 }
 #scroll-hint .sh-texto {
-  font-family: var(--font-serif); font-size: 0.6rem; letter-spacing: 0.3em;
-  text-transform: uppercase; opacity: 0.75;
+  font-family: var(--font-serif); font-size: 0.66rem; letter-spacing: 0.3em;
+  text-transform: uppercase; font-weight: 500;
 }
-#scroll-hint svg { opacity: 0.85; }
+/* Halo claro: la pista pasa por encima de secciones de distinto fondo y
+   sin esto se pierde sobre las oscuras. */
+#scroll-hint { text-shadow: 0 1px 6px rgba(241, 240, 234, 0.9); }
+#scroll-hint svg { filter: drop-shadow(0 1px 4px rgba(241, 240, 234, 0.9)); }
 /* Se apaga en vez de desaparecer de golpe. */
 #scroll-hint.saliendo { animation: none; opacity: 0; transform: translate(-50%, 8px); transition: opacity 0.5s ease, transform 0.5s ease; }
 @keyframes scrollHintEntra { from { opacity: 0; } to { opacity: 1; } }
+/* El parpadeo va de 0.85 a 1, no de 0.55: antes las opacidades del
+   contenedor y del texto se multiplicaban y dejaban la letra en 0.41. */
 @keyframes scrollHintFlota {
-  0%, 100% { transform: translate(-50%, 0);    opacity: 0.55; }
+  0%, 100% { transform: translate(-50%, 0);    opacity: 0.85; }
   50%      { transform: translate(-50%, 7px);  opacity: 1; }
 }
 
