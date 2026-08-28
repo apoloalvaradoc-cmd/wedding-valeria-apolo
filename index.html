@@ -1070,6 +1070,23 @@ body.locked { overflow: hidden; }
 .rsvp-card { background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); padding: 1.8rem 1.4rem; box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 6px 12px rgba(95, 55, 20, 0.15), 0 18px 32px rgba(85, 45, 15, 0.15); }
 @media (min-width: 640px) { .rsvp-card { padding: 2.2rem 2rem; } }
 
+.paso { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-serif);
+  font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wine);
+  margin-bottom: 0.5rem; }
+.paso-num { display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--wine); color: var(--cream);
+  font-size: 0.68rem; letter-spacing: 0; flex-shrink: 0; }
+.paso-opcional { letter-spacing: 0.1em; text-transform: none; color: var(--muted); font-size: 0.72rem; }
+.paso-ayuda { font-size: 0.82rem; color: var(--muted); margin: 0 0 0.8rem; line-height: 1.5; }
+/* El paso final se separa del resto: es donde se decide y se envía. */
+.paso-final { margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px solid rgba(217, 167, 172, 0.45); }
+/* Mientras falte elegir sí/no, el botón se ve apagado en vez de listo. */
+.btn-submit.falta { opacity: 0.55; }
+/* Al marcar "no podremos asistir", la lista de personas deja de aplicar. */
+#attendees-block.apagado { opacity: 0.4; pointer-events: none; }
+.roster-marca { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.roster-row.asiste .roster-marca { color: var(--olive-dark); }
+
 .rsvp-label { font-family: var(--font-serif); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 0.6rem; display: block; }
 .input-wrap { position: relative; }
 .input-wrap svg { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
@@ -1724,31 +1741,45 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
             </button>
           </div>
           <div id="existing-notice" class="alert alert-info hidden"></div>
-          <div class="form-group">
-            <label class="rsvp-label">¿Nos acompañas?</label>
-            <div class="yes-no">
-              <button class="choice" data-asis="yes" onclick="pickAsistira(true)">Sí, ahí estaré</button>
-              <button class="choice" data-asis="no"  onclick="pickAsistira(false)">No podré asistir</button>
-            </div>
-          </div>
-          <div id="attendees-block" class="form-group hidden">
-            <label class="rsvp-label">Nombres de asistentes <span id="attendees-count" style="text-transform:none;letter-spacing:0.05em;color:var(--muted)"></span></label>
+
+          <!-- PASO 1 · quiénes vienen.
+               La pregunta de sí/no ya no va arriba: puesta ahí, elegir
+               "Sí, ahí estaré" parecía el final del trámite y la gente se
+               salía sin enviar nada. Ahora lo primero es marcar personas y
+               la decisión queda al final, pegada al botón. -->
+          <div id="attendees-block" class="form-group">
+            <div class="paso"><span class="paso-num">1</span> ¿Quiénes nos acompañan?</div>
+            <p class="paso-ayuda">
+              Marca la casilla de cada persona que asistirá. Puedes corregir
+              los nombres si algo está mal escrito.
+              <span id="attendees-count"></span>
+            </p>
             <div id="attendees-list"></div>
           </div>
-          <div id="email-block" class="form-group hidden">
-            <label class="rsvp-label">Correo electrónico</label>
-            <p class="gift-desc" style="margin-bottom:0.6rem">Por si necesitamos escribirte algún detalle del día.</p>
-            <input type="email" id="f-email" class="input" placeholder="tucorreo@ejemplo.com" autocomplete="email">
-          </div>
+
+          <!-- PASO 2 · datos, todos opcionales -->
           <div class="form-group">
-            <label class="rsvp-label">Mensaje para los novios</label>
+            <div class="paso"><span class="paso-num">2</span> Cómo contactarte <span class="paso-opcional">opcional</span></div>
+            <label class="rsvp-label" for="f-email">Correo electrónico</label>
+            <input type="email" id="f-email" class="input" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+            <label class="rsvp-label" for="f-comentarios" style="margin-top:1rem">Mensaje para los novios</label>
             <textarea id="f-comentarios" class="textarea" rows="3" placeholder="Déjanos un mensaje, deseo o algo que debamos saber..."></textarea>
           </div>
-          <div id="form-error" class="alert alert-warn hidden"></div>
-          <button id="btn-submit" class="btn-submit" onclick="submitRsvp()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-            <span id="submit-label">Enviar confirmación</span>
-          </button>
+
+          <!-- PASO 3 · la decisión, al final -->
+          <div class="form-group paso-final">
+            <div class="paso"><span class="paso-num">3</span> Confirma tu respuesta</div>
+            <div class="yes-no">
+              <button class="choice" data-asis="yes" onclick="pickAsistira(true)">Sí, ahí estaremos</button>
+              <button class="choice" data-asis="no"  onclick="pickAsistira(false)">No podremos asistir</button>
+            </div>
+            <div id="form-error" class="alert alert-warn hidden" style="margin-top:0.8rem"></div>
+            <button id="btn-submit" class="btn-submit" onclick="submitRsvp()" style="margin-top:0.9rem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              <span id="submit-label">Enviar confirmación</span>
+            </button>
+            <p class="paso-ayuda" id="submit-ayuda" style="margin-top:0.6rem;margin-bottom:0"></p>
+          </div>
         </div>
         <div id="rsvp-success" class="success-wrap hidden">
           <div class="success-icon">
@@ -2697,10 +2728,41 @@ function renderForm() {
   renderAttendees();
   $('#form-error').classList.add('hidden');
 }
+/* Ya no se esconde nada: la lista de personas se ve desde el principio,
+   que es lo primero que hay que hacer. Al marcar "no podremos asistir"
+   simplemente se atenúa, para que se entienda que dejó de aplicar. */
 function toggleConditionalBlocks() {
-  const yes = state.form.asistira === true;
-  $('#attendees-block').classList.toggle('hidden', !yes);
-  $('#email-block').classList.toggle('hidden', !yes);
+  $('#attendees-block').classList.toggle('apagado', state.form.asistira === false);
+  actualizarBotonEnviar();
+}
+
+/* El botón dice exactamente qué va a pasar al tocarlo. Antes decía siempre
+   "Enviar confirmación" y no se sabía si faltaba algo. */
+function actualizarBotonEnviar() {
+  const f = state.form;
+  if (!f) return;
+  const n = f.roster.filter(p => p.asiste && p.nombre.trim()).length;
+  const btn = $('#btn-submit'), etiqueta = $('#submit-label'), ayuda = $('#submit-ayuda');
+  const editando = !!state.existingRsvp;
+
+  if (f.asistira === null) {
+    etiqueta.textContent = editando ? 'Actualizar respuesta' : 'Enviar confirmación';
+    ayuda.textContent = 'Marca arriba si podrán acompañarnos.';
+    btn.classList.add('falta');
+    return;
+  }
+  btn.classList.remove('falta');
+  if (f.asistira === false) {
+    etiqueta.textContent = 'Enviar: no podremos asistir';
+    ayuda.textContent = 'Nos avisas y listo. Gracias por decirnos.';
+    return;
+  }
+  etiqueta.textContent = n === 0
+    ? 'Enviar confirmación'
+    : `Confirmar ${n} ${n === 1 ? 'asistente' : 'asistentes'}`;
+  ayuda.textContent = n === 0
+    ? 'Marca en el paso 1 quiénes asistirán.'
+    : 'Tu respuesta se guarda al tocar el botón.';
 }
 function pickAsistira(val) {
   state.form.asistira = val;
@@ -2711,7 +2773,8 @@ function pickAsistira(val) {
 function renderAttendees() {
   const container = $('#attendees-list'), f = state.form, inv = state.selected;
   const count = f.roster.filter(p => p.asiste).length;
-  $('#attendees-count').textContent = `${count} de ${inv.cupos} confirmados`;
+  $('#attendees-count').textContent = ` · ${count} de ${inv.cupos} marcados`;
+  actualizarBotonEnviar();
   container.innerHTML = f.roster.map((p, i) => {
     // Todos los nombres son editables: los del Sheet vienen precargados pero
     // el invitado puede corregir la escritura o cambiar quién viene.
@@ -2721,9 +2784,10 @@ function renderAttendees() {
         <input type="checkbox" ${p.asiste ? 'checked' : ''} onchange="toggleRoster(${i}, this.checked)">
         <div class="roster-body">
           <div class="roster-head">
-            ${nameCell}
+            <span class="roster-marca">${p.asiste ? 'Asistirá' : 'Marcar si asiste'}</span>
             ${p.titular ? '<span class="roster-badge">Titular</span>' : ''}
           </div>
+          ${nameCell}
           <input type="text" class="roster-restriction" value="${escapeHtml(p.restriccion || '')}" placeholder="Restricción alimenticia (opcional)" oninput="updateRoster(${i}, 'restriccion', this.value)" ${p.asiste ? '' : 'disabled'}>
         </div>
       </label>`;
@@ -2737,7 +2801,8 @@ function updateRoster(i, field, value) {
   state.form.roster[i][field] = value;
   if (field === 'nombre') {
     const count = state.form.roster.filter(p => p.asiste).length;
-    $('#attendees-count').textContent = `${count} de ${state.selected.cupos} confirmados`;
+    $('#attendees-count').textContent = ` · ${count} de ${state.selected.cupos} marcados`;
+    actualizarBotonEnviar();
   }
 }
 async function submitRsvp() {
@@ -2745,17 +2810,18 @@ async function submitRsvp() {
   f.email = $('#f-email').value; f.comentarios = $('#f-comentarios').value;
   const err = $('#form-error'); err.classList.add('hidden');
   const showErr = msg => { err.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h0"/></svg><span>${msg}</span>`; err.classList.remove('hidden'); };
-  if (f.asistira === null) return showErr('Por favor indica si asistirás.');
+  if (f.asistira === null) return showErr('Falta el paso 3: marca si podrán acompañarnos.');
   let asistentes = [];
   if (f.asistira === true) {
     asistentes = f.roster.filter(p => p.asiste && p.nombre.trim())
       .map(p => ({ nombre: p.nombre.trim(), restriccion: (p.restriccion || '').trim() }));
-    if (asistentes.length === 0) return showErr('Marca al menos una persona que asistirá.');
+    if (asistentes.length === 0) return showErr('En el paso 1, marca la casilla de cada persona que asistirá.');
     if (asistentes.length > state.selected.cupos) return showErr(`Solo tienes ${state.selected.cupos} cupos asignados.`);
-    const correo = (f.email || '').trim();
-    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) {
-      return showErr('Déjanos un correo válido para escribirte los detalles.');
-    }
+  }
+  // El correo es opcional: solo se revisa que no esté escrito a medias.
+  const correo = (f.email || '').trim();
+  if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) {
+    return showErr('Ese correo parece incompleto. Puedes corregirlo o dejarlo en blanco.');
   }
   const btn = $('#btn-submit'); btn.disabled = true;
   $('#submit-label').textContent = 'Enviando...';
@@ -2765,7 +2831,7 @@ async function submitRsvp() {
       asistira: f.asistira,
       asistentes,
       roster: f.roster,
-      email: f.asistira ? (f.email || '').trim() : null,
+      email: correo || null,
       comentarios: f.comentarios,
     });
   } catch (e) {

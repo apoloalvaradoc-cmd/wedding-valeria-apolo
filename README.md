@@ -206,6 +206,12 @@ Cuatro pestañas:
 - **Invitaciones** — buscador, filtros (confirmados · sin responder · abrieron
   sin confirmar · no abrieron · no asistirán · por tipo · por mesa) y la tabla
   completa. **Toca cualquier fila** para abrir su ficha.
+> El formulario va en tres pasos: 1) marcar quiénes asisten, 2) correo y
+> mensaje (ambos opcionales), 3) la decisión sí/no pegada al botón. El sí/no
+> estaba arriba y elegirlo parecía cerrar el trámite: la gente se salía sin
+> enviar. El botón dice qué va a pasar al tocarlo ("Confirmar 2 asistentes",
+> "Enviar: no podremos asistir") y se ve apagado mientras falte el paso 3.
+
 - **Confirmados** — la lista cabeza por cabeza: cada persona que asiste, con su
   restricción, de qué invitación viene y su mesa. Es la lista de invitados
   confirmados que se entrega el día del evento. Abajo van las restricciones
