@@ -231,7 +231,8 @@ body.locked { overflow: hidden; }
 .cover-tap-label {
   position: absolute;
   cursor: pointer;
-  bottom: 6%;
+  /* La barra inferior de Safari en iPhone tapa lo anclado abajo. */
+  bottom: calc(6% + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 6;
@@ -1074,7 +1075,8 @@ body.locked { overflow: hidden; }
 
 /* ---------- Pista de scroll ---------- */
 #scroll-hint {
-  position: fixed; bottom: 1.6rem; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: calc(1.6rem + env(safe-area-inset-bottom, 0px));
+  left: 50%; transform: translateX(-50%);
   z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
   color: var(--wine); pointer-events: none;
   /* Aparece con calma para que no compita con el final de la animación. */
@@ -2509,42 +2511,46 @@ function openEnvelope() {
 
   if (!coverVideo) { setTimeout(revelar, 1600); return; }
 
-  /* La invitación se revela cuando el video TERMINA, no a un tiempo fijo:
-     así se ve completa sin importar la velocidad ni desde dónde arranque. */
+  /* ---------- Arranque del video ----------
+     Regla de iOS: play() solo funciona si sale del propio gesto del usuario.
+     Antes se esperaba a loadeddata para llamarlo, y como iOS ignora preload
+     ese evento llegaba después del toque: la llamada quedaba fuera del gesto,
+     Safari la bloqueaba, la promesa fallaba y —peor— ese fallo cerraba la
+     portada. De ahí que en iPhone la animación se viera un instante y ya.
+
+     Ahora play() se llama aquí mismo, síncrono. Si no hay datos todavía,
+     iOS deja el elemento "desbloqueado" y arranca solo cuando lleguen. */
+  coverVideo.playbackRate = VELOCIDAD_PORTADA;
+  const intento = coverVideo.play();
+  if (intento && intento.catch) {
+    intento.catch(() => {
+      // Un play() rechazado NO revela nada: se reintenta al llegar datos.
+      coverVideo.addEventListener('canplay', () => {
+        coverVideo.playbackRate = VELOCIDAD_PORTADA;
+        const r = coverVideo.play();
+        if (r && r.catch) r.catch(() => {});
+      }, { once: true });
+    });
+  }
+
   coverVideo.addEventListener('ended', revelar, { once: true });
 
-  let respaldo = null, yaArranco = false;
+  /* Si el video nunca llega a correr —modo de bajo consumo, datos cortados—
+     nadie puede quedarse encerrado en la portada. */
+  let respaldo = setTimeout(revelar, 6000);
 
-  const arrancar = () => {
-    if (yaArranco) return;   // loadeddata y canplay pueden llegar los dos
-    yaArranco = true;
+  /* En cuanto empieza a correr de verdad se recalcula: el respaldo pasa a
+     medir lo que falta de animación, no un tiempo inventado desde el toque. */
+  coverVideo.addEventListener('playing', () => {
+    $('#cover').classList.remove('cargando');
     coverVideo.playbackRate = VELOCIDAD_PORTADA;
-    const p = coverVideo.play();
-    if (p && p.catch) p.catch(revelar);   // si el navegador lo bloquea, entra igual
-
-    /* El respaldo se cuenta desde que el video EMPIEZA a correr, no desde el
-       toque. Midiéndolo desde el toque, un video que tarda en arrancar hacía
-       que el temporizador venciera a media animación y la cortara. */
     clearTimeout(respaldo);
     const restante = Math.max(0, (coverVideo.duration || 5) - coverVideo.currentTime);
     respaldo = setTimeout(revelar, (restante / VELOCIDAD_PORTADA) * 1000 + 900);
-  };
+  }, { once: true });
 
-  if (coverVideo.readyState >= 2) {
-    /* HAVE_CURRENT_DATA basta para empezar: el video es progresivo y los
-       primeros segundos son el sobre casi quieto, así que sigue bajando
-       mientras corre. Esperar a readyState 3 retrasaba el arranque sin
-       necesidad. */
-    arrancar();
-  } else {
-    /* Todavía descargando. En el teléfono es lo normal: iOS suele ignorar
-       preload y no baja el video hasta este momento. Se arranca en cuanto
-       pueda, pero nadie se queda más de 6 s mirando una pantalla quieta. */
-    coverVideo.addEventListener('loadeddata', arrancar, { once: true });
-    coverVideo.addEventListener('canplay', arrancar, { once: true });
-    $('#cover').classList.add('cargando');
-    respaldo = setTimeout(revelar, 6000);
-  }
+  // Señal de que algo pasa mientras baja lo que falta.
+  if (coverVideo.readyState < 2) $('#cover').classList.add('cargando');
 }
 /* ============================================================
    PISTA DE SCROLL
@@ -2625,6 +2631,10 @@ function posicionarSello() {
   const vh = v.videoHeight || 1280;
 
   const cw = v.clientWidth, ch = v.clientHeight;
+  /* Sin medidas todavía no hay nada que calcular. Antes se seguía adelante y
+     el resultado era left/top = 0: el círculo terminaba en la esquina. */
+  if (!cw || !ch) return;
+
   // object-fit: cover ⇒ escala por el lado que sobra; object-position: center ⇒ centrado.
   const escala = Math.max(cw / vw, ch / vh);
   const w = vw * escala, h = vh * escala;
@@ -2641,8 +2651,13 @@ function posicionarSello() {
 (function alinearSello() {
   const v = $('.cover-video');
   if (!v) return;
-  if (v.readyState >= 2) posicionarSello();
-  else v.addEventListener('loadeddata', posicionarSello, { once: true });
+  /* Se coloca de una: el <video> ya ocupa la pantalla aunque el archivo no
+     haya cargado, y las proporciones del poster son las mismas. En iOS
+     loadeddata puede tardar mucho o no llegar hasta que se reproduce. */
+  posicionarSello();
+  requestAnimationFrame(posicionarSello);
+  v.addEventListener('loadedmetadata', posicionarSello);
+  v.addEventListener('loadeddata', posicionarSello);
   addEventListener('resize', posicionarSello);
   addEventListener('orientationchange', () => setTimeout(posicionarSello, 120));
 })();
