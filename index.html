@@ -215,29 +215,6 @@ body.locked { overflow: hidden; }
   100% { transform: scale(1.7); opacity: 0; }
 }
 
-.cover-para {
-  position: absolute;
-  /* Arriba, en el espacio limpio sobre el sobre: abajo chocaba con
-     el rótulo "Toca para abrir" y quedaba ilegible. */
-  top: 6%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 6;
-  max-width: 82vw;
-  text-align: center;
-  font-family: var(--font-script);
-  font-size: 1.7rem;
-  line-height: 1.2;
-  color: var(--wine);
-  text-shadow: 0 1px 10px rgba(241, 240, 234, 0.85);
-  animation: coverParaIn 1.1s ease both 0.5s;
-}
-@keyframes coverParaIn {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
-}
-#cover.opening .cover-para { opacity: 0; transition: opacity 0.45s ease; }
-
 .cover-tap-label {
   position: absolute;
   bottom: 6%;
@@ -1564,9 +1541,6 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
     <span class="cover-tap-pulse delay" aria-hidden="true"></span>
   </button>
 
-  <!-- Nombre del destinatario — solo aparece si se llegó por link personalizado -->
-  <div class="cover-para hidden" id="cover-para"></div>
-
   <!-- Label CTA, fija en la parte baja del cover -->
   <div class="cover-tap-label" aria-hidden="true">Toca para abrir</div>
 </div>
@@ -2324,6 +2298,9 @@ function openEnvelope() {
    seguimiento) y el RSVP queda precargado con su nombre y sus
    acompañantes, sin que tenga que buscarse.
 
+   La portada no se toca: el nombre del destinatario estorbaba
+   el video y la animación de apertura.
+
    Sin token, o con un token que no existe, la invitación sigue
    funcionando igual: el buscador por nombre queda como respaldo.
 ============================================================ */
@@ -2334,11 +2311,6 @@ async function bootstrapInvitado() {
     const data = await abrirPorToken(token);
     if (!data) { console.warn('Token no reconocido'); return; }
     montarInvitado(data);
-    const para = $('#cover-para');
-    if (para && data.nombre) {
-      para.textContent = 'Para ' + data.nombre;
-      para.classList.remove('hidden');
-    }
   } catch (err) {
     console.warn('No se pudo abrir con el token', err);
   }
