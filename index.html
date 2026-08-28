@@ -2397,6 +2397,9 @@ const $$ = (s) => document.querySelectorAll(s);
 const normalize = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 const pad = (n) => String(n).padStart(2, '0');
 function formatDateTime(iso) { if (!iso) return ''; return new Date(iso).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short' }); }
+/* En español la hora se abrevia "8:56 p. m." — ya trae punto final. Cerrar
+   la frase con otro producía "p. m..". Esto pone el punto solo si falta. */
+function cerrarFrase(t) { return /[.!?]$/.test(String(t).trim()) ? String(t).trim() : String(t).trim() + '.'; }
 /* Deja el teléfono en formato internacional. 8 dígitos ⇒ Guatemala. */
 function normalizarTelefono(raw) {
   if (!raw) return null;
@@ -2863,7 +2866,7 @@ function renderForm() {
   $('#f-comentarios').value = f.comentarios || '';
   const notice = $('#existing-notice');
   if (state.existingRsvp) {
-    notice.textContent = `Ya tenemos tu respuesta del ${formatDateTime(state.existingRsvp.actualizado_en)}. Puedes editarla abajo.`;
+    notice.textContent = `Ya tenemos tu respuesta del ${cerrarFrase(formatDateTime(state.existingRsvp.actualizado_en))} Puedes editarla abajo.`;
     notice.classList.remove('hidden');
     $('#submit-label').textContent = 'Actualizar respuesta';
   } else { notice.classList.add('hidden'); $('#submit-label').textContent = 'Enviar confirmación'; }
