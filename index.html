@@ -2443,8 +2443,16 @@ const VELOCIDAD_PORTADA = (() => {
    deja en caché, así que al tocar ya está listo. Si falla, no importa: el
    <video> lo pedirá igual por su cuenta. */
 (function precargarVideoPortada() {
-  try { fetch('portada-video.mp4', { cache: 'force-cache' }).catch(() => {}); }
-  catch (e) { /* da igual */ }
+  /* Solo si al segundo el <video> no empezó a bajar nada. Pedirlo siempre
+     hacía que el fetch y el propio elemento compitieran por la misma
+     descarga; ahora esto es únicamente el plan B para iOS. */
+  setTimeout(() => {
+    const v = document.querySelector('.cover-video');
+    if (v && v.readyState === 0 && (!v.buffered || v.buffered.length === 0)) {
+      try { fetch('portada-video.mp4', { cache: 'force-cache' }).catch(() => {}); }
+      catch (e) { /* da igual */ }
+    }
+  }, 1000);
 })();
 
 const coverVideo = document.querySelector('.cover-video');
@@ -2490,9 +2498,11 @@ function openEnvelope() {
      así se ve completa sin importar la velocidad ni desde dónde arranque. */
   coverVideo.addEventListener('ended', revelar, { once: true });
 
-  let respaldo = null;
+  let respaldo = null, yaArranco = false;
 
   const arrancar = () => {
+    if (yaArranco) return;   // loadeddata y canplay pueden llegar los dos
+    yaArranco = true;
     coverVideo.playbackRate = VELOCIDAD_PORTADA;
     const p = coverVideo.play();
     if (p && p.catch) p.catch(revelar);   // si el navegador lo bloquea, entra igual
@@ -2505,12 +2515,17 @@ function openEnvelope() {
     respaldo = setTimeout(revelar, (restante / VELOCIDAD_PORTADA) * 1000 + 900);
   };
 
-  if (coverVideo.readyState >= 3) {
-    arrancar();                                   // ya está listo: sin espera
+  if (coverVideo.readyState >= 2) {
+    /* HAVE_CURRENT_DATA basta para empezar: el video es progresivo y los
+       primeros segundos son el sobre casi quieto, así que sigue bajando
+       mientras corre. Esperar a readyState 3 retrasaba el arranque sin
+       necesidad. */
+    arrancar();
   } else {
     /* Todavía descargando. En el teléfono es lo normal: iOS suele ignorar
        preload y no baja el video hasta este momento. Se arranca en cuanto
        pueda, pero nadie se queda más de 6 s mirando una pantalla quieta. */
+    coverVideo.addEventListener('loadeddata', arrancar, { once: true });
     coverVideo.addEventListener('canplay', arrancar, { once: true });
     $('#cover').classList.add('cargando');
     respaldo = setTimeout(revelar, 6000);
