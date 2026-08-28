@@ -10,14 +10,18 @@
  *   # revisar qué saldría
  *   node generar_lista_sql.mjs invitados.csv --reporte
  *
- *   # generar el SQL
+ *   # ACTUALIZAR — lo normal una vez que ya salieron invitaciones.
+ *   # Conserva el token (y por lo tanto el link) de quien ya existe,
+ *   # agrega los nuevos y solo escribe los campos que cambiaron.
+ *   VA_CLAVE='...' node generar_lista_sql.mjs invitados.csv --actualizar > update.sql
+ *
+ *   # RECONSTRUIR desde cero — solo antes de mandar nada.
  *   node generar_lista_sql.mjs invitados.csv > lista.sql
  *
- * Después se pega `lista.sql` en el SQL Editor de Supabase.
+ * El SQL se pega en el SQL Editor de Supabase.
  *
- * OJO: el SQL borra y recrea la tabla `invitados`, lo que regenera todos
- * los tokens. Solo es seguro mientras no se haya enviado ninguna
- * invitación. Si ya circularon links, no lo corras.
+ * OJO: sin --actualizar el SQL borra y recrea la tabla `invitados`, lo que
+ * regenera todos los tokens e invalida los links ya enviados.
  */
 
 import { readFileSync } from 'node:fs';
@@ -104,8 +108,9 @@ function tipoDe(relacion) {
 /* ---------------- Main ---------------- */
 const archivo = process.argv[2];
 const soloReporte = process.argv.includes('--reporte');
+const actualizar  = process.argv.includes('--actualizar');
 if (!archivo) {
-  console.error('Uso: node generar_lista_sql.mjs <archivo.csv> [--reporte]');
+  console.error('Uso: node generar_lista_sql.mjs <archivo.csv> [--reporte|--actualizar]');
   process.exitCode = 1;
 }
 
@@ -206,8 +211,143 @@ rep('Nombres repetidos (el buscador mostrará ambos)',
 
 if (soloReporte) process.exitCode = 0;
 
-/* ---------------- SQL ---------------- */
-if (!soloReporte) {
+/* ============================================================
+   MODO ACTUALIZAR  ·  node generar_lista_sql.mjs lista.csv --actualizar
+
+   Una vez que empezaron a salir invitaciones ya no se puede rehacer la
+   tabla desde cero: eso regenera los tokens e invalida los links que la
+   gente ya recibió. Este modo compara el Sheet contra lo que hay en la
+   base y emite:
+     · UPDATE para quien ya existe — refresca datos, NO toca su token
+     · INSERT para los nuevos, con id y token nuevos
+     · un aviso de quién está en la base pero ya no en el Sheet
+       (no se borra solo: puede ser un cambio de nombre, no una baja)
+
+   Empareja por nombre normalizado. Necesita la clave en VA_CLAVE.
+============================================================ */
+if (actualizar) {
+  const SUPABASE_URL = 'https://psmaynxnphbfbtayzaeb.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-';
+  const clave = process.env.VA_CLAVE;
+  if (!clave) throw new Error('Falta la variable de entorno VA_CLAVE');
+
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/admin_lista_envio`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_clave: clave }),
+  });
+  if (!r.ok) throw new Error('No pude leer la base: ' + (await r.text()));
+  const enBase = await r.json();
+
+  /* Emparejar por nombre a secas falla en dos casos reales:
+       · le agregan un tratamiento ("Virgilio Casado" → "Sr. Virgilio Casado")
+       · dos personas distintas se ven iguales sin tildes
+         (Mario Calderon y Mario Calderón son primos, no un duplicado)
+     Por eso se empareja primero por teléfono, que sí es único, y lo que
+     quede se empareja por nombre sin tratamiento, consumiendo candidatos
+     de uno en uno para no colapsar los homónimos. */
+  const TRATAMIENTOS = /^(sr|sra|srta|don|dona|dr|dra|lic|licda|ing|arq|padre)\.?\s+/i;
+  const claveNombre = (s) => norm(s).replace(TRATAMIENTOS, '').trim();
+  const soloDigitos = (t) => (t || '').replace(/\D/g, '');
+
+  const porTel = new Map();
+  const porNombreLista = new Map();
+  enBase.forEach(g => {
+    [g.telefono, g.telefono_alt].forEach(t => {
+      const d = soloDigitos(t);
+      if (d) porTel.set(d, g);
+    });
+    const k = claveNombre(g.nombre);
+    if (!porNombreLista.has(k)) porNombreLista.set(k, []);
+    porNombreLista.get(k).push(g);
+  });
+
+  const usados = new Set();
+  const buscarEnBase = (g) => {
+    const d = soloDigitos(g.telefono);
+    const porNumero = d && porTel.get(d);
+    if (porNumero && !usados.has(porNumero.id)) { usados.add(porNumero.id); return porNumero; }
+    const cand = (porNombreLista.get(claveNombre(g.nombre)) || []).find(x => !usados.has(x.id));
+    if (cand) { usados.add(cand.id); return cand; }
+    return null;
+  };
+
+  // Los ids nuevos siguen después del mayor que ya exista.
+  let maxN = 0;
+  enBase.forEach(g => { const m = /^INV(\d+)$/.exec(g.id); if (m) maxN = Math.max(maxN, +m[1]); });
+
+  const q = (s) => s == null ? 'null' : `'${String(s).replace(/'/g, "''")}'`;
+  const arr = (a) => a.length ? `ARRAY[${a.map(q).join(',')}]::text[]` : `'{}'::text[]`;
+
+  const updates = [], inserts = [];
+  const vistos = new Set();
+  let nActualizados = 0;
+
+  for (const g of invitados) {
+    const ya = buscarEnBase(g);
+    if (ya) {
+      vistos.add(ya.id);
+      // Solo se escribe lo que de verdad cambió: así el SQL queda corto y
+      // se ve de un vistazo qué se está tocando.
+      const sets = [];
+      const mismosNombres = (a, b) =>
+        (a || []).length === (b || []).length && (a || []).every((x, k) => x === (b || [])[k]);
+
+      if (g.nombre !== ya.nombre) sets.push(`nombre=${q(g.nombre)}`);
+      if (!mismosNombres(g.acompanantes, ya.acompanantes)) sets.push(`acompanantes=${arr(g.acompanantes)}`);
+      if (g.cupos !== ya.cupos) sets.push(`cupos=${g.cupos}`);
+      if ((g.grupo || null) !== (ya.grupo || null)) sets.push(`grupo=${q(g.grupo)}`);
+      if ((g.tipo || null) !== (ya.tipo || null)) sets.push(`tipo=${q(g.tipo)}`);
+      // Un teléfono vacío en el Sheet no borra el que ya esté en la base:
+      // pudo haberse corregido a mano desde la consola.
+      if (g.telefono && g.telefono !== ya.telefono) sets.push(`telefono=${q(g.telefono)}`);
+      if (g.telefono_alt && g.telefono_alt !== ya.telefono_alt) sets.push(`telefono_alt=${q(g.telefono_alt)}`);
+      if (g.nombre_acompanante && g.nombre_acompanante !== ya.nombre_acompanante)
+        sets.push(`nombre_acompanante=${q(g.nombre_acompanante)}`);
+
+      if (sets.length) {
+        nActualizados++;
+        updates.push(`update public.invitados set ${sets.join(', ')} where id=${q(ya.id)};  -- ${g.nombre}`);
+      }
+    } else {
+      const id = 'INV' + String(++maxN).padStart(3, '0');
+      inserts.push(
+        `(${q(id)},${q(g.nombre)},${arr(g.acompanantes)},${g.cupos},${q(g.grupo)},` +
+        `${q(g.tipo)},${q('VA' + String(maxN).padStart(3, '0'))},${q(g.telefono)},${q(g.telefono_alt)},${q(g.nombre_acompanante)},` +
+        `substr(md5(${q(id)} || gen_random_uuid()::text), 1, 12))`);
+    }
+  }
+
+  const huerfanos = enBase.filter(g => !vistos.has(g.id));
+  console.error(`\n── MODO ACTUALIZAR ──`);
+  console.error(`En la base: ${enBase.length} · en el Sheet: ${invitados.length}`);
+  console.error(`Emparejados: ${vistos.size} (conservan su token y su link)`);
+console.error(`Con cambios:  ${nActualizados}`);
+  console.error(`Se agregan:    ${inserts.length}`);
+  rep('En la base pero ya no en el Sheet — se dejan intactos, revísalos a mano', huerfanos.map(g => g.nombre));
+
+  const out = [];
+  out.push('-- Actualización incremental desde el Google Sheet.');
+  out.push(`-- ${nActualizados} actualizados (token intacto) · ${inserts.length} nuevos.`);
+  out.push('-- No borra nada: los links ya enviados siguen sirviendo.');
+  out.push('');
+  out.push('begin;');
+  out.push('');
+  if (updates.length) { out.push('-- Refresco de datos, sin tocar id ni token'); out.push(...updates); out.push(''); }
+  if (inserts.length) {
+    out.push('-- Invitados nuevos');
+    out.push('insert into public.invitados');
+    out.push('  (id, nombre, acompanantes, cupos, grupo, tipo, codigo, telefono, telefono_alt, nombre_acompanante, token)');
+    out.push('values');
+    out.push(inserts.join(',\n') + ';');
+    out.push('');
+  }
+  out.push('commit;');
+  console.log(out.join('\n'));
+}
+
+/* ---------------- SQL (reconstrucción completa) ---------------- */
+if (!soloReporte && !actualizar) {
   const q = (s) => s == null ? 'null' : `'${String(s).replace(/'/g, "''")}'`;
   const arr = (a) => a.length ? `ARRAY[${a.map(q).join(',')}]::text[]` : `'{}'::text[]`;
 

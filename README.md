@@ -138,6 +138,25 @@ Lo que hace el script con los datos del Sheet:
 > **Esto regenera todos los tokens**, o sea que invalida los links ya enviados.
 > Solo es seguro mientras no se haya mandado nada.
 
+### Actualizar sin romper los links ya enviados
+
+Una vez que empezaron a salir invitaciones, hay que usar el modo incremental:
+
+```bash
+VA_CLAVE='tu-clave' node generar_lista_sql.mjs invitados.csv --actualizar > update.sql
+```
+
+Compara el Sheet contra la base y emite solo lo necesario: `UPDATE` de los
+campos que de verdad cambiaron —sin tocar id ni token, así el link de cada
+quien sigue sirviendo— e `INSERT` de los nuevos. No borra a nadie: si alguien
+está en la base y ya no en el Sheet, lo reporta para revisarlo a mano.
+
+Empareja **primero por teléfono** y solo después por nombre sin tratamiento
+(`Sr.`, `Sra.`, `Dr.`…). Hacerlo solo por nombre fallaba en dos casos reales:
+cuando le agregan el tratamiento a alguien que ya estaba, y cuando dos personas
+distintas se ven iguales al quitarles las tildes (Mario Calderon y Mario
+Calderón son dos primos, no un duplicado).
+
 Para corregir un número suelto sin rehacer la lista, edítalo directamente en la
 consola o usa `importar_telefonos.mjs`, que solo escribe teléfonos sobre la
 lista existente.
