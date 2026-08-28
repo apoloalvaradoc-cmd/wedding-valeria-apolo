@@ -136,7 +136,9 @@ body.locked { overflow: hidden; }
   --light-x: 35%;
   --light-y: 28%;
 
-  background: #EBDDD1;
+  /* Respaldo por si el <video> no carga en absoluto: el sobre se ve igual.
+     Va en el shorthand porque uno posterior borraría background-image. */
+  background: #EBDDD1 url('portada-poster.jpg') center / cover no-repeat;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 2rem 1.2rem;
   perspective: 1600px;
@@ -1622,7 +1624,12 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
 
   <!-- Floating dust motes (light catching particles) -->
   <!-- Cover video — pausado en el frame del sello hasta que se haga click -->
-  <video class="cover-video" muted playsinline preload="auto" aria-hidden="true">
+  <!-- El poster es lo que arregla iPhone: Safari en iOS no pinta el primer
+       fotograma de un <video> hasta que se reproduce, así que la portada se
+       veía vacía. Con poster el sobre aparece de inmediato en todos lados,
+       aunque el video aún no haya bajado. -->
+  <video class="cover-video" muted playsinline webkit-playsinline preload="auto"
+         poster="portada-poster.jpg" aria-hidden="true">
     <source src="portada-video.mp4" type="video/mp4">
   </video>
 
@@ -1713,7 +1720,7 @@ footer { padding: 3rem 1.5rem 2rem; background: var(--wine); color: var(--cream)
           <div class="story-dot"></div>
           <div class="story-year">07 · Nov · 2025 · la pregunta</div>
           <h3 class="story-title">La propuesta</h3>
-          <p class="story-text">Con un "¿te casarías conmigo?" temblando más que las manos, ella dijo que sí. Desde ese momento empezamos a soñar con este día.</p>
+          <p class="story-text">Con un "¿te casarías conmigo?" ella dijo que sí. Desde ese momento empezamos a soñar con este día.</p>
         </div>
         <div class="story-item">
           <div class="story-dot"></div>
@@ -2606,12 +2613,18 @@ const SELLO = { fx: 0.493, fy: 0.533, d: 0.091 };
 
 function posicionarSello() {
   const v = $('.cover-video'), btn = $('#envelope');
-  if (!v || !btn || !v.videoWidth) return;
+  if (!v || !btn) return;
+
+  /* En iOS videoWidth tarda en llegar, y sin esto el círculo se quedaba
+     donde lo dejó el CSS. El poster tiene el mismo encuadre que el video,
+     así que sus medidas sirven mientras tanto. */
+  const vw = v.videoWidth  || 720;
+  const vh = v.videoHeight || 1280;
 
   const cw = v.clientWidth, ch = v.clientHeight;
   // object-fit: cover ⇒ escala por el lado que sobra; object-position: center ⇒ centrado.
-  const escala = Math.max(cw / v.videoWidth, ch / v.videoHeight);
-  const w = v.videoWidth * escala, h = v.videoHeight * escala;
+  const escala = Math.max(cw / vw, ch / vh);
+  const w = vw * escala, h = vh * escala;
   const x0 = (cw - w) / 2, y0 = (ch - h) / 2;
 
   btn.style.left = (x0 + SELLO.fx * w) + 'px';
