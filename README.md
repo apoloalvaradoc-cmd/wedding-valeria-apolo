@@ -236,9 +236,20 @@ error.
 
 ### Exports
 
-- **Invitaciones CSV** — una fila por invitación con todo: teléfonos, estado,
-  nombres, restricciones, envíos, aperturas.
-- **Lista de confirmados** — una fila por persona confirmada, numerada.
+Salen en **.xlsx de verdad**, no CSV renombrado: Excel abre los CSV con avisos
+de formato y rompe las tildes, y estos archivos se le entregan a la finca. El
+generador está escrito a mano en el propio HTML (un .xlsx es un ZIP con XML
+adentro), así que no depende de ninguna librería ni CDN.
+
+Vienen con la paleta de la invitación: cabecera vino con letra crema, filas
+alternadas en blanco y crema, bordes rosa, título y fecha arriba, encabezado
+congelado, autofiltro puesto y las restricciones alimenticias resaltadas.
+
+- **Invitaciones (Excel)** — una fila por invitación con todo: teléfonos,
+  estado, quiénes vienen, restricciones, envíos, aperturas.
+- **Lista de confirmados (Excel)** — una fila por persona confirmada, numerada.
+- Desde la consola, **Excel** exporta el control de envíos con el link
+  personal de cada quien.
 
 ---
 
