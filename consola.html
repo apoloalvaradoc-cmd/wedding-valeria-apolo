@@ -279,7 +279,15 @@ Valeria & Apolo 🤍`
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
-let clave = localStorage.getItem('va_clave') || null;
+/* Misma llave de guardado que el panel de la invitación (index.html): así
+   la clave se escribe una sola vez por dispositivo y sirve en las dos
+   páginas. Antes cada una usaba la suya y entrar en una no desbloqueaba
+   la otra. La segunda lectura es para adoptar la del panel si esta página
+   nunca se abrió. */
+const CLAVE_GUARDADA = 'va_clave';
+let clave = localStorage.getItem(CLAVE_GUARDADA)
+         || localStorage.getItem('va_admin_clave')
+         || null;
 let datos = [];
 let filtro = 'todos';
 let plantillaActiva = 'invitacion';
@@ -618,7 +626,8 @@ async function login() {
   try {
     clave = p;
     await cargar();
-    localStorage.setItem('va_clave', p);
+    localStorage.setItem(CLAVE_GUARDADA, p);
+    localStorage.setItem('va_admin_clave', p);   // que el panel tampoco la pida
     $('#login-view').classList.add('hidden');
     $('#app').classList.remove('hidden');
   } catch (e) {
@@ -631,7 +640,8 @@ async function login() {
 }
 
 $('#btn-logout').addEventListener('click', () => {
-  localStorage.removeItem('va_clave');
+  localStorage.removeItem(CLAVE_GUARDADA);
+  localStorage.removeItem('va_admin_clave');
   location.reload();
 });
 $('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
@@ -692,9 +702,22 @@ $('#base-url').value = (baseGuardada && baseGuardada.startsWith(location.origin)
 cargarPlantilla('invitacion');
 
 if (clave) {
-  cargar()
-    .then(() => { $('#login-view').classList.add('hidden'); $('#app').classList.remove('hidden'); })
-    .catch(() => { localStorage.removeItem('va_clave'); clave = null; });
+  $('#login-view').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  cargar().catch(e => {
+    /* Solo se olvida la clave si de verdad es incorrecta (28000). Antes se
+       borraba ante cualquier fallo, así que un bache de señal en el
+       teléfono obligaba a escribirla de nuevo. */
+    if (e && e.code === '28000') {
+      localStorage.removeItem(CLAVE_GUARDADA);
+      localStorage.removeItem('va_admin_clave');
+      clave = null;
+      $('#app').classList.add('hidden');
+      $('#login-view').classList.remove('hidden');
+    } else {
+      alert('No pudimos conectar. Revisa tu señal y toca Actualizar.');
+    }
+  });
 }
 </script>
 </body>

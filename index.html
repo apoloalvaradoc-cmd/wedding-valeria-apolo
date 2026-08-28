@@ -3022,12 +3022,23 @@ function openAdmin() {
   // Si ya entró antes en este dispositivo, no volvemos a pedir la clave.
   // Se guarda en localStorage, así que sobrevive a recargas y a cerrar el
   // navegador. El botón "Salir" del encabezado la borra.
-  const guardada = localStorage.getItem('va_admin_clave');
+  // Misma llave que consola.html: se escribe una vez y sirve en las dos.
+  const guardada = localStorage.getItem('va_admin_clave') || localStorage.getItem('va_clave');
   if (guardada) {
     mostrarPanelAdmin();
     loadAdminData(guardada)
       .then(renderTab)
-      .catch(() => { localStorage.removeItem('va_admin_clave'); adminClave = null; mostrarLoginAdmin(); });
+      .catch(e => {
+        // Solo olvidarla si es incorrecta; un fallo de red no debe borrarla.
+        if (e && e.code === '28000') {
+          localStorage.removeItem('va_admin_clave');
+          localStorage.removeItem('va_clave');
+          adminClave = null;
+          mostrarLoginAdmin();
+        } else {
+          alert('No pudimos conectar. Revisa tu señal y vuelve a entrar.');
+        }
+      });
     return;
   }
   mostrarLoginAdmin();
@@ -3043,6 +3054,7 @@ function mostrarPanelAdmin() {
 }
 function salirAdmin() {
   localStorage.removeItem('va_admin_clave');
+  localStorage.removeItem('va_clave');
   adminClave = null;
   mostrarLoginAdmin();
   closeAdmin();
@@ -3078,7 +3090,9 @@ async function adminLogin() {
     return;
   }
   if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
-  localStorage.setItem('va_admin_clave', pass);   // no volver a pedirla en este dispositivo
+  // Las dos llaves, para que la consola de envío tampoco la pida.
+  localStorage.setItem('va_admin_clave', pass);
+  localStorage.setItem('va_clave', pass);
   mostrarPanelAdmin();
   renderTab();
 }

@@ -195,8 +195,9 @@ WhatsApp marca como spam — conviene mandar en tandas de 30 o 40 por día.
 ## 6. Panel de los novios
 
 Doble clic en los `· · ·` del footer, o `#admin` en la URL. Misma clave que
-la consola, y **solo la pide una vez por dispositivo** — queda guardada en el
-navegador hasta que se toque "Salir". **El panel es para ver y administrar; los botones de envío en tanda
+la consola. **Se escribe una sola vez por dispositivo y sirve en las dos
+páginas**: entrar en la consola desbloquea el panel y al revés. Queda guardada
+en el navegador hasta que se toque "Salir", que la borra de ambas. **El panel es para ver y administrar; los botones de envío en tanda
 están en `consola.html`** — hay un enlace directo en el encabezado del panel.
 Cuatro pestañas:
 
