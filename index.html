@@ -1126,17 +1126,17 @@ body.locked { overflow: hidden; }
 #dresscode { background: transparent; }
 .dress-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 640px) { .dress-grid { grid-template-columns: 1fr 1fr; } }
-.dress-card { padding: 1.5rem; background: #ffffff; border: 1px solid rgba(196, 197, 160, 0.4); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
-.dress-card.forbidden { border-color: rgba(184, 69, 94, 0.45); }
-.dress-heading { font-family: var(--font-serif); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--olive-dark); margin-bottom: 1rem; }
-.dress-card.forbidden .dress-heading { color: var(--wine); }
+.dress-card { padding: 1.5rem; background: #ffffff; border: 1px solid rgba(184, 69, 94, 0.45); box-shadow: 0 1px 0 rgba(120, 75, 30, 0.15), 0 4px 8px rgba(95, 55, 20, 0.13), 0 12px 22px rgba(85, 45, 15, 0.13); }
+/* Las dos tarjetas de dress code se ven igual: mismo borde y mismo rótulo.
+   Antes la de la izquierda iba en olivo y la de la derecha en vino, y
+   puestas lado a lado parecían de secciones distintas. */
+.dress-heading { font-family: var(--font-serif); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--wine); margin-bottom: 1rem; }
 .dress-swatches { display: flex; flex-wrap: wrap; gap: 0.8rem; }
 .swatch { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
 .swatch-dot { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(43, 31, 34, 0.15); position: relative; }
 .swatch.forbidden .swatch-dot::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: linear-gradient(to top right, transparent calc(50% - 1.5px), var(--wine) calc(50% - 1.5px), var(--wine) calc(50% + 1.5px), transparent calc(50% + 1.5px)); }
 .swatch-label { font-size: 0.62rem; color: var(--muted); text-align: center; }
 .dress-note { margin-top: 1rem; font-size: 0.85rem; color: var(--ink); }
-.dress-card.forbidden .dress-note { }
 
 /* ============================================================
    ADULTS
