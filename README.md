@@ -27,7 +27,7 @@ Google Sheet  ──generar_lista_sql.mjs──►  invitados (143 · 262 cupos)
 ```
 
 Cada invitado tiene un **token** de 12 caracteres. Su link es
-`https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/?i=<token>`.
+`https://valeria-y-apolo.vercel.app/?i=<token>`.
 Abrirlo registra una fila en `aperturas` — eso es lo que alimenta todo el
 seguimiento. Quien pierda su link puede buscarse por nombre; esa apertura
 queda marcada con `origen = 'buscador'`.
@@ -275,7 +275,7 @@ sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
 ## 8. Despliegue
 
 GitHub Pages sirve la rama `main`:
-<https://apoloalvaradoc-cmd.github.io/wedding-valeria-apolo/>
+<https://valeria-y-apolo.vercel.app/>
 
 Push a `main` y listo. La anon key en el HTML es pública por diseño; lo que
 protege los datos es RLS y las funciones, no el secreto de la key.
