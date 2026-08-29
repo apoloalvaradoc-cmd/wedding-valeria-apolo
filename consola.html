@@ -301,8 +301,9 @@ function render() {
   const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
   const sinTel = datos.filter(g => destinos(g).length === 0).length;
   const numeros = datos.reduce((a, g) => a + destinos(g).length, 0);
+  const cupos = datos.reduce((a, g) => a + (g.cupos || 0), 0);
   $('#stats').innerHTML = [
-    ['Invitaciones', total], ['Números', numeros], ['Enviadas', enviados],
+    ['Invitaciones', total], ['Cupos', cupos], ['Números', numeros], ['Enviadas', enviados],
     ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
     ['Personas', personas], ['Sin teléfono', sinTel],
   ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
@@ -349,7 +350,11 @@ function render() {
       </td>
       ${celdaDestino(g, 'telefono', 'titular', false)}
       ${celdaDestino(g, 'telefono_alt', 'acompanante', true)}
-      <td>${g.cupos}${g.asistira === true ? ` <span class="muted">→ ${g.asistentes}</span>` : ''}</td>
+      <td>
+        <input class="cupo-input" type="number" min="1" max="20" step="1"
+               value="${g.cupos}" data-cupo="${g.id}" title="Cupos de la invitación">
+        ${g.asistira === true ? `<div class="muted">vienen ${g.asistentes}</div>` : ''}
+      </td>
       <td><span class="badge ${e.cls}">${e.label}</span></td>
       <td>${g.aperturas || 0}${g.ultima_apertura ? `<div class="muted">${fecha(g.ultima_apertura)}</div>` : ''}</td>
       <td><textarea class="nota-input" rows="1" placeholder="Notas"
@@ -382,6 +387,25 @@ function colaPendiente() {
       .filter(d => !enviadoA(g, d.destino, tipo))
       .map(d => ({ id: g.id, destino: d.destino, nombre: d.nombre }))
   );
+}
+
+/* Los cupos venían del Sheet y corregir uno suelto obligaba a recargar la
+   lista entera, que además regenera los tokens. Se repinta la tabla al
+   guardar porque el mensaje de WhatsApp lleva los cupos dentro. */
+async function guardarCupos(id, valor) {
+  const n = parseInt(valor, 10);
+  const g = datos.find(x => x.id === id);
+  if (!g) return;
+  if (!(n >= 1 && n <= 20)) { render(); return; }
+  if (n === g.cupos) return;
+  try {
+    await rpc('admin_set_cupos', { p_clave: clave, p_invitado_id: id, p_cupos: n });
+    g.cupos = n;
+    render();
+  } catch (e) {
+    alert('No se pudieron cambiar los cupos: ' + e.message);
+    render();   // devuelve el número al que sí está guardado
+  }
 }
 
 /* Lo que no cabe en ningun otro campo: "no come mariscos", "llega tarde",
@@ -512,6 +536,8 @@ $('#tbody').addEventListener('click', e => {
 $('#tbody').addEventListener('change', e => {
   const t = e.target.closest('[data-tel]');
   if (t) { guardarTel(t.dataset.tel, t.dataset.campo, t.value); return; }
+  const c = e.target.closest('[data-cupo]');
+  if (c) { guardarCupos(c.dataset.cupo, c.value); return; }
   const n = e.target.closest('[data-nota]');
   if (n) guardarNotas(n.dataset.nota, n.value);
 });

@@ -222,3 +222,10 @@
 .editor-mesa { display: grid; gap: 0.6rem; margin-top: 0.5rem; }
 .editor-mesa .row input[type=text] { max-width: 200px; }
 .editor-mesa .row input[type=number] { width: 84px; }
+
+/* Los cupos se editan en la misma tabla, sin abrir nada. */
+.cupo-input {
+  border: 1px dashed var(--line); padding: 0.28rem 0.3rem; width: 60px;
+  font-size: 0.9rem; background: transparent; text-align: center;
+}
+.cupo-input:focus { border-style: solid; }
