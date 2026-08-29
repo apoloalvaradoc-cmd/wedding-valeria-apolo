@@ -325,7 +325,9 @@ function render() {
     const ya = enviadoA(g, destino, tipoActual);
     const nombre = destino === 'titular' ? g.nombre : (g.nombre_acompanante || '');
     return `<td>
-      ${etiqueta ? `<div class="muted" style="margin-bottom:0.15rem">${escapeHtml(nombre)}</div>` : ''}
+      ${etiqueta ? `<input class="nombre-input" placeholder="Nombre del acompañante"
+                           value="${escapeHtml(g.nombre_acompanante || '')}"
+                           data-nombre="${g.id}" data-campo="nombre_acompanante">` : ''}
       <input class="tel-input" value="${escapeHtml(crudo)}" placeholder="5555 5555"
              data-tel="${g.id}" data-campo="${campo}"
              title="${tel ? mostrarTel(crudo) : 'Número no válido'}">
@@ -345,7 +347,8 @@ function render() {
     const e = estado(g);
     return `<tr class="${totalEnvios(g) > 0 ? 'sent' : ''}">
       <td>
-        ${escapeHtml(g.nombre)}
+        <input class="nombre-input titular" value="${escapeHtml(g.nombre)}"
+               data-nombre="${g.id}" data-campo="nombre" title="Nombre de la invitación">
         <div class="muted">${escapeHtml(g.grupo || g.tipo || '')}${g.mesa ? ` · Mesa ${g.mesa}` : ''}</div>
       </td>
       ${celdaDestino(g, 'telefono', 'titular', false)}
@@ -387,6 +390,29 @@ function colaPendiente() {
       .filter(d => !enviadoA(g, d.destino, tipo))
       .map(d => ({ id: g.id, destino: d.destino, nombre: d.nombre }))
   );
+}
+
+/* Los nombres traen erratas y tratamientos raros del Sheet. Corregir uno
+   recargando la lista entera regeneraría todos los tokens y dejaría muertos
+   los links ya enviados, así que se cambia aquí mismo. Se repinta al
+   guardar porque el saludo del mensaje lleva el nombre dentro. */
+async function guardarNombre(id, campo, valor) {
+  const g = datos.find(x => x.id === id);
+  if (!g) return;
+  const v = (valor || '').trim();
+  // La invitación no puede quedarse sin nombre: es como se identifica.
+  if (campo === 'nombre' && !v) { render(); return; }
+  if (v === (g[campo] || '')) return;
+  try {
+    await rpc('admin_set_nombre', {
+      p_clave: clave, p_invitado_id: id, p_nombre: v, p_campo: campo,
+    });
+    g[campo] = v || null;
+    render();
+  } catch (e) {
+    alert('No se pudo guardar el nombre: ' + e.message);
+    render();   // devuelve el campo al valor que sí está guardado
+  }
 }
 
 /* Los cupos venían del Sheet y corregir uno suelto obligaba a recargar la
@@ -538,6 +564,8 @@ $('#tbody').addEventListener('change', e => {
   if (t) { guardarTel(t.dataset.tel, t.dataset.campo, t.value); return; }
   const c = e.target.closest('[data-cupo]');
   if (c) { guardarCupos(c.dataset.cupo, c.value); return; }
+  const nb = e.target.closest('[data-nombre]');
+  if (nb) { guardarNombre(nb.dataset.nombre, nb.dataset.campo, nb.value); return; }
   const n = e.target.closest('[data-nota]');
   if (n) guardarNotas(n.dataset.nota, n.value);
 });

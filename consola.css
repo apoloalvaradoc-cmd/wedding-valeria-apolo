@@ -229,3 +229,15 @@
   font-size: 0.9rem; background: transparent; text-align: center;
 }
 .cupo-input:focus { border-style: solid; }
+
+/* Los nombres también se corrigen en la tabla: vienen del Sheet con
+   erratas y recargar la lista entera regeneraría todos los tokens. */
+.nombre-input {
+  border: 1px dashed transparent; padding: 0.24rem 0.35rem; width: 100%;
+  min-width: 130px; font: inherit; font-size: 0.88rem;
+  background: transparent; color: var(--ink);
+}
+.nombre-input:hover { border-color: var(--line); }
+.nombre-input:focus { border-color: var(--wine); border-style: solid; background: var(--paper); }
+.nombre-input.titular { font-weight: 600; }
+.nombre-input::placeholder { color: var(--muted); font-weight: 400; }
