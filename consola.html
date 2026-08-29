@@ -4,142 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Consola de envío · Valeria &amp; Apolo</title>
-<style>
-  :root {
-    --cream: #F1F0EA;
-    --paper: #FFFFFF;
-    --wine: #580410;
-    --wine-deep: #390000;
-    --olive: #75763E;
-    --sage: #C4C5A0;
-    --rose: #D9A7AC;
-    --ink: #2A2320;
-    --muted: #8A7F79;
-    --line: rgba(217, 167, 172, 0.4);
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--cream); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px; line-height: 1.5;
-  }
-  header {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--wine); color: var(--cream);
-    padding: 0.9rem 1.1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-  }
-  header h1 { margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 4rem; }
-  .card { background: var(--paper); border: 1px solid var(--line); padding: 1.1rem; margin-bottom: 1rem; }
-  .card h2 { margin: 0 0 0.8rem; font-size: 0.66rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--wine); font-weight: 600; }
-  label { display: block; font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
-  input[type=text], input[type=password], input[type=url], textarea, select {
-    width: 100%; padding: 0.6rem 0.7rem; border: 1px solid var(--line);
-    background: var(--paper); color: var(--ink); font: inherit; border-radius: 0;
-  }
-  input:focus, textarea:focus, select:focus { outline: 2px solid var(--sage); outline-offset: -1px; }
-  textarea { resize: vertical; min-height: 108px; font-size: 0.9rem; }
-  button {
-    font: inherit; cursor: pointer; border: 1px solid var(--wine);
-    background: var(--paper); color: var(--wine); padding: 0.5rem 0.9rem;
-  }
-  button:hover:not(:disabled) { background: var(--wine); color: var(--cream); }
-  button:disabled { opacity: 0.45; cursor: not-allowed; }
-  button.filled { background: var(--wine); color: var(--cream); }
-  button.filled:hover:not(:disabled) { background: var(--wine-deep); }
-  button.small { padding: 0.32rem 0.6rem; font-size: 0.82rem; }
-  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 0.6rem; }
-  .stat { background: var(--paper); border: 1px solid var(--line); padding: 0.7rem 0.8rem; }
-  .stat .n { font-size: 1.6rem; color: var(--wine); line-height: 1.1; }
-  .stat .l { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
-  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
-  .chip {
-    padding: 0.34rem 0.72rem; font-size: 0.8rem; border: 1px solid var(--line);
-    background: var(--paper); color: var(--muted); cursor: pointer;
-  }
-  .chip.active { background: var(--wine); border-color: var(--wine); color: var(--cream); }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--paper); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  th {
-    text-align: left; padding: 0.6rem 0.7rem; background: var(--cream);
-    font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); font-weight: 600;
-    position: sticky; top: 0;
-  }
-  td { padding: 0.55rem 0.7rem; border-top: 1px solid rgba(217,167,172,0.25); vertical-align: middle; }
-  tr.sent td { background: rgba(196, 197, 160, 0.13); }
-  .badge { display: inline-block; padding: 0.14rem 0.5rem; font-size: 0.72rem; white-space: nowrap; }
-  .b-conf { background: rgba(117,118,62,0.16); color: var(--olive); }
-  .b-dec  { background: rgba(217,167,172,0.26); color: var(--wine); }
-  .b-open { background: rgba(196,197,160,0.3); color: #5c5d2e; }
-  .b-sent { background: rgba(138,127,121,0.15); color: var(--muted); }
-  .b-none { background: rgba(138,127,121,0.1); color: var(--muted); }
-  .b-warn { background: rgba(217,167,172,0.4); color: var(--wine-deep); }
-  .tel-input { border: 1px dashed var(--line); padding: 0.28rem 0.4rem; width: 132px; font-size: 0.84rem; background: transparent; }
-  .muted { color: var(--muted); font-size: 0.8rem; }
-  .msg { padding: 0.7rem 0; border-top: 1px solid rgba(217,167,172,0.3); }
-  .msg:first-child { border-top: none; padding-top: 0; }
-  .msg-cab { display: flex; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap;
-    font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
-  .msg-quien { color: var(--wine); font-weight: 600; }
-  .msg-texto { font-size: 0.95rem; line-height: 1.45; white-space: pre-wrap; }
-  /* La restricción alimenticia se resalta: es lo que hay que pasarle al catering. */
-  .msg-restriccion { margin-top: 0.35rem; font-size: 0.82rem; color: var(--wine-deep);
-    background: rgba(217,167,172,0.22); padding: 0.3rem 0.5rem; display: inline-block; }
-  .login { max-width: 380px; margin: 12vh auto; }
-  .err { background: rgba(217,167,172,0.3); color: var(--wine-deep); padding: 0.55rem 0.7rem; font-size: 0.85rem; margin-top: 0.6rem; }
-  .hidden { display: none !important; }
-  .hint { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.7rem; }
-  .tpl-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
-  .queue-bar {
-    position: sticky; bottom: 0; background: var(--wine); color: var(--cream);
-    padding: 0.7rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; flex-wrap: wrap;
-  }
-  .queue-bar a { border: 1px solid var(--cream); background: transparent; color: var(--cream);
-    padding: 0.5rem 0.9rem; text-decoration: none; cursor: pointer; display: inline-block; }
-  .queue-bar a:hover:not(.apagado) { background: var(--cream); color: var(--wine); }
-  .queue-bar a.apagado { opacity: 0.45; pointer-events: none; }
-  .btn-wa { display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none;
-    border: 1px solid var(--wine); color: var(--wine); background: var(--paper);
-    max-width: 100%; }
-  .btn-wa span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .btn-wa.filled { background: var(--wine); color: var(--cream); }
-  .btn-wa:hover { background: var(--wine); color: var(--cream); }
-  @media (max-width: 600px) {
-    .wrap { padding: 0.8rem 0.7rem 4rem; }
-    td, th { padding: 0.45rem 0.5rem; }
-    .tel-input { width: 108px; }
-  }
-</style>
+<title>Listado · Consola · Valeria &amp; Apolo</title>
+<link rel="stylesheet" href="consola.css">
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
-<div id="login-view">
-  <div class="wrap">
-    <div class="card login">
-      <h2>Consola de envío</h2>
-      <p class="hint">Valeria &amp; Apolo · 07.11.2026</p>
-      <label for="pass">Clave de administración</label>
-      <input type="password" id="pass" autocomplete="current-password" placeholder="••••••••">
-      <div id="login-err" class="err hidden"></div>
-      <button class="filled" id="btn-login" style="margin-top:0.8rem;width:100%">Entrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ============ CONSOLA ============ -->
 <div id="app" class="hidden">
-  <header>
-    <h1>Consola de envío</h1>
-    <div class="row">
-      <button class="small" id="btn-refresh">Actualizar</button>
-      <button class="small" id="btn-export">Excel</button>
-      <button class="small" id="btn-logout">Salir</button>
-    </div>
-  </header>
-
   <div class="wrap">
     <div class="stats" id="stats"></div>
 
@@ -152,6 +22,11 @@
         Cada invitación se manda a dos números, y el saludo usa el nombre de quien
         recibe: al titular lo saluda por el suyo, al acompañante por el de él.
       </p>
+      <p class="hint">
+        <strong>Antes de darle enviar:</strong> espera a que aparezca la foto debajo del
+        link. Esa vista previa la arma WhatsApp en tu teléfono, no la página, y tarda
+        un par de segundos; si mandas antes, el mensaje sale sin foto.
+      </p>
       <textarea id="tpl-text"></textarea>
       <div class="row" style="margin-top:0.6rem">
         <button class="small" id="btn-tpl-reset">Restaurar texto original</button>
@@ -159,15 +34,8 @@
       </div>
       <div style="margin-top:0.9rem">
         <label for="base-url">Dirección pública de la invitación</label>
-        <input type="url" id="base-url" placeholder="https://usuario.github.io/repo/">
+        <input type="url" id="base-url" placeholder="https://valeria-y-apolo.vercel.app/">
       </div>
-    </div>
-
-    <!-- Los mensajes que dejan los invitados al confirmar. Se oculta entero
-         mientras no haya ninguno, para no ocupar espacio en vano. -->
-    <div class="card hidden" id="card-mensajes">
-      <h2>Mensajes de los invitados <span class="muted" id="mensajes-cuenta"></span></h2>
-      <div id="mensajes-lista"></div>
     </div>
 
     <div class="card">
@@ -182,7 +50,7 @@
           <thead>
             <tr>
               <th>Nombre</th><th>Titular</th><th>Acompañante</th><th>Cupos</th>
-              <th>Estado</th><th>Aperturas</th><th>Link</th>
+              <th>Estado</th><th>Aperturas</th><th>Notas</th><th>Link</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -199,30 +67,17 @@
   </div>
 </div>
 
+<script src="consola-base.js"></script>
+<script src="xlsx.js"></script>
 <script>
 /* ============================================================
-   Consola de envío por WhatsApp · Valeria & Apolo
-
-   No usa la llave de servicio de Supabase. Todo pasa por RPCs
-   que validan la clave de administración contra un hash bcrypt
-   guardado en la base, así que esta página se puede abrir desde
-   el teléfono sin exponer nada.
+   Listado de invitados y envío por WhatsApp
 
    El envío es asistido, no automático: cada botón abre WhatsApp
    con el número y el mensaje ya escritos, y tú das Enter. Es lo
-   que evita que 131 mensajes seguidos desde un número personal
+   que evita que 183 mensajes seguidos desde un número personal
    se vean como spam.
 ============================================================ */
-
-const CONFIG = {
-  supabaseUrl: "https://psmaynxnphbfbtayzaeb.supabase.co",
-  supabaseKey: "sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-",
-  // Se deduce de dónde está servida esta misma página, así el link de los
-  // invitados sale correcto sin importar el dominio (GitHub Pages, Netlify,
-  // dominio propio). Antes iba escrita a mano y había que recordar cambiarla.
-  baseUrlDefault: location.origin + location.pathname.replace(/[^/]*$/, ''),
-  paisPorDefecto: "502",   // Guatemala
-};
 
 const PLANTILLAS = {
   invitacion: {
@@ -292,63 +147,9 @@ Valeria & Apolo 🤍`
   },
 };
 
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-
-/* Misma llave de guardado que el panel de la invitación (index.html): así
-   la clave se escribe una sola vez por dispositivo y sirve en las dos
-   páginas. Antes cada una usaba la suya y entrar en una no desbloqueaba
-   la otra. La segunda lectura es para adoptar la del panel si esta página
-   nunca se abrió. */
-const CLAVE_GUARDADA = 'va_clave';
-let clave = localStorage.getItem(CLAVE_GUARDADA)
-         || localStorage.getItem('va_admin_clave')
-         || null;
 let datos = [];
 let filtro = 'todos';
 let plantillaActiva = 'invitacion';
-
-/* ---------- Supabase RPC ---------- */
-async function rpc(fn, args = {}) {
-  const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/rpc/${fn}`, {
-    method: 'POST',
-    headers: {
-      apikey: CONFIG.supabaseKey,
-      Authorization: 'Bearer ' + CONFIG.supabaseKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(args),
-  });
-  const t = await r.text();
-  let d = null;
-  try { d = t ? JSON.parse(t) : null; } catch { d = t; }
-  if (!r.ok) {
-    const e = new Error((d && d.message) || `RPC ${fn} ${r.status}`);
-    e.code = d && d.code;
-    throw e;
-  }
-  return d;
-}
-
-/* ---------- Teléfono ---------- */
-// Devuelve solo dígitos en formato internacional, o null si no se puede.
-function normalizarTel(raw) {
-  if (!raw) return null;
-  let d = String(raw).replace(/\D/g, '');
-  if (!d) return null;
-  d = d.replace(/^0+/, '');
-  if (d.length === 8) d = CONFIG.paisPorDefecto + d;          // 5555-5555 → +502
-  if (d.startsWith('00')) d = d.slice(2);
-  return d.length >= 10 && d.length <= 15 ? d : null;
-}
-function mostrarTel(raw) {
-  const d = normalizarTel(raw);
-  if (!d) return raw || '';
-  if (d.startsWith(CONFIG.paisPorDefecto) && d.length === 11) {
-    return `+${CONFIG.paisPorDefecto} ${d.slice(3, 7)} ${d.slice(7)}`;
-  }
-  return '+' + d;
-}
 
 /* ---------- Destinos ----------
    Cada invitación se manda al titular y al acompañante. Son dos envíos
@@ -416,7 +217,7 @@ function visibles() {
 
 /* ---------- Mensaje ---------- */
 function baseUrl() {
-  let u = ($('#base-url').value || '').trim() || CONFIG.baseUrlDefault;
+  let u = ($('#base-url').value || '').trim() || CONFIG.sitioPublico;
   if (!u.endsWith('/') && !u.endsWith('.html')) u += '/';
   return u;
 }
@@ -490,11 +291,6 @@ function copiarLink(id) {
 }
 
 /* ---------- Render ---------- */
-function fecha(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString('es-GT', { dateStyle: 'short', timeStyle: 'short' });
-}
-
 function render() {
   // Stats
   const total = datos.length;
@@ -510,9 +306,6 @@ function render() {
     ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
     ['Personas', personas], ['Sin teléfono', sinTel],
   ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
-
-  // Mensajes que dejaron los invitados al confirmar
-  renderMensajes();
 
   // Filtros
   $('#filters').innerHTML = FILTROS.map(f =>
@@ -552,16 +345,18 @@ function render() {
     return `<tr class="${totalEnvios(g) > 0 ? 'sent' : ''}">
       <td>
         ${escapeHtml(g.nombre)}
-        <div class="muted">${escapeHtml(g.grupo || g.tipo || '')}</div>
+        <div class="muted">${escapeHtml(g.grupo || g.tipo || '')}${g.mesa ? ` · Mesa ${g.mesa}` : ''}</div>
       </td>
       ${celdaDestino(g, 'telefono', 'titular', false)}
       ${celdaDestino(g, 'telefono_alt', 'acompanante', true)}
       <td>${g.cupos}${g.asistira === true ? ` <span class="muted">→ ${g.asistentes}</span>` : ''}</td>
       <td><span class="badge ${e.cls}">${e.label}</span></td>
       <td>${g.aperturas || 0}${g.ultima_apertura ? `<div class="muted">${fecha(g.ultima_apertura)}</div>` : ''}</td>
+      <td><textarea class="nota-input" rows="1" placeholder="Notas"
+                    data-nota="${g.id}">${escapeHtml(g.notas || '')}</textarea></td>
       <td><button class="small" data-copy="${g.id}">Link</button></td>
     </tr>`;
-  }).join('') || `<tr><td colspan="7" style="text-align:center;padding:1.4rem;color:var(--muted)">Sin resultados.</td></tr>`;
+  }).join('') || `<tr><td colspan="8" style="text-align:center;padding:1.4rem;color:var(--muted)">Sin resultados.</td></tr>`;
 
   // Cola
   const cola = colaPendiente();
@@ -578,36 +373,6 @@ function render() {
   }
 }
 
-/* Los mensajes del RSVP no se veían en ninguna parte de la consola: había
-   que entrar al panel de la invitación para leerlos. Aquí salen los más
-   recientes primero, junto con la restricción alimenticia y el correo, que
-   es lo otro que escriben y que conviene tener a mano. */
-function renderMensajes() {
-  const conAlgo = datos
-    .filter(g => (g.comentarios && g.comentarios.trim()) || (g.restricciones && g.restricciones.trim()))
-    .sort((a, b) => new Date(b.confirmado_en || 0) - new Date(a.confirmado_en || 0));
-
-  const card = $('#card-mensajes');
-  card.classList.toggle('hidden', conAlgo.length === 0);
-  if (!conAlgo.length) return;
-
-  const conMensaje = conAlgo.filter(g => g.comentarios && g.comentarios.trim()).length;
-  $('#mensajes-cuenta').textContent =
-    `· ${conMensaje} ${conMensaje === 1 ? 'mensaje' : 'mensajes'}`;
-
-  $('#mensajes-lista').innerHTML = conAlgo.map(g => `
-    <div class="msg">
-      <div class="msg-cab">
-        <span class="msg-quien">${escapeHtml(g.nombre)}</span>
-        <span>${g.confirmado_en ? fecha(g.confirmado_en) : ''}${g.email ? ' · ' + escapeHtml(g.email) : ''}</span>
-      </div>
-      ${g.comentarios && g.comentarios.trim()
-        ? `<div class="msg-texto">${escapeHtml(g.comentarios.trim())}</div>` : ''}
-      ${g.restricciones
-        ? `<div class="msg-restriccion">Restricción · ${escapeHtml(g.restricciones)}</div>` : ''}
-    </div>`).join('');
-}
-
 /* La cola va por NÚMERO, no por invitación: un invitado con dos teléfonos
    aparece dos veces hasta que ambos reciban el mensaje de esta plantilla. */
 function colaPendiente() {
@@ -619,8 +384,15 @@ function colaPendiente() {
   );
 }
 
-function escapeHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+/* Lo que no cabe en ningun otro campo: "no come mariscos", "llega tarde",
+   "confirmo por telefono". No se vuelve a pintar la tabla al guardar, para
+   no sacar el cursor de la nota que se esta escribiendo. */
+async function guardarNotas(id, valor) {
+  try {
+    await rpc('admin_set_notas', { p_clave: clave, p_invitado_id: id, p_notas: valor });
+    const g = datos.find(x => x.id === id);
+    if (g) g.notas = valor.trim() || null;
+  } catch (e) { alert('No se pudo guardar la nota: ' + e.message); }
 }
 
 /* ---------- Plantillas ---------- */
@@ -643,216 +415,6 @@ async function cargar() {
   render();
 }
 
-/* ============================================================
-   EXPORTAR A EXCEL
-
-   Genera un .xlsx de verdad, no un CSV renombrado: Excel abre los CSV con
-   avisos de formato y rompe las tildes, y eso no sirve para algo que se le
-   entrega a la finca.
-
-   Un .xlsx es un ZIP con varios XML dentro, así que aquí abajo hay un
-   escritor de ZIP mínimo (sin compresión) y las piezas del libro. Sin
-   librerías externas: la invitación es un solo archivo y no depende de
-   ninguna CDN.
-============================================================ */
-
-/* ---------- ZIP (método "store", sin comprimir) ---------- */
-const TABLA_CRC = (() => {
-  const t = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-function crc32(bytes) {
-  let c = 0xFFFFFFFF;
-  for (let i = 0; i < bytes.length; i++) c = TABLA_CRC[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
-  return (c ^ 0xFFFFFFFF) >>> 0;
-}
-
-function armarZip(archivos) {
-  const enc = new TextEncoder();
-  const partes = [], central = [];
-  let offset = 0;
-
-  const u16 = n => [n & 0xFF, (n >>> 8) & 0xFF];
-  const u32 = n => [n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF];
-
-  for (const a of archivos) {
-    const nombre = enc.encode(a.nombre);
-    const datos = typeof a.datos === 'string' ? enc.encode(a.datos) : a.datos;
-    const crc = crc32(datos);
-
-    const cabecera = [
-      ...u32(0x04034b50), ...u16(20), ...u16(0), ...u16(0),
-      ...u16(0), ...u16(0),                       // hora y fecha: irrelevantes aquí
-      ...u32(crc), ...u32(datos.length), ...u32(datos.length),
-      ...u16(nombre.length), ...u16(0),
-    ];
-    partes.push(new Uint8Array(cabecera), nombre, datos);
-
-    central.push(new Uint8Array([
-      ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0), ...u16(0),
-      ...u16(0), ...u16(0),
-      ...u32(crc), ...u32(datos.length), ...u32(datos.length),
-      ...u16(nombre.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
-      ...u32(0), ...u32(offset),
-    ]), nombre);
-
-    offset += cabecera.length + nombre.length + datos.length;
-  }
-
-  const inicioCentral = offset;
-  let largoCentral = 0;
-  central.forEach(p => largoCentral += p.length);
-
-  const fin = new Uint8Array([
-    ...u32(0x06054b50), ...u16(0), ...u16(0),
-    ...u16(archivos.length), ...u16(archivos.length),
-    ...u32(largoCentral), ...u32(inicioCentral), ...u16(0),
-  ]);
-
-  return new Blob([...partes, ...central, fin], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
-}
-
-/* ---------- Estilos, con la paleta de la invitación ---------- */
-const XLSX_ESTILOS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-<fonts count="5">
-<font><sz val="11"/><color rgb="FF2B1F22"/><name val="Calibri"/></font>
-<font><b/><sz val="20"/><color rgb="FFF1F0EA"/><name val="Calibri"/></font>
-<font><sz val="11"/><color rgb="FF580410"/><name val="Calibri"/></font>
-<font><b/><sz val="11"/><color rgb="FFF1F0EA"/><name val="Calibri"/></font>
-<font><sz val="9"/><color rgb="FF8A7A7D"/><name val="Calibri"/></font>
-</fonts>
-<fills count="6">
-<fill><patternFill patternType="none"/></fill>
-<fill><patternFill patternType="gray125"/></fill>
-<fill><patternFill patternType="solid"><fgColor rgb="FF580410"/><bgColor indexed="64"/></patternFill></fill>
-<fill><patternFill patternType="solid"><fgColor rgb="FFF1F0EA"/><bgColor indexed="64"/></patternFill></fill>
-<fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/><bgColor indexed="64"/></patternFill></fill>
-<fill><patternFill patternType="solid"><fgColor rgb="FFF7E4E6"/><bgColor indexed="64"/></patternFill></fill>
-</fills>
-<borders count="2">
-<border><left/><right/><top/><bottom/><diagonal/></border>
-<border>
-<left style="thin"><color rgb="FFD9A7AC"/></left>
-<right style="thin"><color rgb="FFD9A7AC"/></right>
-<top style="thin"><color rgb="FFD9A7AC"/></top>
-<bottom style="thin"><color rgb="FFD9A7AC"/></bottom>
-<diagonal/></border>
-</borders>
-<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="10">
-<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
-<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-<xf numFmtId="0" fontId="2" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-<xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
-<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
-<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
-<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-<xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
-<xf numFmtId="0" fontId="2" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
-<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1"/>
-</cellXfs>
-<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
-<dxfs count="0"/>
-<tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/>
-</styleSheet>`;
-
-const xmlEsc = (s) => String(s ?? '')
-  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;')
-  .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
-
-const letraColumna = (n) => {
-  let s = '';
-  while (n >= 0) { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; }
-  return s;
-};
-
-/* hoja = { nombre, titulo, subtitulo, columnas:[{titulo, ancho, centrado}], filas:[[...]], resaltar(fila, i) } */
-function hojaXml(hoja) {
-  const cols = hoja.columnas;
-  const ultima = letraColumna(cols.length - 1);
-  const celda = (ref, estilo, valor) => {
-    if (valor === null || valor === undefined || valor === '') return `<c r="${ref}" s="${estilo}"/>`;
-    if (typeof valor === 'number' && isFinite(valor)) return `<c r="${ref}" s="${estilo}"><v>${valor}</v></c>`;
-    return `<c r="${ref}" s="${estilo}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(valor)}</t></is></c>`;
-  };
-
-  const filas = [];
-  // 1 · título   2 · subtítulo   3 · encabezados   4+ · datos
-  filas.push(`<row r="1" ht="34" customHeight="1">` +
-    cols.map((_, i) => celda(letraColumna(i) + '1', 1, i === 0 ? hoja.titulo : '')).join('') + `</row>`);
-  filas.push(`<row r="2" ht="20" customHeight="1">` +
-    cols.map((_, i) => celda(letraColumna(i) + '2', 2, i === 0 ? hoja.subtitulo : '')).join('') + `</row>`);
-  filas.push(`<row r="3" ht="26" customHeight="1">` +
-    cols.map((c, i) => celda(letraColumna(i) + '3', 3, c.titulo)).join('') + `</row>`);
-
-  hoja.filas.forEach((fila, n) => {
-    const par = n % 2 === 1;
-    const r = n + 4;
-    filas.push(`<row r="${r}">` + cols.map((c, i) => {
-      let estilo = c.centrado ? (par ? 7 : 6) : (par ? 5 : 4);
-      if (hoja.resaltar && hoja.resaltar(fila, i)) estilo = 8;
-      return celda(letraColumna(i) + r, estilo, fila[i]);
-    }).join('') + `</row>`);
-  });
-
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-<sheetPr><tabColor rgb="FF580410"/></sheetPr>
-<sheetViews><sheetView showGridLines="0" workbookViewId="0">
-<pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozen"/>
-</sheetView></sheetViews>
-<sheetFormatPr defaultRowHeight="15"/>
-<cols>${cols.map((c, i) => `<col min="${i+1}" max="${i+1}" width="${c.ancho || 18}" customWidth="1"/>`).join('')}</cols>
-<sheetData>${filas.join('')}</sheetData>
-<autoFilter ref="A3:${ultima}3"/>
-<mergeCells count="2"><mergeCell ref="A1:${ultima}1"/><mergeCell ref="A2:${ultima}2"/></mergeCells>
-<pageMargins left="0.4" right="0.4" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>
-</worksheet>`;
-}
-
-function descargarExcel(nombreArchivo, hoja) {
-  const nombreHoja = xmlEsc((hoja.nombre || 'Hoja1').slice(0, 31));
-  const archivos = [
-    { nombre: '[Content_Types].xml', datos: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-<Default Extension="xml" ContentType="application/xml"/>
-<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
-<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
-<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
-</Types>` },
-    { nombre: '_rels/.rels', datos: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
-</Relationships>` },
-    { nombre: 'xl/workbook.xml', datos: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-<sheets><sheet name="${nombreHoja}" sheetId="1" r:id="rId1"/></sheets>
-</workbook>` },
-    { nombre: 'xl/_rels/workbook.xml.rels', datos: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
-<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-</Relationships>` },
-    { nombre: 'xl/styles.xml', datos: XLSX_ESTILOS },
-    { nombre: 'xl/worksheets/sheet1.xml', datos: hojaXml(hoja) },
-  ];
-
-  const url = URL.createObjectURL(armarZip(archivos));
-  const a = document.createElement('a');
-  a.href = url; a.download = nombreArchivo; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 /* ---------- Export ---------- */
 function exportar() {
   const filas = datos.map(g => {
@@ -868,6 +430,8 @@ function exportar() {
       g.aperturas || 0,
       g.ultima_apertura ? fecha(g.ultima_apertura) : '',
       g.confirmado_en ? fecha(g.confirmado_en) : '',
+      g.mesa ?? '',
+      g.notas || '',
       g.email || '',
       g.comentarios || '',
       g.restricciones || '',
@@ -893,6 +457,8 @@ function exportar() {
       { titulo: 'Aperturas',        ancho: 10, centrado: true },
       { titulo: 'Última apertura',  ancho: 18 },
       { titulo: 'Confirmó',         ancho: 18 },
+      { titulo: 'Mesa',             ancho: 8,  centrado: true },
+      { titulo: 'Notas',            ancho: 32 },
       { titulo: 'Correo',           ancho: 26 },
       { titulo: 'Mensaje',          ancho: 42 },
       { titulo: 'Restricciones',    ancho: 26 },
@@ -905,38 +471,6 @@ function exportar() {
 }
 
 /* ---------- Eventos ---------- */
-$('#btn-login').addEventListener('click', login);
-$('#pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-
-async function login() {
-  const p = $('#pass').value;
-  const err = $('#login-err');
-  const btn = $('#btn-login');
-  err.classList.add('hidden');
-  btn.disabled = true; btn.textContent = 'Verificando...';
-  try {
-    clave = p;
-    await cargar();
-    localStorage.setItem(CLAVE_GUARDADA, p);
-    localStorage.setItem('va_admin_clave', p);   // que el panel tampoco la pida
-    $('#login-view').classList.add('hidden');
-    $('#app').classList.remove('hidden');
-  } catch (e) {
-    clave = null;
-    err.textContent = e.code === '28000' ? 'Clave incorrecta.' : ('No pudimos conectar: ' + e.message);
-    err.classList.remove('hidden');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Entrar';
-  }
-}
-
-$('#btn-logout').addEventListener('click', () => {
-  localStorage.removeItem(CLAVE_GUARDADA);
-  localStorage.removeItem('va_admin_clave');
-  location.reload();
-});
-$('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
-$('#btn-export').addEventListener('click', exportar);
 $('#q').addEventListener('input', render);
 
 $('#filters').addEventListener('click', e => {
@@ -970,14 +504,16 @@ $('#base-url').addEventListener('input', () => {
 $('#tbody').addEventListener('click', e => {
   const s = e.target.closest('[data-send]');
   // Sin preventDefault: el enlace navega a WhatsApp por su cuenta y el
-  // registro del envío viaja en paralelo.
+  // registro del envio viaja en paralelo.
   if (s) { marcarEnviado(s.dataset.send, s.dataset.destino); return; }
   const c = e.target.closest('[data-copy]');
   if (c) { copiarLink(c.dataset.copy); return; }
 });
 $('#tbody').addEventListener('change', e => {
   const t = e.target.closest('[data-tel]');
-  if (t) guardarTel(t.dataset.tel, t.dataset.campo, t.value);
+  if (t) { guardarTel(t.dataset.tel, t.dataset.campo, t.value); return; }
+  const n = e.target.closest('[data-nota]');
+  if (n) guardarNotas(n.dataset.nota, n.value);
 });
 
 $('#btn-queue').addEventListener('click', () => {
@@ -986,30 +522,26 @@ $('#btn-queue').addEventListener('click', () => {
 });
 
 /* ---------- Arranque ---------- */
+/* Solo se respeta lo guardado si apunta al sitio publico de verdad: si
+   quedo una direccion vieja de otro dominio, se vuelve a la buena en lugar
+   de mandar links que no son. */
 const baseGuardada = localStorage.getItem('va_base_url');
-$('#base-url').value = (baseGuardada && baseGuardada.startsWith(location.origin))
+$('#base-url').value = (baseGuardada && baseGuardada.startsWith(CONFIG.sitioPublico))
   ? baseGuardada
-  : CONFIG.baseUrlDefault;
+  : CONFIG.sitioPublico;
 cargarPlantilla('invitacion');
 
-if (clave) {
-  $('#login-view').classList.add('hidden');
-  $('#app').classList.remove('hidden');
-  cargar().catch(e => {
-    /* Solo se olvida la clave si de verdad es incorrecta (28000). Antes se
-       borraba ante cualquier fallo, así que un bache de señal en el
-       teléfono obligaba a escribirla de nuevo. */
-    if (e && e.code === '28000') {
-      localStorage.removeItem(CLAVE_GUARDADA);
-      localStorage.removeItem('va_admin_clave');
-      clave = null;
-      $('#app').classList.add('hidden');
-      $('#login-view').classList.remove('hidden');
-    } else {
-      alert('No pudimos conectar. Revisa tu señal y toca Actualizar.');
-    }
-  });
-}
+arrancarConsola({
+  seccion: 'listado',
+  acciones: [
+    { id: 'btn-refresh', label: 'Actualizar' },
+    { id: 'btn-export',  label: 'Excel' },
+  ],
+  cargar,
+});
+
+$('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
+$('#btn-export').addEventListener('click', exportar);
 </script>
 </body>
 </html>

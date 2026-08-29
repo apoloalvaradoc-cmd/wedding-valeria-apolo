@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mensajes · Consola · Valeria &amp; Apolo</title>
+<link rel="stylesheet" href="consola.css">
+</head>
+<body>
+
+<div id="app" class="hidden">
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+
+    <div class="card" style="margin-top:1rem">
+      <h2>Mensajes de los invitados <span class="muted" id="cuenta"></span></h2>
+      <div class="chips" id="filtros"></div>
+      <div class="row" style="margin-bottom:0.7rem">
+        <input type="text" id="q" placeholder="Buscar por nombre o texto..." style="max-width:300px">
+      </div>
+      <div id="lista"></div>
+    </div>
+  </div>
+</div>
+
+<script src="consola-base.js"></script>
+<script src="xlsx.js"></script>
+<script>
+/* ============================================================
+   Mensajes de los invitados
+
+   Lo que la gente escribe al confirmar: el recado y la restricción
+   alimenticia de cada quien. Antes solo se podía leer entrando al
+   panel de la invitación de uno en uno.
+============================================================ */
+
+let datos = [];
+let filtro = 'mensaje';
+
+const FILTROS = [
+  { k: 'mensaje',     label: 'Con mensaje' },
+  { k: 'restriccion', label: 'Con restricción' },
+  { k: 'confirmados', label: 'Todos los que confirmaron' },
+];
+
+const tieneMensaje     = g => !!(g.comentarios && g.comentarios.trim());
+const tieneRestriccion = g => !!(g.restricciones && g.restricciones.trim());
+
+function pasaFiltro(g) {
+  if (filtro === 'mensaje')     return tieneMensaje(g);
+  if (filtro === 'restriccion') return tieneRestriccion(g);
+  return g.asistira === true;
+}
+
+function visibles() {
+  const q = ($('#q').value || '').trim().toLowerCase();
+  return datos
+    .filter(g => pasaFiltro(g))
+    .filter(g => !q
+      || (g.nombre || '').toLowerCase().includes(q)
+      || (g.comentarios || '').toLowerCase().includes(q)
+      || (g.restricciones || '').toLowerCase().includes(q))
+    // Lo más reciente primero: es lo que todavía no se ha leído.
+    .sort((a, b) => new Date(b.confirmado_en || 0) - new Date(a.confirmado_en || 0));
+}
+
+function render() {
+  const conf   = datos.filter(g => g.asistira === true);
+  const perss  = conf.reduce((a, g) => a + (g.asistentes || 0), 0);
+  const conMsj = datos.filter(tieneMensaje).length;
+  const conRes = datos.filter(tieneRestriccion).length;
+
+  $('#stats').innerHTML = [
+    ['Confirmadas', conf.length], ['Personas', perss],
+    ['Con mensaje', conMsj], ['Con restricción', conRes],
+  ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+
+  $('#filtros').innerHTML = FILTROS.map(f =>
+    `<button class="chip ${filtro === f.k ? 'active' : ''}" data-filtro="${f.k}">${f.label}</button>`
+  ).join('');
+
+  const filas = visibles();
+  $('#cuenta').textContent = `· ${filas.length}`;
+
+  $('#lista').innerHTML = filas.map(g => `
+    <div class="msg">
+      <div class="msg-cab">
+        <span class="msg-quien">${escapeHtml(g.nombre)}</span>
+        <span>${g.confirmado_en ? fecha(g.confirmado_en) : ''}${g.email ? ' · ' + escapeHtml(g.email) : ''}</span>
+      </div>
+      ${tieneMensaje(g)
+        ? `<div class="msg-texto">${escapeHtml(g.comentarios.trim())}</div>`
+        : `<div class="msg-texto muted">Confirmó sin dejar mensaje.</div>`}
+      ${tieneRestriccion(g)
+        ? `<div class="msg-restriccion">Restricción · ${escapeHtml(g.restricciones)}</div>` : ''}
+    </div>`).join('')
+    || `<p class="muted" style="padding:1rem 0;text-align:center">Todavía no hay nada aquí.</p>`;
+}
+
+async function cargar() {
+  datos = await rpc('admin_lista_envio', { p_clave: clave });
+  render();
+}
+
+/* ---------- Export ---------- */
+function exportar() {
+  const filas = visibles().map(g => [
+    g.nombre,
+    g.confirmado_en ? fecha(g.confirmado_en) : '',
+    g.asistira === true ? (g.asistentes || 0) : '',
+    g.comentarios || '',
+    g.restricciones || '',
+    g.email || '',
+  ]);
+  const etiqueta = (FILTROS.find(f => f.k === filtro) || {}).label || '';
+
+  descargarExcel('Mensajes · Valeria y Apolo.xlsx', {
+    nombre: 'Mensajes',
+    titulo: 'Valeria & Apolo · 7 de noviembre de 2026',
+    subtitulo: `${etiqueta} · ${filas.length} invitaciones · ${hoyLargo()}`,
+    columnas: [
+      { titulo: 'Invitación',   ancho: 28 },
+      { titulo: 'Confirmó',     ancho: 18 },
+      { titulo: 'Vienen',       ancho: 8, centrado: true },
+      { titulo: 'Mensaje',      ancho: 60 },
+      { titulo: 'Restricción',  ancho: 30 },
+      { titulo: 'Correo',       ancho: 26 },
+    ],
+    filas,
+    // Las restricciones van resaltadas: es lo que hay que pasarle al catering.
+    resaltar: (fila, i) => i === 4 && !!fila[4],
+  });
+}
+
+/* ---------- Eventos ---------- */
+$('#q').addEventListener('input', render);
+$('#filtros').addEventListener('click', e => {
+  const b = e.target.closest('[data-filtro]');
+  if (!b) return;
+  filtro = b.dataset.filtro;
+  render();
+});
+
+arrancarConsola({
+  seccion: 'mensajes',
+  acciones: [
+    { id: 'btn-refresh', label: 'Actualizar' },
+    { id: 'btn-export',  label: 'Excel' },
+  ],
+  cargar,
+});
+
+$('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
+$('#btn-export').addEventListener('click', exportar);
+</script>
+</body>
+</html>

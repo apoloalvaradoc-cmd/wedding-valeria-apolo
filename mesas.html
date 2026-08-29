@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mesas · Consola · Valeria &amp; Apolo</title>
+<link rel="stylesheet" href="consola.css">
+</head>
+<body>
+
+<div id="app" class="hidden">
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+
+    <!-- Solo aparece al tocar el lápiz de una mesa. -->
+    <div class="card hidden" id="editor" style="margin-top:1rem">
+      <h2>Mesa <span id="ed-num"></span></h2>
+      <div class="editor-mesa">
+        <div class="row">
+          <input type="text" id="ed-nombre" placeholder="Nombre de la mesa (opcional)">
+          <input type="number" id="ed-cap" min="1" max="24" title="Lugares">
+          <button class="small filled" id="ed-guardar">Guardar</button>
+          <button class="small" id="ed-vaciar">Vaciar</button>
+          <button class="small" id="ed-borrar">Eliminar mesa</button>
+          <button class="small" id="ed-cerrar">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mesas-layout" style="margin-top:1rem">
+      <div class="card pool" id="pool">
+        <h2>Sin lugar <span class="muted" id="pool-cuenta"></span></h2>
+        <p class="hint">
+          Arrastra a una persona —o al nombre de la invitación, para sentarlos
+          a todos— hasta una mesa. En el teléfono: tócala y luego toca la mesa.
+        </p>
+        <div class="row" style="margin-bottom:0.5rem">
+          <input type="text" id="q" placeholder="Buscar...">
+        </div>
+        <label class="row" style="text-transform:none;letter-spacing:0;font-size:0.8rem;margin-bottom:0.6rem">
+          <input type="checkbox" id="solo-conf" style="width:auto;margin-right:0.4rem">
+          Solo los que ya confirmaron
+        </label>
+        <div id="pool-lista"></div>
+      </div>
+
+      <div class="card" style="padding:0.6rem">
+        <div class="row" style="padding:0.2rem 0.4rem 0.6rem">
+          <button class="small filled" id="btn-mesa">+ Agregar mesa</button>
+          <span class="muted" id="salon-info"></span>
+        </div>
+        <div class="lienzo" id="lienzo">
+          <div class="salon" id="salon"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="barra-sel hidden" id="barra">
+    <span id="barra-texto"></span>
+    <div class="row">
+      <button class="small" id="btn-quitar">Quitar de la mesa</button>
+      <button class="small" id="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="consola-base.js"></script>
+<script src="xlsx.js"></script>
+<script>
+/* ============================================================
+   Mesas · croquis del salón
+
+   Las mesas son redondas y los lugares se dibujan en anillo, como
+   están de verdad en el salón: así se ve de un vistazo quién queda
+   al lado de quién.
+
+   Se sienta POR PERSONA, no por invitación. Es lo que permite
+   partir a una familia de seis en dos mesas, que es justo lo que
+   siempre termina pasando. A quien todavía no confirma se le
+   reserva el lugar igual, con el nombre que ya conocemos.
+
+   Dos formas de mover gente, porque esto se usa tanto en la
+   computadora como en el teléfono:
+     · arrastrar y soltar
+     · tocar a la persona y luego tocar la mesa
+============================================================ */
+
+let mesas = [];
+let invitados = [];
+let asientos = [];
+
+let personas = [];      // todas las personas, aplanadas
+let sentados = new Map();   // "INV001#0" → id de mesa
+
+// Lo que está elegido y espera una mesa: "p|INV001|0" o "g|INV001".
+let sel = null;
+let editando = null;    // id de la mesa abierta en el editor
+
+const K = (inv, idx) => inv + '#' + idx;
+
+/* Nombre corto para el asiento: en un círculo no cabe más. El completo
+   queda en el title, al pasar el mouse. */
+function corto(nombre) {
+  const p = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+  if (!p.length) return '—';
+  if (p.length === 1) return p[0];
+  return p[0] + ' ' + p[1][0] + '.';
+}
+
+function recalcular() {
+  personas = [];
+  invitados.forEach(inv => personasDe(inv).forEach(p => personas.push({
+    invitado_id: inv.id,
+    idx: p.idx,
+    nombre: p.nombre,
+    restriccion: p.restriccion,
+    confirmado: p.confirmado,
+    invitacion: inv.nombre,
+    grupo: inv.grupo || inv.tipo || '',
+  })));
+  sentados = new Map(asientos.map(a => [K(a.invitado_id, a.persona_idx), a.mesa_id]));
+}
+
+const mesaDe = p => sentados.get(K(p.invitado_id, p.idx));
+const ocupantes = id => personas.filter(p => mesaDe(p) === id);
+
+/* ---------- Medidas del dibujo ----------
+   El anillo crece con la capacidad para que los nombres no se encimen:
+   cada lugar necesita alrededor de 68px de arco. */
+function medidas(cap) {
+  const radio = Math.max(104, Math.round(cap * 68 / (2 * Math.PI)) + 14);
+  return { radio, caja: (radio + 44) * 2, diam: Math.round(radio * 1.05) };
+}
+
+/* ---------- Render ---------- */
+function render() {
+  recalcular();
+  renderStats();
+  renderPool();
+  renderSalon();
+  renderBarra();
+  renderEditor();
+}
+
+function renderStats() {
+  const total    = personas.length;
+  const conLugar = personas.filter(p => mesaDe(p) != null).length;
+  const lugares  = mesas.reduce((a, m) => a + m.capacidad, 0);
+  $('#stats').innerHTML = [
+    ['Mesas', mesas.length],
+    ['Lugares', lugares],
+    ['Sentados', conLugar],
+    ['Sin lugar', total - conLugar],
+    ['Libres', Math.max(lugares - conLugar, 0)],
+  ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+
+  $('#salon-info').textContent = mesas.length
+    ? 'Arrastra una mesa por el centro para acomodarla en el salón.'
+    : 'Todavía no hay mesas.';
+}
+
+function renderPool() {
+  const q = ($('#q').value || '').trim().toLowerCase();
+  const soloConf = $('#solo-conf').checked;
+
+  const grupos = invitados.map(inv => {
+    const suyas = personas.filter(p => p.invitado_id === inv.id);
+    const libres = suyas.filter(p => mesaDe(p) == null);
+    return { inv, suyas, libres };
+  }).filter(g => g.libres.length)
+    .filter(g => !soloConf || g.inv.asistira === true)
+    .filter(g => !q
+      || (g.inv.nombre || '').toLowerCase().includes(q)
+      || (g.inv.grupo || '').toLowerCase().includes(q)
+      || g.libres.some(p => p.nombre.toLowerCase().includes(q)));
+
+  const sinLugar = grupos.reduce((a, g) => a + g.libres.length, 0);
+  $('#pool-cuenta').textContent = `· ${sinLugar} persona${sinLugar === 1 ? '' : 's'}`;
+
+  $('#pool-lista').innerHTML = grupos.map(g => {
+    const tokGrupo = `g|${g.inv.id}`;
+    const pend = g.inv.asistira === true ? '' : ' · sin confirmar';
+    return `
+      <div class="grupo">
+        <div class="grupo-cab">
+          <span class="persona grupo-nombre ${sel === tokGrupo ? 'elegida' : ''}"
+                draggable="true" data-persona="${tokGrupo}"
+                title="Sentar a toda la invitación">${escapeHtml(g.inv.nombre)}</span>
+          <span class="grupo-meta">${g.libres.length}/${g.suyas.length}${pend}</span>
+        </div>
+        ${g.inv.grupo ? `<div class="grupo-meta">${escapeHtml(g.inv.grupo)}</div>` : ''}
+        <div class="grupo-gente">
+          ${g.libres.map(p => {
+            const tok = `p|${p.invitado_id}|${p.idx}`;
+            return `<span class="persona ${p.confirmado ? '' : 'sin-confirmar'} ${sel === tok ? 'elegida' : ''}"
+                          draggable="true" data-persona="${tok}"
+                          title="${escapeHtml(p.nombre)}${p.restriccion ? ' · ' + escapeHtml(p.restriccion) : ''}"
+                    >${escapeHtml(p.nombre)}</span>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('') || `<p class="muted" style="padding:0.8rem 0">Ya todos tienen lugar.</p>`;
+}
+
+function renderSalon() {
+  // El salón crece hacia abajo conforme se agregan mesas, para que siempre
+  // quepan aunque estén todas amontonadas.
+  const filas = Math.max(3, Math.ceil(mesas.length / 4));
+  $('#salon').style.height = Math.max(1000, filas * 340 + 80) + 'px';
+
+  $('#salon').innerHTML = mesas.map(m => {
+    const { radio, caja, diam } = medidas(m.capacidad);
+    const gente = ocupantes(m.id);
+    const llena = gente.length >= m.capacidad;
+
+    const asientosHtml = Array.from({ length: m.capacidad }, (_, i) => {
+      const ang = -Math.PI / 2 + (i * 2 * Math.PI / m.capacidad);
+      const cx = caja / 2 + radio * Math.cos(ang);
+      const cy = caja / 2 + radio * Math.sin(ang);
+      const pos = `left:${cx.toFixed(1)}px;top:${cy.toFixed(1)}px`;
+      const p = gente[i];
+      if (!p) return `<div class="asiento libre" style="${pos}">+</div>`;
+      const tok = `p|${p.invitado_id}|${p.idx}`;
+      const cls = [
+        'asiento',
+        p.restriccion ? 'con-restriccion' : '',
+        p.confirmado ? '' : 'sin-confirmar',
+        sel === tok ? 'elegida' : '',
+      ].filter(Boolean).join(' ');
+      return `<div class="${cls}" style="${pos}" draggable="true" data-persona="${tok}"
+                   title="${escapeHtml(p.nombre)} · ${escapeHtml(p.invitacion)}${p.restriccion ? ' · ' + escapeHtml(p.restriccion) : ''}"
+              >${escapeHtml(corto(p.nombre))}</div>`;
+    }).join('');
+
+    return `
+      <div class="mesa ${llena ? 'llena' : ''}" data-mesa="${m.id}"
+           style="left:${(m.pos_x * 100).toFixed(2)}%;top:${(m.pos_y * 100).toFixed(2)}%;--caja:${caja}px;--d:${diam}px">
+        <div class="mesa-circulo">
+          <div class="mesa-num">${m.id}</div>
+          ${m.nombre ? `<div class="mesa-nombre">${escapeHtml(m.nombre)}</div>` : ''}
+          <div class="mesa-cuenta">${gente.length}/${m.capacidad}</div>
+          <button class="mesa-editar" data-editar="${m.id}">Editar</button>
+        </div>
+        ${asientosHtml}
+      </div>`;
+  }).join('');
+}
+
+function renderBarra() {
+  const barra = $('#barra');
+  barra.classList.toggle('hidden', !sel);
+  if (!sel) return;
+
+  const p = sel.split('|');
+  let texto, sentada = false;
+  if (p[0] === 'g') {
+    const inv = invitados.find(x => x.id === p[1]);
+    texto = `${inv ? inv.nombre : ''} · toca una mesa para sentar a toda la invitación`;
+    sentada = personas.some(x => x.invitado_id === p[1] && mesaDe(x) != null);
+  } else {
+    const per = personas.find(x => x.invitado_id === p[1] && x.idx === +p[2]);
+    texto = `${per ? per.nombre : ''} · toca una mesa para darle lugar`;
+    sentada = per ? mesaDe(per) != null : false;
+  }
+  $('#barra-texto').textContent = texto;
+  $('#btn-quitar').classList.toggle('hidden', !sentada);
+}
+
+function renderEditor() {
+  const card = $('#editor');
+  const m = mesas.find(x => x.id === editando);
+  card.classList.toggle('hidden', !m);
+  if (!m) return;
+  $('#ed-num').textContent = m.id + (m.nombre ? ' · ' + m.nombre : '');
+  $('#ed-nombre').value = m.nombre || '';
+  $('#ed-cap').value = m.capacidad;
+}
+
+/* ---------- Guardar ---------- */
+async function cargar() {
+  const d = await rpc('admin_mesas_datos', { p_clave: clave });
+  mesas = d.mesas || [];
+  invitados = d.invitados || [];
+  asientos = d.asientos || [];
+  render();
+}
+
+/* Cada movimiento se guarda al momento. No hay botón de guardar: armar el
+   salón son cientos de movimientos pequeños y nadie se acuerda de apretarlo. */
+async function sentar(invId, idx, mesaId) {
+  try {
+    await rpc('admin_sentar', {
+      p_clave: clave, p_invitado_id: invId, p_persona_idx: idx, p_mesa_id: mesaId,
+    });
+    asientos = asientos.filter(a => !(a.invitado_id === invId && a.persona_idx === idx));
+    if (mesaId != null) asientos.push({ invitado_id: invId, persona_idx: idx, mesa_id: mesaId });
+    render();
+  } catch (e) { alert(e.message); }
+}
+
+async function sentarGrupo(invId, mesaId) {
+  try {
+    const r = await rpc('admin_sentar_grupo', {
+      p_clave: clave, p_invitado_id: invId, p_mesa_id: mesaId,
+    });
+    if (r && r.faltaron > 0) {
+      alert(`La mesa se llenó: ${r.faltaron} persona${r.faltaron === 1 ? '' : 's'} de esa invitación quedaron sin lugar.`);
+    }
+    await cargar();
+  } catch (e) { alert(e.message); }
+}
+
+async function levantarGrupo(invId) {
+  try {
+    await rpc('admin_levantar_grupo', { p_clave: clave, p_invitado_id: invId });
+    await cargar();
+  } catch (e) { alert(e.message); }
+}
+
+async function moverMesa(id, x, y) {
+  try {
+    await rpc('admin_mesa_guardar', { p_clave: clave, p_id: id, p_pos_x: x, p_pos_y: y });
+    const m = mesas.find(v => v.id === id);
+    if (m) { m.pos_x = x; m.pos_y = y; }
+  } catch (e) { alert(e.message); cargar(); }
+}
+
+async function agregarMesa() {
+  // Se acomodan en cuadrícula para que no se apilen todas en el mismo punto.
+  const n = mesas.length;
+  const x = Math.min(0.95, 0.14 + (n % 4) * 0.24);
+  const y = Math.min(0.95, 0.12 + Math.floor(n / 4) * (340 / Math.max(1000, Math.ceil((n + 1) / 4) * 340 + 80)));
+  try {
+    const m = await rpc('admin_mesa_guardar', { p_clave: clave, p_pos_x: x, p_pos_y: y });
+    mesas.push(m);
+    editando = m.id;
+    render();
+  } catch (e) { alert(e.message); }
+}
+
+/* ---------- Qué hacer con lo elegido ---------- */
+function aplicar(tok, mesaId) {
+  const p = String(tok || '').split('|');
+  if (p[0] === 'p') return sentar(p[1], +p[2], mesaId);
+  if (p[0] === 'g') return mesaId == null ? levantarGrupo(p[1]) : sentarGrupo(p[1], mesaId);
+}
+
+function elegir(tok) {
+  sel = (sel === tok) ? null : tok;
+  render();
+}
+
+function tocarMesa(id) {
+  if (!sel) return;
+  const tok = sel;
+  sel = null;
+  aplicar(tok, id);
+}
+
+/* ---------- Arrastrar y soltar ---------- */
+document.addEventListener('dragstart', e => {
+  const el = e.target.closest('[data-persona]');
+  if (!el) return;
+  e.dataTransfer.setData('text/plain', el.dataset.persona);
+  e.dataTransfer.effectAllowed = 'move';
+});
+
+function limpiarDestinos() {
+  $$('.mesa.destino').forEach(m => m.classList.remove('destino'));
+}
+document.addEventListener('dragend', limpiarDestinos);
+
+const salon = $('#salon');
+salon.addEventListener('dragover', e => {
+  const m = e.target.closest('.mesa');
+  if (!m) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  if (!m.classList.contains('destino')) { limpiarDestinos(); m.classList.add('destino'); }
+});
+salon.addEventListener('drop', e => {
+  const m = e.target.closest('.mesa');
+  if (!m) return;
+  e.preventDefault();
+  limpiarDestinos();
+  aplicar(e.dataTransfer.getData('text/plain'), +m.dataset.mesa);
+});
+
+// Soltar de vuelta en la lista = quitar de la mesa.
+const pool = $('#pool');
+pool.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+pool.addEventListener('drop', e => {
+  e.preventDefault();
+  aplicar(e.dataTransfer.getData('text/plain'), null);
+});
+
+/* ---------- Mover las mesas por el salón ----------
+   El mismo gesto sirve para dos cosas: si el dedo no se movió es un toque
+   (sienta a quien esté elegido); si se movió, es arrastrar la mesa. */
+let arrastre = null;
+salon.addEventListener('pointerdown', e => {
+  const c = e.target.closest('.mesa-circulo');
+  if (!c || e.target.closest('[data-editar]')) return;
+  const el = c.closest('.mesa');
+  arrastre = { id: +el.dataset.mesa, el, x0: e.clientX, y0: e.clientY, movido: false, pos: null };
+  c.setPointerCapture(e.pointerId);
+});
+salon.addEventListener('pointermove', e => {
+  if (!arrastre) return;
+  if (!arrastre.movido && Math.hypot(e.clientX - arrastre.x0, e.clientY - arrastre.y0) < 5) return;
+  arrastre.movido = true;
+  const r = salon.getBoundingClientRect();
+  const x = Math.min(0.97, Math.max(0.03, (e.clientX - r.left) / r.width));
+  const y = Math.min(0.97, Math.max(0.03, (e.clientY - r.top) / r.height));
+  arrastre.el.style.left = (x * 100).toFixed(2) + '%';
+  arrastre.el.style.top  = (y * 100).toFixed(2) + '%';
+  arrastre.pos = { x, y };
+});
+function soltarMesa() {
+  if (!arrastre) return;
+  const a = arrastre;
+  arrastre = null;
+  if (a.movido && a.pos) moverMesa(a.id, a.pos.x, a.pos.y);
+  else tocarMesa(a.id);
+}
+salon.addEventListener('pointerup', soltarMesa);
+salon.addEventListener('pointercancel', () => { arrastre = null; cargar(); });
+
+/* ---------- Clics ---------- */
+salon.addEventListener('click', e => {
+  const ed = e.target.closest('[data-editar]');
+  if (ed) { editando = +ed.dataset.editar; renderEditor(); $('#editor').scrollIntoView({ block: 'nearest' }); return; }
+  const per = e.target.closest('[data-persona]');
+  if (per) elegir(per.dataset.persona);
+});
+pool.addEventListener('click', e => {
+  const per = e.target.closest('[data-persona]');
+  if (per) elegir(per.dataset.persona);
+});
+
+$('#btn-cancelar').addEventListener('click', () => { sel = null; render(); });
+$('#btn-quitar').addEventListener('click', () => {
+  const tok = sel;
+  sel = null;
+  aplicar(tok, null);
+});
+
+$('#btn-mesa').addEventListener('click', agregarMesa);
+$('#q').addEventListener('input', renderPool);
+$('#solo-conf').addEventListener('change', renderPool);
+
+$('#ed-cerrar').addEventListener('click', () => { editando = null; renderEditor(); });
+$('#ed-guardar').addEventListener('click', async () => {
+  const m = mesas.find(x => x.id === editando);
+  if (!m) return;
+  try {
+    const nueva = await rpc('admin_mesa_guardar', {
+      p_clave: clave, p_id: m.id,
+      p_nombre: $('#ed-nombre').value,
+      p_capacidad: Math.max(1, Math.min(24, +$('#ed-cap').value || m.capacidad)),
+    });
+    Object.assign(m, nueva);
+    render();
+  } catch (e) { alert(e.message); }
+});
+$('#ed-vaciar').addEventListener('click', async () => {
+  const m = mesas.find(x => x.id === editando);
+  if (!m) return;
+  const gente = ocupantes(m.id);
+  if (!gente.length) return;
+  if (!confirm(`¿Levantar a las ${gente.length} personas de la mesa ${m.id}?`)) return;
+  for (const p of gente) {
+    await rpc('admin_sentar', {
+      p_clave: clave, p_invitado_id: p.invitado_id, p_persona_idx: p.idx, p_mesa_id: null,
+    }).catch(e => alert(e.message));
+  }
+  await cargar();
+});
+$('#ed-borrar').addEventListener('click', async () => {
+  const m = mesas.find(x => x.id === editando);
+  if (!m) return;
+  const gente = ocupantes(m.id).length;
+  const aviso = gente
+    ? `La mesa ${m.id} tiene ${gente} persona${gente === 1 ? '' : 's'} sentada${gente === 1 ? '' : 's'}. Volverán a quedar sin lugar. ¿Eliminarla?`
+    : `¿Eliminar la mesa ${m.id}?`;
+  if (!confirm(aviso)) return;
+  try {
+    await rpc('admin_mesa_borrar', { p_clave: clave, p_id: m.id });
+    editando = null;
+    await cargar();
+  } catch (e) { alert(e.message); }
+});
+
+/* ---------- Export ---------- */
+function exportar() {
+  const filas = [];
+  mesas.forEach(m => {
+    ocupantes(m.id).forEach((p, i) => filas.push([
+      m.id, m.nombre || '', i + 1, p.nombre, p.restriccion || '',
+      p.invitacion, p.grupo, p.confirmado ? 'Sí' : 'Sin confirmar',
+    ]));
+  });
+  // Los que todavía no tienen lugar van al final, para que no se olviden.
+  personas.filter(p => mesaDe(p) == null).forEach(p => filas.push([
+    '', 'Sin mesa', '', p.nombre, p.restriccion || '',
+    p.invitacion, p.grupo, p.confirmado ? 'Sí' : 'Sin confirmar',
+  ]));
+
+  const sentadas = personas.filter(p => mesaDe(p) != null).length;
+  descargarExcel('Mesas · Valeria y Apolo.xlsx', {
+    nombre: 'Mesas',
+    titulo: 'Valeria & Apolo · 7 de noviembre de 2026',
+    subtitulo: `${mesas.length} mesas · ${sentadas} personas con lugar · ${hoyLargo()}`,
+    columnas: [
+      { titulo: 'Mesa',        ancho: 8,  centrado: true },
+      { titulo: 'Nombre',      ancho: 20 },
+      { titulo: 'Lugar',       ancho: 7,  centrado: true },
+      { titulo: 'Persona',     ancho: 30 },
+      { titulo: 'Restricción', ancho: 26 },
+      { titulo: 'Invitación',  ancho: 28 },
+      { titulo: 'Grupo',       ancho: 20 },
+      { titulo: 'Confirmado',  ancho: 14, centrado: true },
+    ],
+    filas,
+    // Las restricciones resaltadas: es lo que hay que pasarle al catering.
+    resaltar: (fila, i) => i === 4 && !!fila[4],
+  });
+}
+
+arrancarConsola({
+  seccion: 'mesas',
+  acciones: [
+    { id: 'btn-refresh', label: 'Actualizar' },
+    { id: 'btn-export',  label: 'Excel' },
+  ],
+  cargar,
+});
+
+$('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
+$('#btn-export').addEventListener('click', exportar);
+</script>
+</body>
+</html>
