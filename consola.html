@@ -78,6 +78,15 @@
   .b-warn { background: rgba(217,167,172,0.4); color: var(--wine-deep); }
   .tel-input { border: 1px dashed var(--line); padding: 0.28rem 0.4rem; width: 132px; font-size: 0.84rem; background: transparent; }
   .muted { color: var(--muted); font-size: 0.8rem; }
+  .msg { padding: 0.7rem 0; border-top: 1px solid rgba(217,167,172,0.3); }
+  .msg:first-child { border-top: none; padding-top: 0; }
+  .msg-cab { display: flex; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap;
+    font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
+  .msg-quien { color: var(--wine); font-weight: 600; }
+  .msg-texto { font-size: 0.95rem; line-height: 1.45; white-space: pre-wrap; }
+  /* La restricción alimenticia se resalta: es lo que hay que pasarle al catering. */
+  .msg-restriccion { margin-top: 0.35rem; font-size: 0.82rem; color: var(--wine-deep);
+    background: rgba(217,167,172,0.22); padding: 0.3rem 0.5rem; display: inline-block; }
   .login { max-width: 380px; margin: 12vh auto; }
   .err { background: rgba(217,167,172,0.3); color: var(--wine-deep); padding: 0.55rem 0.7rem; font-size: 0.85rem; margin-top: 0.6rem; }
   .hidden { display: none !important; }
@@ -152,6 +161,13 @@
         <label for="base-url">Dirección pública de la invitación</label>
         <input type="url" id="base-url" placeholder="https://usuario.github.io/repo/">
       </div>
+    </div>
+
+    <!-- Los mensajes que dejan los invitados al confirmar. Se oculta entero
+         mientras no haya ninguno, para no ocupar espacio en vano. -->
+    <div class="card hidden" id="card-mensajes">
+      <h2>Mensajes de los invitados <span class="muted" id="mensajes-cuenta"></span></h2>
+      <div id="mensajes-lista"></div>
     </div>
 
     <div class="card">
@@ -495,6 +511,9 @@ function render() {
     ['Personas', personas], ['Sin teléfono', sinTel],
   ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
 
+  // Mensajes que dejaron los invitados al confirmar
+  renderMensajes();
+
   // Filtros
   $('#filters').innerHTML = FILTROS.map(f =>
     `<button class="chip ${filtro === f.k ? 'active' : ''}" data-filter="${f.k}">${f.label}</button>`
@@ -557,6 +576,36 @@ function render() {
     bq.removeAttribute('href');
     bq.classList.add('apagado');
   }
+}
+
+/* Los mensajes del RSVP no se veían en ninguna parte de la consola: había
+   que entrar al panel de la invitación para leerlos. Aquí salen los más
+   recientes primero, junto con la restricción alimenticia y el correo, que
+   es lo otro que escriben y que conviene tener a mano. */
+function renderMensajes() {
+  const conAlgo = datos
+    .filter(g => (g.comentarios && g.comentarios.trim()) || (g.restricciones && g.restricciones.trim()))
+    .sort((a, b) => new Date(b.confirmado_en || 0) - new Date(a.confirmado_en || 0));
+
+  const card = $('#card-mensajes');
+  card.classList.toggle('hidden', conAlgo.length === 0);
+  if (!conAlgo.length) return;
+
+  const conMensaje = conAlgo.filter(g => g.comentarios && g.comentarios.trim()).length;
+  $('#mensajes-cuenta').textContent =
+    `· ${conMensaje} ${conMensaje === 1 ? 'mensaje' : 'mensajes'}`;
+
+  $('#mensajes-lista').innerHTML = conAlgo.map(g => `
+    <div class="msg">
+      <div class="msg-cab">
+        <span class="msg-quien">${escapeHtml(g.nombre)}</span>
+        <span>${g.confirmado_en ? fecha(g.confirmado_en) : ''}${g.email ? ' · ' + escapeHtml(g.email) : ''}</span>
+      </div>
+      ${g.comentarios && g.comentarios.trim()
+        ? `<div class="msg-texto">${escapeHtml(g.comentarios.trim())}</div>` : ''}
+      ${g.restricciones
+        ? `<div class="msg-restriccion">Restricción · ${escapeHtml(g.restricciones)}</div>` : ''}
+    </div>`).join('');
 }
 
 /* La cola va por NÚMERO, no por invitación: un invitado con dos teléfonos
@@ -819,6 +868,9 @@ function exportar() {
       g.aperturas || 0,
       g.ultima_apertura ? fecha(g.ultima_apertura) : '',
       g.confirmado_en ? fecha(g.confirmado_en) : '',
+      g.email || '',
+      g.comentarios || '',
+      g.restricciones || '',
       linkDe(g),
     ];
   });
@@ -841,6 +893,9 @@ function exportar() {
       { titulo: 'Aperturas',        ancho: 10, centrado: true },
       { titulo: 'Última apertura',  ancho: 18 },
       { titulo: 'Confirmó',         ancho: 18 },
+      { titulo: 'Correo',           ancho: 26 },
+      { titulo: 'Mensaje',          ancho: 42 },
+      { titulo: 'Restricciones',    ancho: 26 },
       { titulo: 'Link personal',    ancho: 46 },
     ],
     filas,
