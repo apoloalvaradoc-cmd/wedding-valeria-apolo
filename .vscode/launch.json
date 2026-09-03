@@ -1,0 +1,44 @@
+{
+  // Abren Chrome con el depurador enganchado: los breakpoints y el console.log
+  // del navegador aparecen dentro de VS Code.
+  // Antes hay que levantar el servidor: botón "Go Live" o Ctrl+Shift+B.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Invitación · localhost:5173",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173/index.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Invitación con token · ?i=…",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173/index.html?i=${input:token}",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Consola de envío · consola.html",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173/consola.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Script de Node (el archivo abierto)",
+      "type": "node",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "token",
+      "type": "promptString",
+      "description": "Token del invitado (12 caracteres)"
+    }
+  ]
+}

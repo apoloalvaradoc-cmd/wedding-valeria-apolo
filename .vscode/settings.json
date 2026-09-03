@@ -1,0 +1,64 @@
+{
+  // ── Ambiente de trabajo · Valeria & Apolo ─────────────────────────────
+  // Sitio estático sin build: index.html (invitación) y consola.html
+  // (envío por WhatsApp). Backend en Supabase. Deploy en Vercel.
+
+  // index.html pesa 200 KB en un solo archivo: formatear al guardar
+  // haría un diff gigante. Se formatea a mano (Shift+Alt+F) cuando toque.
+  "editor.formatOnSave": false,
+  "html.format.enable": false,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": true,
+  "editor.wordWrap": "off",
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.encoding": "utf8",
+
+  // Live Server (botón "Go Live" abajo a la derecha) en el mismo puerto
+  // que usa el servidor de Claude Code, para que los links no cambien.
+  // Ojo: no corras Live Server y la tarea "Servidor local" a la vez.
+  "liveServer.settings.port": 5173,
+  "liveServer.settings.root": "/",
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.donotVerifyTags": true,
+
+  // El repo carga ~40 MB de fotos y texturas: fuera de la búsqueda
+  // y del Ctrl+P para que buscar en el código sea instantáneo.
+  "search.exclude": {
+    "**/*.png": true,
+    "**/*.jpg": true,
+    "**/*.jpeg": true,
+    "**/*.webp": true,
+    "**/*.mp4": true,
+    "invitados.csv": true,
+    "lista.sql": true,
+    "update.sql": true
+  },
+  "search.followSymlinks": false,
+
+  // Agrupa los archivos que van juntos, para no perderse en la raíz.
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "index.html": "og-preview.jpg, portada-poster.jpg, portada-video.mp4, vercel.json",
+    "consola.html": "consola.css, consola-base.js, xlsx.js, mensajes.html, mesas.html",
+    "README.md": ".gitignore, .editorconfig"
+  },
+  "explorer.confirmDelete": true,
+
+  "[sql]": {
+    "editor.tabSize": 2,
+    "editor.wordWrap": "on"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": { "comments": "off", "strings": "off", "other": "off" }
+  },
+
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "terminal.integrated.cwd": "${workspaceFolder}"
+}

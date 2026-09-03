@@ -2,3 +2,9 @@
 .DS_Store
 Thumbs.db
 *.tmp
+
+# Generados desde el Google Sheet — llevan nombres y teléfonos de los
+# invitados. Se quedan en la máquina, no en el repo.
+invitados.csv
+lista.sql
+update.sql

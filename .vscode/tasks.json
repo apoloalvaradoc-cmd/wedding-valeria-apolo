@@ -1,0 +1,71 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Ctrl+Shift+B. Alternativa al botón "Go Live" — mismo puerto.
+      "label": "Servidor local · http://localhost:5173",
+      "type": "shell",
+      "command": "npx -y http-server . -p 5173 -c-1",
+      "isBackground": true,
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": {
+        "pattern": [{ "regexp": "^$", "file": 1, "location": 2, "message": 3 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting up http-server",
+          "endsPattern": "Hit CTRL-C to stop the server"
+        }
+      },
+      "presentation": { "panel": "dedicated", "reveal": "always" }
+    },
+    {
+      "label": "1 · Bajar el Sheet (invitados.csv)",
+      "type": "shell",
+      "command": "curl.exe -sL \"https://docs.google.com/spreadsheets/d/1kwuopuj9nY3wlrEXie9k7cKkVkp37T2Lmzi4nIi3i78/export?format=csv\" -o invitados.csv",
+      "problemMatcher": [],
+      "presentation": { "panel": "shared", "reveal": "always" },
+      "detail": "Descarga la lista de invitados. El Sheet es la fuente de verdad."
+    },
+    {
+      "label": "2 · Reporte de la lista (no toca la base)",
+      "type": "shell",
+      "command": "node generar_lista_sql.mjs invitados.csv --reporte",
+      "problemMatcher": [],
+      "presentation": { "panel": "shared", "reveal": "always" },
+      "detail": "Cuántas invitaciones y cupos salen, quién no tiene teléfono, nombres repetidos."
+    },
+    {
+      "label": "3 · Generar update.sql (incremental · conserva los links)",
+      "type": "shell",
+      "command": "node generar_lista_sql.mjs invitados.csv --actualizar > update.sql",
+      "options": { "env": { "VA_CLAVE": "${input:claveAdmin}" } },
+      "problemMatcher": [],
+      "presentation": { "panel": "shared", "reveal": "always" },
+      "detail": "Solo UPDATE/INSERT de lo que cambió. NO regenera tokens. El SQL se pega en Supabase."
+    },
+    {
+      "label": "Teléfonos · simulacro (no escribe nada)",
+      "type": "shell",
+      "command": "node importar_telefonos.mjs invitados.csv",
+      "problemMatcher": [],
+      "presentation": { "panel": "shared", "reveal": "always" }
+    },
+    {
+      "label": "Teléfonos · aplicar de verdad",
+      "type": "shell",
+      "command": "node importar_telefonos.mjs invitados.csv --aplicar",
+      "options": { "env": { "VA_CLAVE": "${input:claveAdmin}" } },
+      "problemMatcher": [],
+      "presentation": { "panel": "shared", "reveal": "always" },
+      "detail": "Escribe los teléfonos en Supabase vía admin_set_telefono."
+    }
+  ],
+  "inputs": [
+    {
+      "id": "claveAdmin",
+      "type": "promptString",
+      "description": "Clave de administración (VA_CLAVE)",
+      "password": true
+    }
+  ]
+}

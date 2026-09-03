@@ -1,0 +1,10 @@
+{
+  // Las que hacen falta para trabajar en este proyecto.
+  // VS Code las ofrece al abrir la carpeta.
+  "recommendations": [
+    "ritwickdey.liveserver",      // "Go Live": sirve el sitio en :5173 y recarga solo
+    "esbenp.prettier-vscode",     // formatear a mano (Shift+Alt+F)
+    "ms-python.python",           // los scripts de imagen (recolor_*.py, remove_*.py)
+    "eamodio.gitlens"             // ver quién cambió qué, útil con historial largo
+  ]
+}
