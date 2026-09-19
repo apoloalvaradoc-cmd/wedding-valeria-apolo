@@ -3413,11 +3413,14 @@ function computeStats() {
   return {
     total: inv.length, confirmados, declinaron, abiertas, enviadas, personas,
     pendientes: inv.length - confirmados - declinaron,
-    // Mismo criterio que la consola: los cupos de quien no asiste ya no
-    // estan en juego, aunque la invitacion se siga contando.
+    // Lugares que siguen en pie, con el mismo criterio que la consola: un
+    // cupo solo cuenta mientras pueda llegar alguien en el. Si tenian 2 y
+    // confirmo 1, el otro se perdio igual que si hubiera dicho que no.
     cupos: inv.reduce((a, i) => {
       const r = state.admin.rsvps[i.id];
-      return a + (r && r.asistira === false ? 0 : i.cupos);
+      if (r && r.asistira === false) return a;
+      if (r && r.asistira === true) return a + Math.max((r.asistentes || []).length, 1);
+      return a + i.cupos;
     }, 0),
   };
 }

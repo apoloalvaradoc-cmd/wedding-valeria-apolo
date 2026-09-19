@@ -172,6 +172,20 @@ function enviadoA(g, destino, tipo) {
 
 const totalEnvios = (g) => (g.inv_titular || 0) + (g.inv_acomp || 0) + (g.rec_titular || 0) + (g.rec_acomp || 0);
 
+/* Cuántos lugares siguen en pie en una invitación. Un cupo solo cuenta
+   mientras pueda llegar alguien en él:
+     · dijeron que no      → ninguno
+     · ya confirmaron      → los que apuntaron; si tenían 2 cupos y vino 1,
+                             el otro se perdió igual que si hubiera dicho que no
+     · todavía no responden→ todos sus cupos, que para eso se los guardamos
+   Es la misma cuenta que hace mesas_personas() en la base, así que el total
+   de aquí y la gente que aparece en el croquis de mesas siempre coinciden. */
+function lugaresEnPie(g) {
+  if (g.asistira === false) return 0;
+  if (g.asistira === true) return Math.max(g.asistentes || 0, 1);
+  return g.cupos || 0;
+}
+
 /* ---------- Estado de cada invitado ---------- */
 function estado(g) {
   if (g.asistira === true)  return { k: 'confirmado', label: 'Confirmado', cls: 'b-conf' };
@@ -301,15 +315,16 @@ function render() {
   const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
   const sinTel = datos.filter(g => destinos(g).length === 0).length;
   const numeros = datos.reduce((a, g) => a + destinos(g).length, 0);
-  /* Quien ya dijo que no va deja de ocupar lugar, asi que sus cupos no
-     cuentan. La invitacion si se sigue contando en Invitaciones: la
-     mandamos y nos respondieron, eso no se borra. */
-  const cupos = datos.reduce((a, g) => a + (g.asistira === false ? 0 : (g.cupos || 0)), 0);
+  const cupos = datos.reduce((a, g) => a + lugaresEnPie(g), 0);
   $('#stats').innerHTML = [
-    ['Invitaciones', total], ['Cupos', cupos], ['Números', numeros], ['Enviadas', enviados],
+    ['Invitaciones', total],
+    ['Cupos', cupos, 'Lugares que siguen en pie. Los de quien dijo que no, y los que no usaron al confirmar, ya no cuentan.'],
+    ['Números', numeros], ['Enviadas', enviados],
     ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
     ['Personas', personas], ['Sin teléfono', sinTel],
-  ].map(([l, n]) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  ].map(([l, n, t]) =>
+    `<div class="stat"${t ? ` title="${escapeHtml(t)}"` : ''}><div class="n">${n}</div><div class="l">${l}</div></div>`
+  ).join('');
 
   // Filtros
   $('#filters').innerHTML = FILTROS.map(f =>
