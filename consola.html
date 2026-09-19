@@ -301,7 +301,10 @@ function render() {
   const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
   const sinTel = datos.filter(g => destinos(g).length === 0).length;
   const numeros = datos.reduce((a, g) => a + destinos(g).length, 0);
-  const cupos = datos.reduce((a, g) => a + (g.cupos || 0), 0);
+  /* Quien ya dijo que no va deja de ocupar lugar, asi que sus cupos no
+     cuentan. La invitacion si se sigue contando en Invitaciones: la
+     mandamos y nos respondieron, eso no se borra. */
+  const cupos = datos.reduce((a, g) => a + (g.asistira === false ? 0 : (g.cupos || 0)), 0);
   $('#stats').innerHTML = [
     ['Invitaciones', total], ['Cupos', cupos], ['Números', numeros], ['Enviadas', enviados],
     ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
