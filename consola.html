@@ -310,18 +310,33 @@ function render() {
   const total = datos.length;
   const enviados = datos.filter(g => totalEnvios(g) > 0).length;
   const abiertos = datos.filter(g => g.aperturas > 0).length;
-  const conf = datos.filter(g => g.asistira === true).length;
-  const dec = datos.filter(g => g.asistira === false).length;
-  const personas = datos.reduce((a, g) => a + (g.asistira === true ? g.asistentes : 0), 0);
   const sinTel = datos.filter(g => destinos(g).length === 0).length;
   const numeros = datos.reduce((a, g) => a + destinos(g).length, 0);
-  const cupos = datos.reduce((a, g) => a + lugaresEnPie(g), 0);
+
+  /* Cuántas invitaciones, para las etiquetas de ayuda. */
+  const invConf = datos.filter(g => g.asistira === true).length;
+  const invDec  = datos.filter(g => g.asistira === false).length;
+  const invPend = total - invConf - invDec;
+
+  /* Y cuánta GENTE, que es lo que se le entrega a la finca. Estos tres
+     reparten los cupos que repartimos, sin que se pierda ni sobre ninguno:
+     confirmados + los que faltan responder + los perdidos = todos. */
+  const confirmados = datos.reduce((a, g) => a + (g.asistira === true ? lugaresEnPie(g) : 0), 0);
+  const pendientes  = datos.reduce((a, g) => a + (g.asistira == null   ? lugaresEnPie(g) : 0), 0);
+  const perdidos    = datos.reduce((a, g) => a + Math.max((g.cupos || 0) - lugaresEnPie(g), 0), 0);
+  const cupos = confirmados + pendientes;
+
+  const cuenta = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
   $('#stats').innerHTML = [
-    ['Invitaciones', total],
-    ['Cupos', cupos, 'Lugares que siguen en pie. Los de quien dijo que no, y los que no usaron al confirmar, ya no cuentan.'],
-    ['Números', numeros], ['Enviadas', enviados],
-    ['Abrieron', abiertos], ['Confirmadas', conf], ['No asisten', dec],
-    ['Personas', personas], ['Sin teléfono', sinTel],
+    ['Invitaciones', total, `${invConf} confirmaron · ${invDec} dijeron que no · ${invPend} sin responder`],
+    ['Cupos', cupos, 'Lugares que siguen en pie: los confirmados más los que faltan responder.'],
+    ['Números', numeros],
+    ['Enviadas', enviados, 'Invitaciones a las que ya les escribimos.'],
+    ['Abrieron', abiertos, 'Invitaciones que abrieron el link.'],
+    ['Confirmados', confirmados, `Personas, no invitaciones. Vienen de ${cuenta(invConf, 'invitación', 'invitaciones')}.`],
+    ['No asisten', perdidos, `Lugares que ya no llegan: los de ${cuenta(invDec, 'invitación que dijo', 'invitaciones que dijeron')} que no, más los cupos que nadie usó al confirmar.`],
+    ['Faltan responder', pendientes, `Personas, de ${cuenta(invPend, 'invitación', 'invitaciones')} que no han contestado.`],
+    ['Sin teléfono', sinTel, 'Invitaciones a las que no les podemos escribir.'],
   ].map(([l, n, t]) =>
     `<div class="stat"${t ? ` title="${escapeHtml(t)}"` : ''}><div class="n">${n}</div><div class="l">${l}</div></div>`
   ).join('');

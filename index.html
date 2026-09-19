@@ -3410,18 +3410,29 @@ function computeStats() {
     else if (r && r.asistira === false) declinaron++;
   });
   const personas = personasConfirmadas().length;
+
+  /* Lugares que siguen en pie en una invitacion, con la misma regla que la
+     consola: un cupo cuenta solo mientras pueda llegar alguien en el. Si
+     tenian 2 y confirmo 1, el otro se perdio igual que si hubieran dicho
+     que no. Asi el panel, el listado y el croquis de mesas dan lo mismo. */
+  const enPie = (i) => {
+    const r = state.admin.rsvps[i.id];
+    if (r && r.asistira === false) return 0;
+    if (r && r.asistira === true) return Math.max((r.asistentes || []).length, 1);
+    return i.cupos;
+  };
+
+  // Gente, no invitaciones. Los tres reparten los cupos que repartimos.
+  const genteConf = inv.reduce((a, i) => a + (state.admin.rsvps[i.id] &&
+    state.admin.rsvps[i.id].asistira === true ? enPie(i) : 0), 0);
+  const gentePend = inv.reduce((a, i) => a + (state.admin.rsvps[i.id] ? 0 : i.cupos), 0);
+  const gentePerdida = inv.reduce((a, i) => a + Math.max(i.cupos - enPie(i), 0), 0);
+
   return {
     total: inv.length, confirmados, declinaron, abiertas, enviadas, personas,
     pendientes: inv.length - confirmados - declinaron,
-    // Lugares que siguen en pie, con el mismo criterio que la consola: un
-    // cupo solo cuenta mientras pueda llegar alguien en el. Si tenian 2 y
-    // confirmo 1, el otro se perdio igual que si hubiera dicho que no.
-    cupos: inv.reduce((a, i) => {
-      const r = state.admin.rsvps[i.id];
-      if (r && r.asistira === false) return a;
-      if (r && r.asistira === true) return a + Math.max((r.asistentes || []).length, 1);
-      return a + i.cupos;
-    }, 0),
+    genteConf, gentePend, gentePerdida,
+    cupos: genteConf + gentePend,
   };
 }
 
@@ -3432,16 +3443,15 @@ function renderResumen() {
     <div class="stat"><div class="stat-label">Invitaciones</div><div class="stat-value">${s.total}</div></div>
     <div class="stat"><div class="stat-label">Enviadas</div><div class="stat-value">${s.enviadas}</div></div>
     <div class="stat"><div class="stat-label">Abrieron</div><div class="stat-value">${s.abiertas}</div></div>
-    <div class="stat accent-olive"><div class="stat-label">Confirmadas</div><div class="stat-value">${s.confirmados}</div></div>
-    <div class="stat accent-rose"><div class="stat-label">No asistirán</div><div class="stat-value">${s.declinaron}</div></div>
-    <div class="stat accent-muted"><div class="stat-label">Pendientes</div><div class="stat-value">${s.pendientes}</div></div>
-    <div class="stat accent-olive"><div class="stat-label">Personas</div><div class="stat-value">${s.personas}</div></div>
+    <div class="stat accent-olive" title="Personas, no invitaciones. Vienen de ${s.confirmados} invitaciones."><div class="stat-label">Confirmados</div><div class="stat-value">${s.genteConf}</div></div>
+    <div class="stat accent-rose" title="Lugares que ya no llegan: los de ${s.declinaron} invitaciones que dijeron que no, más los cupos que nadie usó al confirmar."><div class="stat-label">No asistirán</div><div class="stat-value">${s.gentePerdida}</div></div>
+    <div class="stat accent-muted" title="Personas, de ${s.pendientes} invitaciones que no han contestado."><div class="stat-label">Faltan responder</div><div class="stat-value">${s.gentePend}</div></div>
   `;
   const respondieron = s.confirmados + s.declinaron;
   const pct = s.total ? Math.round((respondieron / s.total) * 100) : 0;
   $('#response-bar').style.width = pct + '%';
   $('#response-text').textContent =
-    `${pct}% respondió (${respondieron} de ${s.total}) · ${s.personas} personas confirmadas de ${s.cupos} cupos`;
+    `${pct}% respondió (${respondieron} de ${s.total} invitaciones) · ${s.genteConf} personas confirmadas de ${s.cupos} cupos en pie`;
 
   // Avance por grupo: dónde falta empujar.
   const grupos = {};
