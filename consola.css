@@ -241,3 +241,9 @@
 .nombre-input:focus { border-color: var(--wine); border-style: solid; background: var(--paper); }
 .nombre-input.titular { font-weight: 600; }
 .nombre-input::placeholder { color: var(--muted); font-weight: 400; }
+
+/* ---------- Agregar invitado y menú de asistencia ---------- */
+.nuevo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.7rem; }
+.nuevo-grid .span2 { grid-column: 1 / -1; }
+.nuevo-grid input[type=number] { width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; }
+.asis-menu { display: block; margin-top: 0.3rem; padding: 0.2rem 0.3rem; font-size: 0.78rem; width: auto; max-width: 150px; cursor: pointer; }

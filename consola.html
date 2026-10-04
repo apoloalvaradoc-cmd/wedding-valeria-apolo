@@ -38,6 +38,56 @@
       </div>
     </div>
 
+    <div class="card hidden" id="nuevo-card">
+      <h2>Agregar invitado</h2>
+      <p class="hint">
+        Queda con su propio link desde ya. Si después también lo agregan al Google
+        Sheet, el modo actualizar lo reconoce por el teléfono y no lo duplica.
+      </p>
+      <form id="nuevo-form" class="nuevo-grid" autocomplete="off">
+        <div class="span2">
+          <label for="nv-nombre">Nombre de la invitación</label>
+          <input type="text" id="nv-nombre" required maxlength="120" placeholder="Ej. Familia López, Sr. Juan Pérez">
+        </div>
+        <div>
+          <label for="nv-cupos">Cupos</label>
+          <input type="number" id="nv-cupos" min="1" max="20" step="1" value="2" required>
+        </div>
+        <div>
+          <label for="nv-tipo">Grupo</label>
+          <select id="nv-tipo">
+            <option value="familia">Familia</option>
+            <option value="amigo">Amigos</option>
+            <option value="amigos_papa">Amigos papá</option>
+            <option value="amigos_mama">Amigos mamá</option>
+            <option value="cortejo">Cortejo</option>
+            <option value="otro" selected>Otro</option>
+          </select>
+        </div>
+        <div>
+          <label for="nv-tel">Teléfono titular</label>
+          <input type="text" id="nv-tel" inputmode="tel" placeholder="5555 5555">
+        </div>
+        <div>
+          <label for="nv-acomp">Acompañante</label>
+          <input type="text" id="nv-acomp" maxlength="120" placeholder="Opcional">
+        </div>
+        <div>
+          <label for="nv-tel-alt">Teléfono acompañante</label>
+          <input type="text" id="nv-tel-alt" inputmode="tel" placeholder="Opcional">
+        </div>
+        <div>
+          <label for="nv-notas">Notas</label>
+          <input type="text" id="nv-notas" placeholder="Opcional">
+        </div>
+        <div class="span2 row">
+          <button type="submit" class="filled" id="nv-guardar">Agregar a la lista</button>
+          <button type="button" id="nv-cancelar">Cancelar</button>
+          <span class="muted" id="nv-msg"></span>
+        </div>
+      </form>
+    </div>
+
     <div class="card">
       <h2>Invitados</h2>
       <div class="chips" id="filters"></div>
@@ -391,7 +441,10 @@ function render() {
                value="${g.cupos}" data-cupo="${g.id}" title="Cupos de la invitación">
         ${g.asistira === true ? `<div class="muted">vienen ${g.asistentes}</div>` : ''}
       </td>
-      <td><span class="badge ${e.cls}">${e.label}</span></td>
+      <td>
+        <span class="badge ${e.cls}">${e.label}</span>
+        ${menuAsistencia(g)}
+      </td>
       <td>${g.aperturas || 0}${g.ultima_apertura ? `<div class="muted">${fecha(g.ultima_apertura)}</div>` : ''}</td>
       <td><textarea class="nota-input" rows="1" placeholder="Notas"
                     data-nota="${g.id}">${escapeHtml(g.notas || '')}</textarea></td>
@@ -464,6 +517,119 @@ async function guardarCupos(id, valor) {
   } catch (e) {
     alert('No se pudieron cambiar los cupos: ' + e.message);
     render();   // devuelve el número al que sí está guardado
+  }
+}
+
+/* ---------- Asistencia desde el listado ----------
+   Casi todos contestan por WhatsApp, y es aquí donde se está cuando
+   contestan. El menú de cada fila registra la respuesta sin abrir la ficha
+   del panel. Los nombres de quienes van los arma la base: conserva los que
+   ya habían confirmado (con sus restricciones) y completa con los que
+   conocemos de la invitación. */
+function menuAsistencia(g) {
+  const op = [];
+  if (g.asistira !== true) {
+    op.push(['si', g.cupos === 1 ? 'Sí va' : `Sí van los ${g.cupos}`]);
+  }
+  if (g.cupos > 1) {
+    op.push(['cuantos', g.asistira === true ? 'Cambiar cuántos van…' : 'Sí van, pero menos…']);
+  }
+  if (g.asistira !== false) op.push(['no', 'Ya no van']);
+  if (g.asistira != null)   op.push(['pend', 'Volver a pendiente']);
+  return `<select class="asis-menu" data-asis="${g.id}" title="Registrar su respuesta">
+    <option value="">Marcar…</option>
+    ${op.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}
+  </select>`;
+}
+
+async function marcarAsistencia(id, accion) {
+  const g = datos.find(x => x.id === id);
+  if (!g || !accion) return;
+  let asistira = null, personas = null;
+
+  if (accion === 'si') {
+    asistira = true; personas = g.cupos;
+  } else if (accion === 'cuantos') {
+    const actual = g.asistira === true ? g.asistentes : g.cupos;
+    const r = prompt(`¿Cuántas personas van de ${g.nombre}? (1 a ${g.cupos})`, String(actual));
+    if (r === null) { render(); return; }
+    personas = parseInt(r, 10);
+    if (!(personas >= 1 && personas <= g.cupos)) {
+      alert(`Tiene que ser un número de 1 a ${g.cupos}. Si van más, sube primero los cupos.`);
+      render(); return;
+    }
+    asistira = true;
+  } else if (accion === 'no') {
+    if (g.asistira === true &&
+        !confirm(`${g.nombre} tenía ${g.asistentes} confirmados. ¿Marcar que ya no van?`)) { render(); return; }
+    asistira = false;
+  } else if (accion === 'pend') {
+    if (!confirm(`¿Borrar la respuesta de ${g.nombre} y dejarla pendiente?`)) { render(); return; }
+  }
+
+  try {
+    const res = await rpc('admin_marcar_asistencia', {
+      p_clave: clave, p_invitado_id: id, p_asistira: asistira, p_personas: personas,
+    });
+    g.asistira = res.asistira;
+    g.asistentes = res.asistentes;
+    g.confirmado_en = asistira === null ? null : new Date().toISOString();
+    if (asistira !== true) g.restricciones = null;
+    render();
+  } catch (e) {
+    alert('No se pudo registrar la respuesta: ' + e.message);
+    render();
+  }
+}
+
+/* ---------- Agregar invitado ---------- */
+function abrirNuevo() {
+  $('#nuevo-card').classList.remove('hidden');
+  $('#nv-msg').textContent = '';
+  $('#nuevo-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('#nv-nombre').focus();
+}
+
+async function crearInvitado(ev) {
+  ev.preventDefault();
+  const nombre = $('#nv-nombre').value.trim();
+  const cupos = parseInt($('#nv-cupos').value, 10);
+  if (!nombre) return;
+  if (!(cupos >= 1 && cupos <= 20)) { $('#nv-msg').textContent = 'Los cupos van de 1 a 20.'; return; }
+
+  // Mismo número que ya está en la lista: casi siempre es la misma persona.
+  const tel = normalizarTel($('#nv-tel').value);
+  const repetido = tel && datos.find(g => normalizarTel(g.telefono) === tel || normalizarTel(g.telefono_alt) === tel);
+  if (repetido && !confirm(`Ese número ya es de ${repetido.nombre}. ¿Agregarlo de todos modos?`)) return;
+
+  // Si el número se entiende, se guarda ya en formato internacional.
+  const telDe = (v) => { const d = normalizarTel(v); return d ? '+' + d : v.trim(); };
+
+  const btn = $('#nv-guardar');
+  btn.disabled = true; btn.textContent = 'Agregando...';
+  try {
+    const res = await rpc('admin_crear_invitado', {
+      p_clave: clave,
+      p_nombre: nombre,
+      p_cupos: cupos,
+      p_telefono: telDe($('#nv-tel').value),
+      p_telefono_alt: telDe($('#nv-tel-alt').value),
+      p_nombre_acompanante: $('#nv-acomp').value.trim(),
+      p_tipo: $('#nv-tipo').value,
+      p_notas: $('#nv-notas').value.trim(),
+    });
+    $('#nuevo-form').reset();
+    $('#nv-cupos').value = 2;
+    await cargar();
+    // Se deja a la vista para poder mandarle la invitación de una vez.
+    filtro = 'todos';
+    $('#q').value = nombre;
+    render();
+    $('#nv-msg').textContent = `Listo: ${nombre} quedó en la lista (${res.id}).`;
+  } catch (e) {
+    $('#nv-msg').textContent = 'No se pudo agregar: ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Agregar a la lista';
   }
 }
 
@@ -599,6 +765,8 @@ $('#tbody').addEventListener('change', e => {
   if (c) { guardarCupos(c.dataset.cupo, c.value); return; }
   const nb = e.target.closest('[data-nombre]');
   if (nb) { guardarNombre(nb.dataset.nombre, nb.dataset.campo, nb.value); return; }
+  const as = e.target.closest('[data-asis]');
+  if (as) { marcarAsistencia(as.dataset.asis, as.value); return; }
   const n = e.target.closest('[data-nota]');
   if (n) guardarNotas(n.dataset.nota, n.value);
 });
@@ -621,6 +789,7 @@ cargarPlantilla('invitacion');
 arrancarConsola({
   seccion: 'listado',
   acciones: [
+    { id: 'btn-nuevo',   label: '+ Agregar invitado', filled: true },
     { id: 'btn-refresh', label: 'Actualizar' },
     { id: 'btn-export',  label: 'Excel' },
   ],
@@ -629,6 +798,9 @@ arrancarConsola({
 
 $('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
 $('#btn-export').addEventListener('click', exportar);
+$('#btn-nuevo').addEventListener('click', abrirNuevo);
+$('#nv-cancelar').addEventListener('click', () => $('#nuevo-card').classList.add('hidden'));
+$('#nuevo-form').addEventListener('submit', crearInvitado);
 </script>
 </body>
 </html>

@@ -53,6 +53,8 @@ legítimo pasa por funciones `SECURITY DEFINER`:
 | `admin_lista_envio(clave)` | consola | todo + teléfono + token |
 | `admin_registrar_envio(clave, …)` | consola | marca un envío |
 | `admin_set_telefono(clave, …)` | consola | corrige un número |
+| `admin_crear_invitado(clave, …)` | consola | agrega una invitación nueva con su token |
+| `admin_marcar_asistencia(clave, …)` | consola | sí van · cuántos · ya no van · pendiente |
 
 La clave de administración **ya no vive en el HTML**. Se compara contra un
 hash bcrypt guardado en la tabla `config`, con medio segundo de espera en cada
@@ -192,6 +194,11 @@ entra con la clave.
   anotando a cuál de los dos números fue.
 - **Cola**: va por número, no por invitación. Un invitado con dos teléfonos
   aparece dos veces hasta que ambos reciban esa plantilla.
+- **+ Agregar invitado** (arriba): alta de una invitación nueva sin pasar
+  por el Sheet. Queda con su link de una vez y sigue la serie `INV###`.
+- **Menú de asistencia** en la columna Estado: *Sí van*, *Sí van, pero
+  menos…*, *Ya no van* y *Volver a pendiente*. Para los que contestan por
+  WhatsApp. Conserva los nombres y restricciones que ya hubieran dejado.
 - **Filtros**: sin enviar · enviados que no abrieron · abrieron sin confirmar ·
   falta confirmar · confirmados · no asistirán · sin ningún teléfono ·
   **falta un destino** (recibió en un número pero no en el otro).
@@ -276,6 +283,7 @@ congelado, autofiltro puesto y las restricciones alimenticias resaltadas.
 | `005_doble_destino_envio.sql` | segundo teléfono y `envios.destino` |
 | `006_admin_gestion_confirmaciones.sql` | registrar confirmaciones a mano, mesas |
 | `007_admin_editar_invitado.sql` | editar nombre y teléfonos desde la ficha |
+| `015_admin_crear_y_marcar.sql` | agregar invitados y marcar asistencia desde el listado |
 
 Al restaurar en un proyecto nuevo hay que correrlas en orden y después
 sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
