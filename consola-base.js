@@ -14,8 +14,8 @@
 ============================================================ */
 
 const CONFIG = {
-  supabaseUrl: "https://psmaynxnphbfbtayzaeb.supabase.co",
-  supabaseKey: "sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-",
+  supabaseUrl: "https://elytdndedfxiqfqdnwzx.supabase.co",
+  supabaseKey: "sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp",
   // La dirección que reciben los invitados. Va fija a propósito: antes se
   // deducía de dónde estuviera abierta la consola, así que abrirla desde
   // GitHub Pages o desde localhost mandaba links con ese dominio. El sitio

@@ -1,23 +1,25 @@
 # Restore · wedding-valeria-apolo
 
-## Estado actual (26-ago-2026)
+## Estado actual (12-oct-2026)
 
-Proyecto **activo**. El plan free permite 2 proyectos activos por usuario; para
-reactivar este se pausó `agendaflow-beauty`.
+La base vive ahora en la cuenta **agendaes** de Supabase, proyecto
+`elytdndedfxiqfqdnwzx` (org `agendaes`, plan free). Se copió completa desde
+`psmaynxnphbfbtayzaeb`: esquema con las migraciones de este repo, y datos tabla
+por tabla verificados con conteo + md5 idénticos en origen y destino.
 
-- `invitados`: **143 filas · 262 cupos**, reconstruidas desde el Google Sheet
-  el 26-ago-2026. Todas con token. 140 tienen al menos un teléfono; sin ninguno
-  quedan Abuelito Runy, Marco Morales y Yali Botas.
-- `rsvps`, `aperturas`, `envios`: vacías — aún no se distribuye la invitación.
-- `config`: contiene `admin_hash`.
-
-> El RESTORE.md anterior decía "0 filas" en `invitados`. Era incorrecto: la
-> lista sí estaba cargada.
+- `invitados` 192 · `rsvps` 143 · `aperturas` 763 · `envios` 326 · `mesas` 1 ·
+  `asientos` 2 · `config` 1 (`admin_hash`, misma clave de siempre).
+- Los ids/tokens son los mismos, así que los links ya enviados siguen sirviendo.
+- El proyecto viejo `psmaynxnphbfbtayzaeb` (cuenta de portalcasa) quedó
+  **pausado** como respaldo. No se transfirió porque esa org estaba en periodo
+  de gracia del plan free.
+- Copia local de los datos en `respaldo/2026-10-12/` (ignorada por git).
+- Un cron de Vercel (`/api/keepalive`) evita que el plan free la pause.
 
 ## Cómo restaurar
 
 ### Opción A — Reactivar el mismo proyecto
-1. Supabase Dashboard → proyecto `wedding-valeria-apolo` (`psmaynxnphbfbtayzaeb`).
+1. Supabase Dashboard (cuenta agendaes) → proyecto `elytdndedfxiqfqdnwzx`.
 2. "Restore project". Si falla por límite de proyectos activos, pausa otro primero.
 3. El esquema y los datos vuelven tal cual. No hace falta correr nada.
 

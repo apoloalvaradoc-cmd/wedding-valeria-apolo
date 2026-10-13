@@ -4,9 +4,9 @@
 // Solo devuelve el código HTTP, nunca la respuesta: el buscador regresa
 // nombres de invitados. Borrar (junto con el cron) después del 7 nov.
 
-const SUPABASE_URL = "https://psmaynxnphbfbtayzaeb.supabase.co";
+const SUPABASE_URL = "https://elytdndedfxiqfqdnwzx.supabase.co";
 // La misma key pública que va en index.html.
-const SUPABASE_KEY = "sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-";
+const SUPABASE_KEY = "sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp";
 
 module.exports = async (req, res) => {
   let status = 0;

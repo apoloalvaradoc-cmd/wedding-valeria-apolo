@@ -7,7 +7,7 @@ Dos páginas estáticas, sin build y sin dependencias:
 | `index.html` | La invitación. Con `?i=TOKEN` saluda por nombre, registra la apertura y precarga el RSVP. | Los invitados |
 | `consola.html` | Consola de envío por WhatsApp y seguimiento. Pide clave. | Ustedes dos |
 
-Backend: Supabase (`psmaynxnphbfbtayzaeb`), PostgreSQL 17.
+Backend: Supabase (`elytdndedfxiqfqdnwzx`, cuenta agendaes), PostgreSQL 17.
 
 ---
 
@@ -331,11 +331,11 @@ junto con `api/keepalive.js`, después de la boda.
 
 ```bash
 # Las tablas deben estar cerradas: esto tiene que fallar
-curl -s "https://psmaynxnphbfbtayzaeb.supabase.co/rest/v1/invitados?select=*" \
-  -H "apikey: sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-"
+curl -s "https://elytdndedfxiqfqdnwzx.supabase.co/rest/v1/invitados?select=*" \
+  -H "apikey: sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp"
 
 # El buscador sí debe responder
-curl -s -X POST "https://psmaynxnphbfbtayzaeb.supabase.co/rest/v1/rpc/buscar_invitado" \
-  -H "apikey: sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-" \
+curl -s -X POST "https://elytdndedfxiqfqdnwzx.supabase.co/rest/v1/rpc/buscar_invitado" \
+  -H "apikey: sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp" \
   -H "Content-Type: application/json" -d '{"q":"varg"}'
 ```

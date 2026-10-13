@@ -226,8 +226,8 @@ if (soloReporte) process.exitCode = 0;
    Empareja por nombre normalizado. Necesita la clave en VA_CLAVE.
 ============================================================ */
 if (actualizar) {
-  const SUPABASE_URL = 'https://psmaynxnphbfbtayzaeb.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-';
+  const SUPABASE_URL = 'https://elytdndedfxiqfqdnwzx.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp';
   const clave = process.env.VA_CLAVE;
   if (!clave) throw new Error('Falta la variable de entorno VA_CLAVE');
 

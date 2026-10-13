@@ -25,8 +25,8 @@ import { readFileSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
 
-const SUPABASE_URL = 'https://psmaynxnphbfbtayzaeb.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_vl2iawt4czQVfk53ACvxBg_TvkpUfI-';
+const SUPABASE_URL = 'https://elytdndedfxiqfqdnwzx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JyZovP1ejwyqf51pT_ArAg_kfOtBvAp';
 const PAIS = '502'; // Guatemala
 
 /* ---------------- CSV ---------------- */
