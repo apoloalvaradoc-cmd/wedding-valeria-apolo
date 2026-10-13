@@ -298,8 +298,9 @@ Vercel (team **agendaes**, proyecto `valeria-y-apolo`) sirve la rama `main`:
 Push a `main` y listo. La anon key en el HTML es pública por diseño; lo que
 protege los datos es RLS y las funciones, no el secreto de la key.
 
-`.github/workflows/supabase-keepalive.yml` hace una búsqueda vacía cada 2 días
-para que Supabase free no pause el proyecto. Se puede borrar después de la boda.
+Un cron de Vercel (`vercel.json` → `/api/keepalive`) hace una búsqueda vacía
+una vez al día para que Supabase free no pause el proyecto. Se puede borrar,
+junto con `api/keepalive.js`, después de la boda.
 
 ---
 
