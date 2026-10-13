@@ -292,11 +292,14 @@ sembrar `admin_hash` y generar los tokens — está anotado al final del 004.
 
 ## 8. Despliegue
 
-GitHub Pages sirve la rama `main`:
+Vercel (team **agendaes**, proyecto `valeria-y-apolo`) sirve la rama `main`:
 <https://valeria-y-apolo.vercel.app/>
 
 Push a `main` y listo. La anon key en el HTML es pública por diseño; lo que
 protege los datos es RLS y las funciones, no el secreto de la key.
+
+`.github/workflows/supabase-keepalive.yml` hace una búsqueda vacía cada 2 días
+para que Supabase free no pause el proyecto. Se puede borrar después de la boda.
 
 ---
 

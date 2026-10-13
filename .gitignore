@@ -8,3 +8,6 @@ Thumbs.db
 invitados.csv
 lista.sql
 update.sql
+
+# Respaldos locales de la base (nombres y teléfonos). Nunca al repo.
+respaldo/
