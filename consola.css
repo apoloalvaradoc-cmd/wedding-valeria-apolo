@@ -207,7 +207,8 @@
 .mesa.abierta .mesa-cuerpo { box-shadow: 0 0 0 4px rgba(88, 4, 16, 0.18); }
 .mesa-num { font-size: 20px; color: var(--wine); }
 .mesa-cuenta { font-size: 9px; letter-spacing: 0.08em; color: var(--muted); margin-top: 2px; }
-.mesa.rect_v .mesa-num { font-size: 17px; }
+.mesa.rect_h .mesa-num, .mesa.rect_v .mesa-num { font-size: 15px; }
+.mesa.rect_h .mesa-cuenta, .mesa.rect_v .mesa-cuenta { font-size: 8px; margin-top: 1px; }
 
 /* Cada lugar es una ficha con iniciales; el nombre completo va en el title
    y en el panel de la mesa. A la escala del plano no cabe más. */
@@ -218,6 +219,8 @@
   font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
   border: 1px solid var(--wine); background: var(--paper); color: var(--wine); cursor: grab;
 }
+/* En las rectangulares van más juntos (medida del plano). */
+.mesa.rect_h .asiento, .mesa.rect_v .asiento { width: 21px; height: 21px; font-size: 9px; }
 .asiento.libre { border: 1px dashed var(--muted); opacity: 0.45; background: transparent; cursor: default; }
 .asiento.elegida { background: var(--wine); border-color: var(--wine); color: var(--cream); }
 .asiento.con-restriccion { border-color: var(--rose); background: rgba(217,167,172,0.3); }
@@ -279,3 +282,42 @@
 .nuevo-grid .span2 { grid-column: 1 / -1; }
 .nuevo-grid input[type=number] { width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; }
 .asis-menu { display: block; margin-top: 0.3rem; padding: 0.2rem 0.3rem; font-size: 0.78rem; width: auto; max-width: 150px; cursor: pointer; }
+
+/* ============================================================
+   Mesas · impresión (botón PDF)
+   Carta horizontal. La primera hoja es el plano completo a escala
+   0.6 (1600 × 1126 → 960 × 676, lo que cabe con márgenes de 10 mm);
+   después, las tarjetas de cada mesa con los nombres completos.
+============================================================ */
+#imprimir { display: none; }
+
+@media print {
+  @page { size: letter landscape; margin: 10mm; }
+  html, body { background: #fff !important; }
+  body > * { display: none !important; }
+  body > #imprimir { display: block !important; }
+  #imprimir * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .imp-cab { display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1.5px solid var(--wine); padding-bottom: 4px; margin-bottom: 8px; }
+  .imp-cab h1 { font-size: 16pt; color: var(--wine); margin: 0; font-weight: 600; }
+  .imp-cab p { font-size: 9pt; color: var(--muted); margin: 0; }
+
+  .hoja-plano { break-after: page; }
+  .plano-marco { position: relative; width: 960px; height: 676px; overflow: hidden; }
+  /* zoom y no transform: transform deja el ancho de 1600 px en el layout y
+     Chrome achica toda la hoja para que quepa. */
+  .salon-impreso { zoom: 0.6; }
+  .salon-impreso .mesa-cuerpo { cursor: default; }
+
+  /* En filas, para que se lean en orden: 1, 2, 3, 4 / 5, 6… */
+  .tarjetas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: start; }
+  .tarjeta { break-inside: avoid; border: 1px solid var(--line); padding: 6px 8px 4px; }
+  .tarjeta h3 { font-size: 10.5pt; color: var(--wine); margin: 0 0 3px; display: flex;
+    justify-content: space-between; gap: 6px; font-weight: 600; }
+  .tarjeta h3 span { color: var(--muted); font-weight: 400; font-size: 9pt; }
+  .tarjeta ol { margin: 0; padding-left: 1.3em; font-size: 9pt; line-height: 1.35; color: var(--ink); }
+  .tarjeta .restr { color: var(--wine); font-size: 8pt; }
+  .tarjeta .pend { color: var(--olive); font-style: italic; }
+  .tarjeta .pend span { font-size: 8pt; }
+}
