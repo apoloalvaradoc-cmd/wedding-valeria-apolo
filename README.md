@@ -284,6 +284,7 @@ congelado, autofiltro puesto y las restricciones alimenticias resaltadas.
 | `006_admin_gestion_confirmaciones.sql` | registrar confirmaciones a mano, mesas |
 | `007_admin_editar_invitado.sql` | editar nombre y teléfonos desde la ficha |
 | `015_admin_crear_y_marcar.sql` | agregar invitados y marcar asistencia desde el listado |
+| `016_mesas_plano.sql` | forma de las mesas, lugares apartados y pasar una mesa completa a otra |
 
 Al restaurar en un proyecto nuevo hay que correrlas en orden y después
 sembrar `admin_hash` y generar los tokens — está anotado al final del 004.

@@ -27,7 +27,8 @@ por tabla verificados con conteo + md5 idénticos en origen y destino.
 1. SQL Editor → correr **en orden**:
    `schema.sql` → `migrations/002_links_tracking.sql` →
    `migrations/003_rpcs.sql` → `migrations/004_rpcs_consola_envio.sql` →
-   `migrations/005_doble_destino_envio.sql`
+   `migrations/005_doble_destino_envio.sql` → y el resto de `migrations/`
+   en orden, hasta `016_mesas_plano.sql`
 2. Sembrar la clave de administración:
    ```sql
    insert into public.config (clave, valor)

@@ -137,6 +137,8 @@
    Mesas · croquis del salón
 ============================================================ */
 .mesas-layout { display: grid; grid-template-columns: 296px 1fr; gap: 1rem; align-items: start; }
+/* Sin esto el salón, más ancho que la columna, la estira y empuja la página. */
+.mesas-layout > * { min-width: 0; }
 @media (max-width: 900px) { .mesas-layout { grid-template-columns: 1fr; } }
 
 .pool { position: sticky; top: 4.4rem; max-height: calc(100vh - 6rem); overflow-y: auto; }
@@ -162,52 +164,82 @@
 
 .lienzo {
   position: relative; background: var(--paper); border: 1px solid var(--line);
-  overflow: auto; height: calc(100vh - 12rem); min-height: 460px;
+  overflow: auto; max-height: calc(100vh - 9rem);
 }
-/* El salón en sí. Ancho fijo para que el croquis no se deforme al cambiar
-   de pantalla: si no cabe, se hace scroll. */
-.salon { position: relative; width: 1360px; height: 1000px; }
-.salon.arrastrando { cursor: grabbing; }
+/* El salón mide siempre lo mismo por dentro (la proporción del plano del
+   PDF) y se escala entero con el zoom. Así las mesas guardan su lugar y su
+   tamaño relativo en cualquier pantalla. El marco solo reserva el espacio
+   ya escalado, para que el scroll del lienzo sea el correcto. */
+.salon-marco { position: relative; }
+.salon {
+  position: absolute; left: 0; top: 0; width: 1600px; height: 1126px;
+  transform-origin: 0 0; background: var(--paper);
+}
+.zoom { display: inline-flex; gap: 0.25rem; margin-left: auto; }
+.zoom button { min-width: 2.2rem; }
+
+/* Lo fijo del salón: no se mueve ni recibe gente. */
+.elemento {
+  position: absolute; border: 1.5px solid var(--ink); color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; letter-spacing: 0.08em; pointer-events: none;
+  background: var(--paper);
+}
+.elemento.pista { background: rgba(196, 197, 160, 0.14); }
+.elemento.honor { border-color: var(--muted); color: var(--muted); font-size: 12px;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(16.66% - 1px), var(--line) calc(16.66% - 1px) 16.66%); }
+.elemento.pastel { border-radius: 50%; font-size: 11px; color: var(--muted); }
 
 .mesa {
-  position: absolute; width: var(--caja); height: var(--caja);
+  position: absolute; width: var(--w); height: var(--h);
   transform: translate(-50%, -50%); touch-action: none;
 }
-.mesa-circulo {
+.mesa-cuerpo {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: var(--d); height: var(--d); border-radius: 50%;
+  width: var(--cw); height: var(--ch);
   background: var(--cream); border: 2px solid var(--wine);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: grab; user-select: none; text-align: center; padding: 0.4rem;
+  cursor: grab; user-select: none; text-align: center; line-height: 1;
 }
-.mesa.destino .mesa-circulo { background: rgba(196, 197, 160, 0.45); border-style: dashed; }
-.mesa.llena .mesa-circulo { border-color: var(--olive); }
-.mesa-num { font-size: 1.35rem; color: var(--wine); line-height: 1; }
-.mesa-nombre { font-size: 0.7rem; color: var(--ink); margin-top: 0.15rem; max-width: 90%;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mesa-cuenta { font-size: 0.66rem; letter-spacing: 0.1em; color: var(--muted); margin-top: 0.2rem; }
-.mesa-editar {
-  position: absolute; left: 50%; bottom: 0.2rem; transform: translateX(-50%);
-  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--muted); background: none; border: none; padding: 0.2rem 0.3rem; cursor: pointer;
-}
-.mesa-editar:hover { color: var(--wine); background: none; }
+.mesa.redonda .mesa-cuerpo { border-radius: 50%; }
+.mesa.destino .mesa-cuerpo { background: rgba(196, 197, 160, 0.45); border-style: dashed; }
+.mesa.llena .mesa-cuerpo { border-color: var(--olive); }
+.mesa.abierta .mesa-cuerpo { box-shadow: 0 0 0 4px rgba(88, 4, 16, 0.18); }
+.mesa-num { font-size: 20px; color: var(--wine); }
+.mesa-cuenta { font-size: 9px; letter-spacing: 0.08em; color: var(--muted); margin-top: 2px; }
+.mesa.rect_v .mesa-num { font-size: 17px; }
 
-/* Los asientos van en anillo alrededor del círculo, como en el salón. */
+/* Cada lugar es una ficha con iniciales; el nombre completo va en el title
+   y en el panel de la mesa. A la escala del plano no cabe más. */
 .asiento {
   position: absolute; transform: translate(-50%, -50%);
-  width: 68px; font-size: 0.6rem; line-height: 1.15; text-align: center;
-  padding: 0.2rem 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: grab;
-}
-.asiento.libre {
-  border-style: dashed; color: var(--muted); background: transparent;
-  width: 22px; height: 22px; border-radius: 50%; padding: 0; cursor: default;
+  width: 26px; height: 26px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.02em;
+  border: 1px solid var(--wine); background: var(--paper); color: var(--wine); cursor: grab;
 }
+.asiento.libre { border: 1px dashed var(--muted); opacity: 0.45; background: transparent; cursor: default; }
 .asiento.elegida { background: var(--wine); border-color: var(--wine); color: var(--cream); }
-.asiento.con-restriccion { border-color: var(--rose); background: rgba(217,167,172,0.22); }
-.asiento.sin-confirmar { color: var(--muted); border-style: dashed; }
+.asiento.con-restriccion { border-color: var(--rose); background: rgba(217,167,172,0.3); }
+.asiento.sin-confirmar { color: var(--muted); border-style: dashed; border-color: var(--muted); }
+/* Apartado: lugar guardado con un nombre que todavía no es invitación. */
+.asiento.apartado { border-style: dashed; border-color: var(--olive); color: var(--olive);
+  background: rgba(196, 197, 160, 0.25); font-style: italic; }
+.asiento.apartado.elegida { background: var(--olive); color: var(--cream); }
+
+/* Panel de la mesa abierta: los lugares con nombre completo. */
+.lugares { list-style: none; margin: 0.4rem 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.25rem 1rem; }
+.lugares li { display: flex; gap: 0.4rem; align-items: baseline; font-size: 0.86rem;
+  padding: 0.2rem 0; border-bottom: 1px solid rgba(217,167,172,0.25); }
+.lugares .n { color: var(--muted); font-size: 0.72rem; min-width: 1.2rem; }
+.lugares .quien { flex: 1; min-width: 0; }
+.lugares .de { display: block; font-size: 0.72rem; color: var(--muted); }
+.lugares .pend { font-style: italic; color: var(--olive); }
+.lugares button { font-size: 0.66rem; padding: 0.1rem 0.4rem; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 0.8rem; font-size: 0.74rem; color: var(--muted); }
+.leyenda .asiento { position: static; transform: none; display: inline-flex;
+  width: 16px; height: 16px; font-size: 0; vertical-align: middle; margin-right: 0.3rem; cursor: default; }
 
 /* Barra que aparece al elegir a alguien: explica qué sigue. */
 .barra-sel {
