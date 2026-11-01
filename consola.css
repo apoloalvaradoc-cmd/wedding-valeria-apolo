@@ -178,15 +178,17 @@
 .zoom { display: inline-flex; gap: 0.25rem; margin-left: auto; }
 .zoom button { min-width: 2.2rem; }
 
-/* Lo fijo del salón: no se mueve ni recibe gente. */
+/* Lo fijo del salón: no se mueve ni recibe gente. Tocarlo solo cambia su
+   texto. */
 .elemento {
   position: absolute; border: 1.5px solid var(--ink); color: var(--ink);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; letter-spacing: 0.08em; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 15px; letter-spacing: 0.08em; cursor: pointer;
   background: var(--paper);
 }
+.elemento:hover { border-color: var(--wine); }
 .elemento.pista { background: rgba(196, 197, 160, 0.14); }
-.elemento.honor { border-color: var(--muted); color: var(--muted); font-size: 12px;
+.elemento.larga { border-color: var(--muted); color: var(--muted); font-size: 12px;
   background: repeating-linear-gradient(90deg, transparent 0 calc(16.66% - 1px), var(--line) calc(16.66% - 1px) 16.66%); }
 .elemento.pastel { border-radius: 50%; font-size: 11px; color: var(--muted); }
 
