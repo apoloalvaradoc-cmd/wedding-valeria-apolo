@@ -102,6 +102,9 @@
   </div>
 </div>
 
+<!-- Solo se ve al imprimir: el plano del salón y la lista por mesa. -->
+<div id="imprimir"></div>
+
 <script src="consola-base.js"></script>
 <script src="xlsx.js"></script>
 <script>
@@ -187,8 +190,14 @@ const usados = id => ocupantes(id).length + apartadosDe(id).length;
 /* ---------- Geometría de cada mesa ----------
    Devuelve el tamaño de la caja, el del cuerpo y dónde va cada lugar,
    en px del salón. Las rectangulares llevan uno en cada cabecera y el
-   resto repartido en los dos lados largos, como en el plano. */
-const FICHA = 28;   // separación entre lugares
+   resto repartido en los dos lados largos, como en el plano.
+
+   Las medidas salen del PDF: una rectangular de 10 mide 151 × 96 px con
+   todo y sillas, y las paradas que van en pareja junto a la pista (4 y 10,
+   5 y 11) quedan a 144 px una de otra. Por eso sus lugares son un poco más
+   chicos y más juntos que los de las redondas: si no, se enciman. */
+const FICHA = 28;        // separación entre lugares, redondas
+const FICHA_RECT = 22;   // separación entre lugares, rectangulares
 
 function geometria(m) {
   const cap = m.capacidad;
@@ -196,18 +205,18 @@ function geometria(m) {
     const cab = cap >= 4 ? 1 : 0;
     const lados = cap - 2 * cab;
     const arriba = Math.ceil(lados / 2), abajo = lados - arriba;
-    const largo = Math.max(arriba, 1) * FICHA + 12;
-    const ancho = 40;
+    const largo = Math.max(arriba, 1) * FICHA_RECT + 4;
+    const ancho = 34;
     const lugares = [];
     const fila = (n, y) => {
-      for (let i = 0; i < n; i++) lugares.push({ x: (i - (n - 1) / 2) * FICHA, y });
+      for (let i = 0; i < n; i++) lugares.push({ x: (i - (n - 1) / 2) * FICHA_RECT, y });
     };
-    fila(arriba, -(ancho / 2 + 16));
-    if (cab) lugares.push({ x: largo / 2 + 16, y: 0 });
-    fila(abajo, ancho / 2 + 16);
-    if (cab) lugares.push({ x: -(largo / 2 + 16), y: 0 });
+    fila(arriba, -(ancho / 2 + 12));
+    if (cab) lugares.push({ x: largo / 2 + 12, y: 0 });
+    fila(abajo, ancho / 2 + 12);
+    if (cab) lugares.push({ x: -(largo / 2 + 12), y: 0 });
     const vertical = m.forma === 'rect_v';
-    const w = largo + 2 * 32, h = ancho + 2 * 32;
+    const w = largo + 2 * 24, h = ancho + 2 * 24;
     return {
       w: vertical ? h : w, h: vertical ? w : h,
       cw: vertical ? ancho : largo, ch: vertical ? largo : ancho,
@@ -295,6 +304,15 @@ function renderPool() {
 }
 
 function renderSalon() {
+  $('#salon').innerHTML = htmlSalon();
+  aplicarZoom();
+}
+
+/* El salón como HTML. Para imprimir va "limpio": sin la persona elegida
+   ni la mesa abierta, que solo tienen sentido en pantalla. */
+function htmlSalon(limpio = false) {
+  const elegido = limpio ? null : sel;
+  const abierta = limpio ? null : editando;
   const fijos = ELEMENTOS.map(e => `
     <div class="elemento ${e.cls}"
          style="left:${e.x * 100}%;top:${e.y * 100}%;width:${e.w * 100}%;height:${e.h * 100}%"
@@ -315,7 +333,7 @@ function renderSalon() {
           'asiento',
           p.restriccion ? 'con-restriccion' : '',
           p.confirmado ? '' : 'sin-confirmar',
-          sel === tok ? 'elegida' : '',
+          elegido === tok ? 'elegida' : '',
         ].filter(Boolean).join(' ');
         return `<div class="${cls}" style="${pos}" draggable="true" data-persona="${tok}"
                      title="${escapeHtml(p.nombre)} · ${escapeHtml(p.invitacion)}${p.restriccion ? ' · ' + escapeHtml(p.restriccion) : ''}"
@@ -324,7 +342,7 @@ function renderSalon() {
       const a = aps[i - gente.length];
       if (a) {
         const tok = `a|${a.id}`;
-        return `<div class="asiento apartado ${sel === tok ? 'elegida' : ''}" style="${pos}"
+        return `<div class="asiento apartado ${elegido === tok ? 'elegida' : ''}" style="${pos}"
                      draggable="true" data-persona="${tok}"
                      title="${escapeHtml(a.nombre)} · apartado, pendiente"
                 >${escapeHtml(iniciales(a.nombre))}</div>`;
@@ -333,7 +351,7 @@ function renderSalon() {
     }).join('');
 
     return `
-      <div class="mesa ${m.forma} ${llena ? 'llena' : ''} ${editando === m.id ? 'abierta' : ''}"
+      <div class="mesa ${m.forma} ${llena ? 'llena' : ''} ${abierta === m.id ? 'abierta' : ''}"
            data-mesa="${m.id}"
            style="left:${(m.pos_x * 100).toFixed(2)}%;top:${(m.pos_y * 100).toFixed(2)}%;--w:${g.w}px;--h:${g.h}px;--cw:${g.cw}px;--ch:${g.ch}px"
            title="${m.nombre ? escapeHtml(m.nombre) : 'Mesa ' + m.id}">
@@ -345,8 +363,7 @@ function renderSalon() {
       </div>`;
   }).join('');
 
-  $('#salon').innerHTML = fijos + html;
-  aplicarZoom();
+  return fijos + html;
 }
 
 /* ---------- Zoom ----------
@@ -761,7 +778,19 @@ function exportar() {
   ]));
 
   const sentadas = personas.filter(p => mesaDe(p) != null).length;
-  descargarExcel('Mesas · Valeria y Apolo.xlsx', {
+
+  // Segunda hoja: una fila por mesa, para ver de un vistazo cómo va cada una.
+  const FORMAS = { redonda: 'Redonda', rect_h: 'Rectangular', rect_v: 'Rectangular' };
+  const resumen = mesas.map(m => {
+    const gente = ocupantes(m.id), aps = apartadosDe(m.id);
+    return [
+      m.id, m.nombre || '', FORMAS[m.forma] || '', m.capacidad,
+      gente.length, aps.length, Math.max(m.capacidad - gente.length - aps.length, 0),
+      [...gente.map(p => p.nombre), ...aps.map(a => a.nombre + ' (pendiente)')].join(' · '),
+    ];
+  });
+
+  descargarExcel('Mesas · Valeria y Apolo.xlsx', [{
     nombre: 'Mesas',
     titulo: 'Valeria & Apolo · 7 de noviembre de 2026',
     subtitulo: `${mesas.length} mesas · ${sentadas} personas con lugar · ${apartados.length} apartados · ${hoyLargo()}`,
@@ -778,19 +807,78 @@ function exportar() {
     filas,
     // Las restricciones resaltadas: es lo que hay que pasarle al catering.
     resaltar: (fila, i) => i === 4 && !!fila[4],
-  });
+  }, {
+    nombre: 'Por mesa',
+    titulo: 'Valeria & Apolo · mesas',
+    subtitulo: `${mesas.length} mesas · ${sentadas} sentados · ${apartados.length} apartados · ${hoyLargo()}`,
+    columnas: [
+      { titulo: 'Mesa',      ancho: 7,  centrado: true },
+      { titulo: 'Nombre',    ancho: 16 },
+      { titulo: 'Forma',     ancho: 13 },
+      { titulo: 'Lugares',   ancho: 9,  centrado: true },
+      { titulo: 'Sentados',  ancho: 10, centrado: true },
+      { titulo: 'Apartados', ancho: 11, centrado: true },
+      { titulo: 'Libres',    ancho: 8,  centrado: true },
+      { titulo: 'Quiénes',   ancho: 120 },
+    ],
+    filas: resumen,
+    resaltar: (fila, i) => i === 5 && fila[5] > 0,
+  }]);
+}
+
+/* ---------- PDF ----------
+   No se genera un PDF a mano: se arma una vista para imprimir y el
+   navegador la guarda como PDF ("Guardar como PDF" en el diálogo de
+   imprimir). Primera hoja, el plano del salón; después, la lista de cada
+   mesa con nombres completos, que es lo que se le entrega a la finca. */
+function imprimir() {
+  const sentadas = personas.filter(p => mesaDe(p) != null).length;
+  const conGente = mesas.filter(m => usados(m.id));
+  const vacias = mesas.length - conGente.length;
+
+  const tarjetas = conGente.map(m => {
+    const gente = ocupantes(m.id).map(p => `
+      <li>${escapeHtml(p.nombre)}${p.restriccion ? ` <span class="restr">${escapeHtml(p.restriccion)}</span>` : ''}</li>`);
+    const aps = apartadosDe(m.id).map(a => `
+      <li class="pend">${escapeHtml(a.nombre)} <span>(pendiente)</span></li>`);
+    return `
+      <div class="tarjeta">
+        <h3>Mesa ${m.id}${m.nombre ? ` · ${escapeHtml(m.nombre)}` : ''}
+          <span>${usados(m.id)}/${m.capacidad}</span></h3>
+        <ol>${[...gente, ...aps].join('')}</ol>
+      </div>`;
+  }).join('');
+
+  $('#imprimir').innerHTML = `
+    <section class="hoja-plano">
+      <div class="imp-cab">
+        <h1>Valeria &amp; Apolo · Plano del salón</h1>
+        <p>${mesas.length} mesas · ${sentadas} sentados · ${apartados.length} apartados · ${hoyLargo()}</p>
+      </div>
+      <div class="plano-marco"><div class="salon salon-impreso">${htmlSalon(true)}</div></div>
+    </section>
+    <section class="hoja-lista">
+      <div class="imp-cab">
+        <h1>Lista por mesa</h1>
+        <p>${conGente.length} mesas con gente${vacias ? ` · ${vacias} vacías` : ''} · "(pendiente)" es un lugar apartado sin invitación</p>
+      </div>
+      <div class="tarjetas">${tarjetas || '<p>Todavía no hay nadie sentado.</p>'}</div>
+    </section>`;
+  window.print();
 }
 
 arrancarConsola({
   seccion: 'mesas',
   acciones: [
     { id: 'btn-refresh', label: 'Actualizar' },
+    { id: 'btn-pdf',     label: 'PDF' },
     { id: 'btn-export',  label: 'Excel' },
   ],
   cargar,
 });
 
 $('#btn-refresh').addEventListener('click', () => cargar().catch(e => alert(e.message)));
+$('#btn-pdf').addEventListener('click', imprimir);
 $('#btn-export').addEventListener('click', exportar);
 </script>
 </body>
