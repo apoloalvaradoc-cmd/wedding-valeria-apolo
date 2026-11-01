@@ -71,6 +71,8 @@
             <option value="rect_v">Rectangular parada</option>
           </select>
           <button class="small filled" id="btn-mesa">+ Agregar mesa</button>
+          <button class="small" id="btn-auto"
+                  title="Sienta por tipo de invitado a quienes todavía no tienen lugar. No mueve a nadie que ya esté sentado.">Autoacomodar</button>
           <span class="muted" id="salon-info"></span>
           <span class="zoom">
             <button class="small" id="zoom-menos" title="Alejar">−</button>
@@ -133,14 +135,19 @@
 const SALON_W = 1600;
 const SALON_H = 1126;
 
-/* Lo fijo, en fracción del salón, medido sobre el PDF. */
+/* Lo fijo, en fracción del salón, medido sobre el PDF. El texto de cada
+   uno se cambia tocándolo y se guarda en la base (etiquetas); txt es solo
+   el que se usa mientras no haya otro guardado. La larga frente a la
+   tarima va sin nombre: todavía no se sabe si va a ser mesa. */
 const ELEMENTOS = [
-  { cls: 'tarima', txt: 'Tarima',       x: 0.4428, y: 0.0385, w: 0.1162, h: 0.1162 },
-  { cls: 'honor',  txt: 'Mesa de honor', x: 0.2390, y: 0.1808, w: 0.5221, h: 0.0506 },
-  { cls: 'pista',  txt: 'Pista',        x: 0.3599, y: 0.2314, w: 0.2820, h: 0.2818 },
-  { cls: 'bar',    txt: 'Bar',          x: 0.4428, y: 0.5580, w: 0.1162, h: 0.1162 },
-  { cls: 'pastel', txt: 'Pastel',       x: 0.4677, y: 0.7395, w: 0.0759, h: 0.0759 * SALON_W / SALON_H },
+  { cls: 'tarima', txt: 'Tarima', x: 0.4428, y: 0.0385, w: 0.1162, h: 0.1162 },
+  { cls: 'larga',  txt: '',       x: 0.2390, y: 0.1808, w: 0.5221, h: 0.0506 },
+  { cls: 'pista',  txt: 'Pista',  x: 0.3599, y: 0.2314, w: 0.2820, h: 0.2818 },
+  { cls: 'bar',    txt: 'Bar',    x: 0.4428, y: 0.5580, w: 0.1162, h: 0.1162 },
+  { cls: 'pastel', txt: 'Pastel', x: 0.4677, y: 0.7395, w: 0.0759, h: 0.0759 * SALON_W / SALON_H },
 ];
+let etiquetas = {};     // texto guardado de cada elemento fijo, por cls
+const textoDe = e => (e.cls in etiquetas ? etiquetas[e.cls] : e.txt);
 
 let mesas = [];
 let invitados = [];
@@ -314,9 +321,10 @@ function htmlSalon(limpio = false) {
   const elegido = limpio ? null : sel;
   const abierta = limpio ? null : editando;
   const fijos = ELEMENTOS.map(e => `
-    <div class="elemento ${e.cls}"
+    <div class="elemento ${e.cls}" data-elemento="${e.cls}"
+         title="${limpio ? '' : 'Toca para cambiar el texto'}"
          style="left:${e.x * 100}%;top:${e.y * 100}%;width:${e.w * 100}%;height:${e.h * 100}%"
-    >${e.txt}</div>`).join('');
+    >${escapeHtml(textoDe(e))}</div>`).join('');
 
   const html = mesas.map(m => {
     const g = geometria(m);
@@ -459,7 +467,22 @@ async function cargar() {
   invitados = d.invitados || [];
   asientos = d.asientos || [];
   apartados = d.apartados || [];
+  // Si la base todavía no tiene la 017, se quedan los textos por defecto.
+  etiquetas = await rpc('admin_salon_etiqueta', { p_clave: clave }).catch(() => ({})) || {};
   render();
+}
+
+async function editarElemento(cls) {
+  const e = ELEMENTOS.find(x => x.cls === cls);
+  if (!e) return;
+  const nuevo = prompt('Texto para este espacio del salón (vacío = sin nombre):', textoDe(e));
+  if (nuevo === null) return;
+  try {
+    etiquetas = await rpc('admin_salon_etiqueta', {
+      p_clave: clave, p_elemento: cls, p_texto: nuevo.trim().slice(0, 40),
+    });
+    render();
+  } catch (err) { alert(err.message); }
 }
 
 /* Cada movimiento se guarda al momento. No hay botón de guardar: armar el
@@ -543,6 +566,108 @@ async function agregarMesa() {
     editando = m.id;
     render();
   } catch (e) { alert(e.message); }
+}
+
+/* ---------- Autoacomodar ----------
+   Sienta de un jalón a quienes todavía no tienen lugar, juntando por tipo
+   de invitado: familia de la novia con familia de la novia, cortejo con
+   cortejo, amigos del papá con amigos del papá. A nadie que ya esté
+   sentado se le mueve, ni se tocan los apartados: solo se llenan huecos.
+   Respeta "Solo los que ya confirmaron".
+
+   Por cada invitación busca, en este orden:
+     1. una mesa de su mismo grupo donde quepa entera
+     2. una mesa vacía
+     3. cualquier mesa donde quepa entera
+     4. si no cabe junta en ninguna, se parte entre las que tengan lugar,
+        primero las de su grupo
+   Los grupos grandes van primero, para que les toquen mesas enteras. */
+const grupoDe = inv => inv.tipo === 'cortejo' ? 'Cortejo' : (inv.grupo || inv.tipo || 'Otros');
+
+function planAutoacomodo() {
+  const soloConf = $('#solo-conf').checked;
+  const libres = new Map(mesas.map(m => [m.id, m.capacidad - usados(m.id)]));
+  const gruposEn = new Map(mesas.map(m => [m.id, new Set(ocupantes(m.id).map(p =>
+    grupoDe(invitados.find(i => i.id === p.invitado_id) || {})))]));
+
+  const porGrupo = new Map();
+  invitados
+    .filter(inv => !soloConf || inv.asistira === true)
+    .forEach(inv => {
+      const sueltas = personas.filter(p => p.invitado_id === inv.id && mesaDe(p) == null);
+      if (!sueltas.length) return;
+      const g = grupoDe(inv);
+      if (!porGrupo.has(g)) porGrupo.set(g, []);
+      porGrupo.get(g).push({ inv, sueltas });
+    });
+
+  const grupos = [...porGrupo.entries()]
+    .map(([g, invs]) => ({ g, invs: invs.sort((a, b) => b.sueltas.length - a.sueltas.length) }))
+    .sort((a, b) => b.invs.reduce((s, x) => s + x.sueltas.length, 0) - a.invs.reduce((s, x) => s + x.sueltas.length, 0));
+
+  const ids = mesas.map(m => m.id).sort((a, b) => a - b);
+  const plan = [];   // { mesaId, gente: [persona] }
+  let sinLugar = 0;
+
+  const sentarEn = (id, gente, g) => {
+    plan.push({ mesaId: id, gente });
+    libres.set(id, libres.get(id) - gente.length);
+    gruposEn.get(id).add(g);
+  };
+
+  for (const { g, invs } of grupos) {
+    for (const { sueltas } of invs) {
+      const n = sueltas.length;
+      const suya  = ids.find(id => libres.get(id) >= n && gruposEn.get(id).has(g));
+      const vacia = ids.find(id => libres.get(id) >= n && !gruposEn.get(id).size && usados(id) === 0);
+      const otra  = ids.find(id => libres.get(id) >= n);
+      const destino = suya ?? vacia ?? otra;
+      if (destino != null) { sentarEn(destino, sueltas, g); continue; }
+
+      // No cabe junta en ninguna: se reparte, primero en mesas de su grupo.
+      let resto = [...sueltas];
+      const orden = [...ids].sort((a, b) => (gruposEn.get(b).has(g) ? 1 : 0) - (gruposEn.get(a).has(g) ? 1 : 0));
+      for (const id of orden) {
+        if (!resto.length) break;
+        const k = Math.min(libres.get(id), resto.length);
+        if (k > 0) { sentarEn(id, resto.slice(0, k), g); resto = resto.slice(k); }
+      }
+      sinLugar += resto.length;
+    }
+  }
+  return { plan, sinLugar };
+}
+
+async function autoacomodar() {
+  const { plan, sinLugar } = planAutoacomodo();
+  const personasPlan = plan.reduce((s, x) => s + x.gente.length, 0);
+  if (!personasPlan) return alert('No hay a quién acomodar: o ya todos tienen lugar o no queda espacio en las mesas.');
+  const mesasUsadas = new Set(plan.map(x => x.mesaId)).size;
+  const soloConf = $('#solo-conf').checked;
+  if (!confirm(`Se van a sentar ${personasPlan} persona${personasPlan === 1 ? '' : 's'}`
+    + `${soloConf ? ' (solo confirmados)' : ''} en ${mesasUsadas} mesa${mesasUsadas === 1 ? '' : 's'}, juntando por tipo de invitado.`
+    + ` A quien ya tiene lugar no se le mueve.`
+    + (sinLugar ? `\n\n${sinLugar} no caben: faltan lugares.` : '')
+    + '\n\n¿Seguir?')) return;
+
+  const boton = $('#btn-auto');
+  boton.disabled = true;
+  let hechos = 0;
+  const errores = [];
+  for (const { mesaId, gente } of plan) {
+    for (const p of gente) {
+      boton.textContent = `Acomodando… ${++hechos}/${personasPlan}`;
+      try {
+        await rpc('admin_sentar', {
+          p_clave: clave, p_invitado_id: p.invitado_id, p_persona_idx: p.idx, p_mesa_id: mesaId,
+        });
+      } catch (e) { errores.push(`${p.nombre}: ${e.message}`); }
+    }
+  }
+  boton.disabled = false;
+  boton.textContent = 'Autoacomodar';
+  await cargar();
+  if (errores.length) alert(`No se pudo sentar a ${errores.length}:\n` + errores.slice(0, 10).join('\n'));
 }
 
 /* ---------- Qué hacer con lo elegido ---------- */
@@ -645,7 +770,9 @@ salon.addEventListener('pointercancel', () => { arrastre = null; cargar(); });
 /* ---------- Clics ---------- */
 salon.addEventListener('click', e => {
   const per = e.target.closest('[data-persona]');
-  if (per) elegir(per.dataset.persona);
+  if (per) return elegir(per.dataset.persona);
+  const el = e.target.closest('[data-elemento]');
+  if (el) editarElemento(el.dataset.elemento);
 });
 pool.addEventListener('click', e => {
   const per = e.target.closest('[data-persona]');
@@ -660,6 +787,7 @@ $('#btn-quitar').addEventListener('click', () => {
 });
 
 $('#btn-mesa').addEventListener('click', agregarMesa);
+$('#btn-auto').addEventListener('click', autoacomodar);
 $('#q').addEventListener('input', renderPool);
 $('#solo-conf').addEventListener('change', renderPool);
 
