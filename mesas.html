@@ -48,13 +48,17 @@
 
     <div class="mesas-layout" style="margin-top:1rem">
       <div class="card pool" id="pool">
-        <h2>Sin lugar <span class="muted" id="pool-cuenta"></span></h2>
-        <p class="hint">
+        <div class="row vista-pool" style="margin-bottom:0.5rem">
+          <button class="small filled" data-vista="sin">Sin lugar</button>
+          <button class="small" data-vista="todos">Todos</button>
+        </div>
+        <h2><span id="pool-titulo">Sin lugar</span> <span class="muted" id="pool-cuenta"></span></h2>
+        <p class="hint" id="pool-ayuda">
           Arrastra a una persona —o al nombre de la invitación, para sentarlos
           a todos— hasta una mesa. En el teléfono: tócala y luego toca la mesa.
         </p>
         <div class="row" style="margin-bottom:0.5rem">
-          <input type="text" id="q" placeholder="Buscar...">
+          <input type="text" id="q" placeholder="Buscar nombre, grupo o número de mesa...">
         </div>
         <label class="row" style="text-transform:none;letter-spacing:0;font-size:0.8rem;margin-bottom:0.6rem">
           <input type="checkbox" id="solo-conf" style="width:auto;margin-right:0.4rem">
@@ -267,47 +271,89 @@ function renderStats() {
     : 'Todavía no hay mesas.';
 }
 
+/* Dos vistas: "Sin lugar" (lo de siempre, para ir sentando) y "Todos",
+   el listado completo con la mesa de cada quien, para encontrar a alguien
+   y moverlo. En "Todos" se busca también por número de mesa. */
+let vistaPool = 'sin';
+
 function renderPool() {
   const q = ($('#q').value || '').trim().toLowerCase();
   const soloConf = $('#solo-conf').checked;
+  const todos = vistaPool === 'todos';
+  const qMesa = /^\d+$/.test(q) ? +q : null;
+
+  $$('.vista-pool [data-vista]').forEach(b => b.classList.toggle('filled', b.dataset.vista === vistaPool));
+  $('#pool-titulo').textContent = todos ? 'Todos' : 'Sin lugar';
+  $('#pool-ayuda').textContent = todos
+    ? 'Busca a quien sea y arrástralo —o tócalo y luego toca la mesa— para moverlo. El nombre de la invitación mueve a todos los suyos juntos. Toca el número de mesa para abrirla.'
+    : 'Arrastra a una persona —o al nombre de la invitación, para sentarlos a todos— hasta una mesa. En el teléfono: tócala y luego toca la mesa.';
 
   const grupos = invitados.map(inv => {
     const suyas = personas.filter(p => p.invitado_id === inv.id);
     const libres = suyas.filter(p => mesaDe(p) == null);
-    return { inv, suyas, libres };
-  }).filter(g => g.libres.length)
+    return { inv, suyas, libres, ver: todos ? suyas : libres };
+  }).filter(g => g.ver.length)
     .filter(g => !soloConf || g.inv.asistira === true)
     .filter(g => !q
+      || (qMesa != null && g.suyas.some(p => mesaDe(p) === qMesa))
       || (g.inv.nombre || '').toLowerCase().includes(q)
       || (g.inv.grupo || '').toLowerCase().includes(q)
-      || g.libres.some(p => p.nombre.toLowerCase().includes(q)));
+      || g.ver.some(p => p.nombre.toLowerCase().includes(q)));
 
-  const sinLugar = grupos.reduce((a, g) => a + g.libres.length, 0);
-  $('#pool-cuenta').textContent = `· ${sinLugar} persona${sinLugar === 1 ? '' : 's'}`;
+  const cuenta = grupos.reduce((a, g) => a + g.ver.length, 0);
+  $('#pool-cuenta').textContent = `· ${cuenta} persona${cuenta === 1 ? '' : 's'}`;
 
-  $('#pool-lista').innerHTML = grupos.map(g => {
+  const insignia = id => id == null
+    ? `<span class="en-mesa sin">sin lugar</span>`
+    : `<span class="en-mesa" data-ver-mesa="${id}" title="Abrir la mesa ${id}">Mesa ${id}</span>`;
+
+  const html = grupos.map(g => {
     const tokGrupo = `g|${g.inv.id}`;
     const pend = g.inv.asistira === true ? '' : ' · sin confirmar';
+    const mesasSuyas = [...new Set(g.suyas.map(mesaDe).filter(x => x != null))].sort((a, b) => a - b);
+    const meta = todos
+      ? (mesasSuyas.length ? mesasSuyas.map(insignia).join(' ') : insignia(null)) + `<span class="grupo-meta">${pend}</span>`
+      : `<span class="grupo-meta">${g.libres.length}/${g.suyas.length}${pend}</span>`;
     return `
       <div class="grupo">
         <div class="grupo-cab">
           <span class="persona grupo-nombre ${sel === tokGrupo ? 'elegida' : ''}"
                 draggable="true" data-persona="${tokGrupo}"
-                title="Sentar a toda la invitación">${escapeHtml(g.inv.nombre)}</span>
-          <span class="grupo-meta">${g.libres.length}/${g.suyas.length}${pend}</span>
+                title="${todos ? 'Mover' : 'Sentar'} a toda la invitación">${escapeHtml(g.inv.nombre)}</span>
+          <span>${meta}</span>
         </div>
         ${g.inv.grupo ? `<div class="grupo-meta">${escapeHtml(g.inv.grupo)}</div>` : ''}
         <div class="grupo-gente">
-          ${g.libres.map(p => {
+          ${g.ver.map(p => {
             const tok = `p|${p.invitado_id}|${p.idx}`;
+            const m = mesaDe(p);
+            // En "Todos" cada persona dice su mesa solo si la invitación está repartida.
+            const suMesa = todos && mesasSuyas.length > 1 ? ` · ${m != null ? 'M' + m : 'sin lugar'}` : '';
             return `<span class="persona ${p.confirmado ? '' : 'sin-confirmar'} ${sel === tok ? 'elegida' : ''}"
                           draggable="true" data-persona="${tok}"
-                          title="${escapeHtml(p.nombre)}${p.restriccion ? ' · ' + escapeHtml(p.restriccion) : ''}"
-                    >${escapeHtml(p.nombre)}</span>`;
+                          title="${escapeHtml(p.nombre)}${m != null ? ' · mesa ' + m : ''}${p.restriccion ? ' · ' + escapeHtml(p.restriccion) : ''}"
+                    >${escapeHtml(p.nombre)}${suMesa}</span>`;
           }).join('')}
         </div>
       </div>`;
-  }).join('') || `<p class="muted" style="padding:0.8rem 0">Ya todos tienen lugar.</p>`;
+  }).join('');
+
+  // En "Todos" también salen los apartados, que se buscan y se mueven igual.
+  const aps = !todos ? [] : apartados
+    .filter(a => !q || a.nombre.toLowerCase().includes(q) || (qMesa != null && a.mesa_id === qMesa))
+    .sort((a, b) => a.mesa_id - b.mesa_id);
+  const htmlAps = aps.length ? `
+    <div class="grupo">
+      <div class="grupo-cab"><span class="grupo-nombre">Apartados (pendientes)</span></div>
+      <div class="grupo-gente">${aps.map(a => {
+        const tok = `a|${a.id}`;
+        return `<span class="persona sin-confirmar ${sel === tok ? 'elegida' : ''}" draggable="true" data-persona="${tok}"
+                      title="${escapeHtml(a.nombre)} · apartado en la mesa ${a.mesa_id}">${escapeHtml(a.nombre)} · M${a.mesa_id}</span>`;
+      }).join('')}</div>
+    </div>` : '';
+
+  $('#pool-lista').innerHTML = (html + htmlAps)
+    || `<p class="muted" style="padding:0.8rem 0">${todos ? 'Nadie con ese nombre.' : 'Ya todos tienen lugar.'}</p>`;
 }
 
 function renderSalon() {
@@ -404,8 +450,8 @@ function renderBarra() {
   let texto, sentada = false, quitar = 'Quitar de la mesa';
   if (p[0] === 'g') {
     const inv = invitados.find(x => x.id === p[1]);
-    texto = `${inv ? inv.nombre : ''} · toca una mesa para sentar a toda la invitación`;
     sentada = personas.some(x => x.invitado_id === p[1] && mesaDe(x) != null);
+    texto = `${inv ? inv.nombre : ''} · toca una mesa para ${sentada ? 'mover' : 'sentar'} a toda la invitación`;
   } else if (p[0] === 'a') {
     const a = apartados.find(x => x.id === +p[1]);
     texto = `${a ? a.nombre : ''} (apartado) · toca otra mesa para pasarle el lugar`;
@@ -508,6 +554,24 @@ async function sentarGrupo(invId, mesaId) {
     }
     await cargar();
   } catch (e) { alert(e.message); }
+}
+
+/* Mover a toda una invitación que ya tiene lugar: se revisa antes que
+   quepan todos en la mesa nueva, para no levantarlos y dejarlos a medias. */
+async function moverGrupo(invId, mesaId) {
+  const suyas = personas.filter(p => p.invitado_id === invId);
+  const m = mesas.find(x => x.id === mesaId);
+  const faltan = suyas.filter(p => mesaDe(p) !== mesaId).length;
+  if (!m || !faltan) return;
+  const libres = m.capacidad - usados(mesaId);
+  if (faltan > libres) {
+    return alert(`En la mesa ${mesaId} quedan ${libres} lugar${libres === 1 ? '' : 'es'} y esta invitación necesita ${faltan}.`);
+  }
+  try {
+    await rpc('admin_levantar_grupo', { p_clave: clave, p_invitado_id: invId });
+    await rpc('admin_sentar_grupo', { p_clave: clave, p_invitado_id: invId, p_mesa_id: mesaId });
+  } catch (e) { alert(e.message); }
+  await cargar();
 }
 
 async function levantarGrupo(invId) {
@@ -674,7 +738,11 @@ async function autoacomodar() {
 function aplicar(tok, mesaId) {
   const p = String(tok || '').split('|');
   if (p[0] === 'p') return sentar(p[1], +p[2], mesaId);
-  if (p[0] === 'g') return mesaId == null ? levantarGrupo(p[1]) : sentarGrupo(p[1], mesaId);
+  if (p[0] === 'g') {
+    if (mesaId == null) return levantarGrupo(p[1]);
+    const yaSentada = personas.some(x => x.invitado_id === p[1] && mesaDe(x) != null);
+    return yaSentada ? moverGrupo(p[1], mesaId) : sentarGrupo(p[1], mesaId);
+  }
   if (p[0] === 'a') return mesaId == null ? quitarApartado(+p[1]) : moverApartado(+p[1], mesaId);
 }
 
@@ -775,6 +843,10 @@ salon.addEventListener('click', e => {
   if (el) editarElemento(el.dataset.elemento);
 });
 pool.addEventListener('click', e => {
+  const vista = e.target.closest('[data-vista]');
+  if (vista) { vistaPool = vista.dataset.vista; return renderPool(); }
+  const ver = e.target.closest('[data-ver-mesa]');
+  if (ver) return abrirMesa(+ver.dataset.verMesa);
   const per = e.target.closest('[data-persona]');
   if (per) elegir(per.dataset.persona);
 });
