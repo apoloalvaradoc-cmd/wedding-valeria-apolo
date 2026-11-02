@@ -150,6 +150,12 @@
 .grupo-nombre { font-size: 0.86rem; color: var(--wine); font-weight: 600; }
 .grupo-meta { font-size: 0.72rem; color: var(--muted); }
 .grupo-gente { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.35rem; }
+/* En la vista "Todos": en qué mesa está cada invitación. Tocarla abre la mesa. */
+.en-mesa { font-size: 0.7rem; padding: 0.05rem 0.4rem; margin-left: 0.2rem; white-space: nowrap;
+  border: 1px solid var(--wine); color: var(--wine); cursor: pointer; }
+.en-mesa:hover { background: var(--wine); color: var(--cream); }
+.en-mesa.sin { border-style: dashed; border-color: var(--muted); color: var(--muted); cursor: default; }
+.en-mesa.sin:hover { background: none; color: var(--muted); }
 
 /* Cada persona suelta. Es lo que se arrastra a una mesa. */
 .persona {
