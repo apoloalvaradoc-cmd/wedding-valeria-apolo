@@ -205,9 +205,16 @@ function visibles() {
 const RELLENO = new Set(['y', 'de', 'del', 'la', 'familia', 'fam', 'sr', 'sra']);
 const palabras = s => sinTildes(s).replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(w => w.length > 1 && !RELLENO.has(w));
 function coincide(quien, g) {
+  const nombres = [g.nombre, g.nombre_acompanante, ...(g.acompanantes || []), ...(g.nombres_asistentes || [])].filter(Boolean);
+  // Parejas firmadas solo con nombre de pila ("Marian y Beto"): cada nombre
+  // tiene que ser el primero de alguna persona de la invitación.
+  const partes = sinTildes(quien).split(/\s+y\s+/).map(x => x.trim()).filter(Boolean);
+  if (partes.length > 1 && partes.every(x => !/\s/.test(x))) {
+    const pilas = nombres.flatMap(n => palabras(n).slice(0, 1));
+    return partes.every(p => pilas.some(w => w.startsWith(p) || (p.startsWith(w) && w.length >= 4)));
+  }
   const q = palabras(quien);
   if (q.length < 2) return false;
-  const nombres = [g.nombre, g.nombre_acompanante, ...(g.acompanantes || []), ...(g.nombres_asistentes || [])].filter(Boolean);
   return nombres.some(n => {
     const ws = palabras(n);
     const esta = p => ws.some(w => w.startsWith(p) || (p.startsWith(w) && w.length >= 4));
