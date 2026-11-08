@@ -40,6 +40,7 @@ const SECCIONES = [
   { k: 'listado',  href: 'consola.html',  label: 'Listado'  },
   { k: 'mensajes', href: 'mensajes.html', label: 'Mensajes' },
   { k: 'mesas',    href: 'mesas.html',    label: 'Mesas'    },
+  { k: 'gracias',  href: 'agradecimientos.html', label: 'Gracias' },
 ];
 
 /* ---------- Supabase RPC ---------- */
