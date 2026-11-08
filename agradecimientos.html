@@ -29,7 +29,8 @@
       <h2>Mensajes de agradecimiento</h2>
       <p class="muted" style="margin-top:-0.4rem">
         Cada invitado recibe uno u otro según su regalo. Variables: {nombre} {primer_nombre} {regalo} (lo que anotaste que nos dieron) {link}.
-        Se guardan en este dispositivo.
+        <br>Para que se adapte a una o varias personas escribe <b>{plural|singular}</b>: <code>agradecer{les|te}</code>, <code>{su|tu} cariño</code>.
+        Si la invitación es de una sola persona se usa lo de la derecha. Se guardan en este dispositivo.
       </p>
       <div class="tpl-grid">
         <div>
@@ -45,6 +46,30 @@
         <button class="small" id="btn-tpl-reset">Restaurar textos originales</button>
         <span class="muted" id="tpl-saved"></span>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>Envío en bloque (lista de difusión)</h2>
+      <p class="muted" style="margin-top:-0.4rem">
+        WhatsApp no deja mandar un mensaje personalizado a muchos a la vez, pero sí uno igual para todos con una
+        <b>lista de difusión</b> (hasta 256 contactos; solo les llega a quienes tienen tu número guardado).
+        Aquí sale el mensaje sin nombre y en plural, y los contactos de los que aún no tienen agradecimiento.
+      </p>
+      <div class="chips" id="dif-grupos"></div>
+      <div class="row" style="align-items:flex-start">
+        <textarea id="dif-texto" readonly style="min-height:170px;flex:1 1 320px"></textarea>
+        <div style="display:grid;gap:0.45rem;min-width:220px">
+          <span class="muted" id="dif-cuenta"></span>
+          <button class="small filled" id="dif-copiar">1 · Copiar mensaje</button>
+          <button class="small" id="dif-vcf">2 · Descargar contactos (.vcf)</button>
+          <button class="small" id="dif-marcar">3 · Ya lo mandé: marcarlos enviados</button>
+        </div>
+      </div>
+      <ol class="muted" style="margin:0.6rem 0 0;padding-left:1.2rem">
+        <li>Abre el .vcf en tu teléfono para guardar los contactos (quedan como "Boda · Nombre"; si ya los tenías, WhatsApp los junta).</li>
+        <li>En WhatsApp: ⋮ → Nueva difusión → busca "Boda" y selecciónalos (máximo 256 por lista).</li>
+        <li>Pega el mensaje y envía. Luego vuelve aquí y toca el paso 3.</li>
+      </ol>
     </div>
 
     <div class="card hidden" id="reg-card">
@@ -105,11 +130,11 @@ const PLANTILLAS = {
   sin_regalo:
 `¡Hola, {primer_nombre}! ❤️
 
-Queremos agradecerles de corazón por habernos acompañado en uno de los días más especiales de nuestras vidas. ¡Nos hizo muy felices compartirlo con ustedes!
+Queremos agradecer{les|te} de corazón por habernos acompañado en uno de los días más especiales de nuestras vidas. ¡Nos hizo muy felices compartirlo con{ ustedes|tigo}!
 
-Gracias por todo su cariño y por ser parte de este momento tan importante para nosotros.
+Gracias por todo {su|tu} cariño y por ser parte de este momento tan importante para nosotros.
 
-Les compartimos este enlace con algunos recuerdos de nuestra boda para que puedan revivir esa noche tan especial.
+{Les|Te} compartimos este enlace con algunos recuerdos de nuestra boda para que {puedan|puedas} revivir esa noche tan especial.
 
 🎥 {link}
 
@@ -121,9 +146,9 @@ Valeria y Apolo ❤️`,
 
 ¡Gracias por acompañarnos en uno de los días más especiales de nuestras vidas! Fue una noche inolvidable, llena de amor, alegría y momentos que guardaremos para siempre en nuestros corazones.
 
-Gracias también por todo su cariño y por el lindo detalle que tuvieron con nosotros. Será parte de nuestro nuevo hogar y de los recuerdos que construiremos juntos en esta hermosa etapa que comenzamos como familia.
+Gracias también por todo {su|tu} cariño y por el lindo detalle que {tuvieron|tuviste} con nosotros. Será parte de nuestro nuevo hogar y de los recuerdos que construiremos juntos en esta hermosa etapa que comenzamos como familia.
 
-Aquí les dejamos un pequeño video de esa noche:
+Aquí {les|te} dejamos un pequeño video de esa noche:
 🎥 {link}
 
 Con muchísimo cariño y gratitud,
@@ -153,7 +178,7 @@ let registro = [];   // regalos de Cemaco / Max / Siman
 let filtro = 'vinieron';
 
 /* ---------- Plantillas ---------- */
-const LLAVE_TPL = k => 'va_tpl_gracias_' + k;
+const LLAVE_TPL = k => 'va_tpl_gracias2_' + k;
 function cargarPlantillas() {
   $$('[data-tpl]').forEach(t => {
     const g = localStorage.getItem(LLAVE_TPL(t.dataset.tpl));
@@ -233,6 +258,13 @@ async function aplicarSugerencia(id) {
   await guardarRegalo(id, sug[0].tienda, sug.map(etiquetaRegalo).join(', '));
 }
 
+/* ---------- Singular / plural ----------
+   Cuántas personas son: las que llegaron si confirmaron, si no los cupos.
+   {plural|singular} en la plantilla elige según eso. */
+const personas = g => g.asistira === true ? (g.asistentes || 1) : (g.cupos || 1);
+const esUno = g => personas(g) === 1;
+const conjugar = (txt, uno) => txt.replace(/\{([^{}|]*)\|([^{}|]*)\}/g, (_, pl, sg) => uno ? sg : pl);
+
 /* ---------- Mensaje ---------- */
 function linkDe(g) {
   return `${PAGINA_GRACIAS}?i=${encodeURIComponent(g.token)}${conRegalo(g) ? '&r=1' : ''}`;
@@ -243,7 +275,7 @@ function mensajeDe(g, nombreDestino) {
   const pal = nombre.split(/\s+/);
   const primer = /^(familia|fam\.?|sr\.?|sra\.?|srs\.?|lic\.?|licda\.?|dr\.?|dra\.?|ing\.?|don|doña)$/i.test(pal[0] || '') ? nombre : (pal[0] || '');
   const nota = (g.regalo_nota || '').trim();
-  return plantilla(conRegalo(g) ? 'con_regalo' : 'sin_regalo')
+  return conjugar(plantilla(conRegalo(g) ? 'con_regalo' : 'sin_regalo'), esUno(g))
     .replaceAll('{nombre}', nombre)
     .replaceAll('{primer_nombre}', primer)
     .replaceAll('{regalo}', nota ? ` (${nota})` : '')
@@ -343,6 +375,7 @@ function render() {
       ${celda(g, 'titular')}
       ${celda(g, 'acompanante')}
       <td>${conRegalo(g) ? '<span class="badge b-regalo">Con regalo</span>' : '<span class="badge b-none">Sin regalo</span>'}
+        <div class="muted">${esUno(g) ? 'en singular (1 persona)' : `en plural (${personas(g)} personas)`}</div>
         <div class="muted"><a href="${escapeHtml(linkDe(g))}" target="_blank" rel="noopener">ver página</a></div></td>
     </tr>`;
   }).join('') || `<tr><td colspan="5" style="text-align:center;padding:1.4rem;color:var(--muted)">Sin resultados.</td></tr>`;
@@ -359,6 +392,8 @@ function render() {
       : '';
   }
 
+  renderDifusion();
+
   const cola = colaPendiente();
   $('#queue-info').textContent = cola.length
     ? `${cola.length} número${cola.length === 1 ? '' : 's'} por agradecer con este filtro · siguiente: ${cola[0].nombre}`
@@ -371,6 +406,65 @@ function render() {
     bq.removeAttribute('href');
     bq.classList.add('apagado');
   }
+}
+
+/* ---------- Difusión ----------
+   Mensaje igual para todos: sin nombre, en plural y con el link general
+   (con ?r=1 para el grupo con regalo). Sale para los que confirmaron y a
+   los que todavía no se les ha agradecido en ningún número. */
+let difGrupo = 'sin';
+const DIF_GRUPOS = [
+  { k: 'sin', label: 'Sin regalo' },
+  { k: 'con', label: 'Con regalo' },
+];
+function difInvitados() {
+  return datos.filter(g => g.asistira === true && totalAgr(g) === 0 && (difGrupo === 'con') === conRegalo(g));
+}
+function difDestinos() { return difInvitados().flatMap(g => destinos(g).map(d => ({ ...d, id: g.id }))); }
+function difMensaje() {
+  const link = PAGINA_GRACIAS + (difGrupo === 'con' ? '?r=1' : '');
+  return conjugar(plantilla(difGrupo === 'con' ? 'con_regalo' : 'sin_regalo'), false)
+    .replace(/,?\s*\{(primer_nombre|nombre)\}/g, '')
+    .replaceAll('{regalo}', '')
+    .replaceAll('{link}', link);
+}
+function renderDifusion() {
+  $('#dif-grupos').innerHTML = DIF_GRUPOS.map(x =>
+    `<button class="chip ${difGrupo === x.k ? 'active' : ''}" data-dif="${x.k}">${x.label}</button>`).join('');
+  const ds = difDestinos();
+  $('#dif-texto').value = difMensaje();
+  $('#dif-cuenta').textContent = `${difInvitados().length} invitaciones · ${ds.length} números`
+    + (ds.length > 256 ? ' (más de 256: haz dos listas)' : '');
+  $('#dif-vcf').disabled = $('#dif-marcar').disabled = !ds.length;
+}
+function descargarVcf() {
+  const vcf = difDestinos().map(d => [
+    'BEGIN:VCARD', 'VERSION:3.0',
+    `FN:Boda · ${d.nombre}`, `N:${d.nombre};Boda;;;`,
+    `TEL;TYPE=CELL:+${d.tel}`, 'END:VCARD',
+  ].join('\r\n')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([vcf], { type: 'text/vcard' }));
+  a.download = `boda-gracias-${difGrupo === 'con' ? 'con-regalo' : 'sin-regalo'}.vcf`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function difMarcarEnviados() {
+  const ds = difDestinos();
+  if (!ds.length || !confirm(`¿Marcar ${ds.length} números como agradecidos? Hazlo solo después de mandar la difusión.`)) return;
+  $('#dif-marcar').disabled = true;
+  for (const d of ds) {
+    try {
+      await rpc('admin_registrar_envio', {
+        p_clave: clave, p_invitado_id: d.id, p_tipo: 'agradecimiento',
+        p_nota: 'difusion_' + difGrupo, p_destino: d.destino,
+      });
+      const g = datos.find(x => x.id === d.id);
+      const campo = d.destino === 'titular' ? 'agr_titular' : 'agr_acomp';
+      g[campo] = (g[campo] || 0) + 1;
+    } catch (e) { alert('No se pudo marcar a ' + d.nombre + ': ' + e.message); break; }
+  }
+  render();
 }
 
 function colaPendiente() {
@@ -444,6 +538,20 @@ $('#btn-queue').addEventListener('click', () => {
   const cola = colaPendiente();
   if (cola.length) marcarEnviado(cola[0].id, cola[0].destino);
 });
+
+$('#dif-grupos').addEventListener('click', e => {
+  const b = e.target.closest('[data-dif]');
+  if (b) { difGrupo = b.dataset.dif; renderDifusion(); }
+});
+$('#dif-copiar').addEventListener('click', async () => {
+  const b = $('#dif-copiar');
+  try { await navigator.clipboard.writeText($('#dif-texto').value); }
+  catch { $('#dif-texto').select(); document.execCommand('copy'); }
+  b.textContent = '¡Copiado!';
+  setTimeout(() => b.textContent = '1 · Copiar mensaje', 1500);
+});
+$('#dif-vcf').addEventListener('click', descargarVcf);
+$('#dif-marcar').addEventListener('click', difMarcarEnviados);
 
 cargarPlantillas();
 arrancarConsola({

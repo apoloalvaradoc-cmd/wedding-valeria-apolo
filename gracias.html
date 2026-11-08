@@ -85,13 +85,28 @@ h1 {
 }
 .divisor { display: flex; align-items: center; justify-content: center; gap: 0.7rem; margin: 0.3rem 0 0.9rem; color: var(--rose); }
 .divisor::before, .divisor::after { content: ""; width: 44px; height: 1px; background: var(--sage); }
-.intro { font-size: 1.25rem; line-height: 1.35; margin: 0 auto 1.6rem; max-width: 26ch; color: var(--ink); }
+.intro { font-size: 1.25rem; line-height: 1.35; margin: 0 auto 1rem; max-width: 26ch; color: var(--ink); }
+.ir-regalo {
+  display: inline-flex; align-items: center; gap: 0.45rem; margin: 0 auto 1.4rem;
+  padding: 0.5rem 1.1rem; border-radius: 999px; border: 1px solid var(--rose-powder);
+  background: var(--cream-2); color: var(--wine); text-decoration: none; font-size: 1.02rem; font-weight: 600;
+  box-shadow: 0 6px 14px -10px rgba(57,0,0,0.5);
+}
+.contenido { display: grid; gap: 0; }
+@media (min-width: 860px) {
+  main { max-width: 1020px; }
+  .contenido { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 2.6rem; align-items: start; }
+  .contenido .video { width: 100%; max-height: none; }
+  .contenido .regalo { margin-top: 5rem; }
+  .contenido.solo-video { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .ir-regalo { display: none; }
+}
 
 /* --- video --- */
 .video {
   position: relative; border-radius: 18px; overflow: hidden;
   background: #111; box-shadow: 0 18px 40px -18px rgba(57, 0, 0, 0.45);
-  aspect-ratio: 9 / 16; max-height: 78vh; margin: 0 auto; width: min(100%, calc(78vh * 9 / 16));
+  aspect-ratio: 9 / 16; max-height: 60vh; margin: 0 auto; width: min(100%, calc(60vh * 9 / 16));
 }
 .video video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .video .play {
@@ -109,7 +124,7 @@ h1 {
 .video.playing .play { display: none; }
 
 /* --- tarjeta de regalos --- */
-.regalo { position: relative; margin-top: 5.6rem; }
+.regalo { position: relative; margin-top: 5.4rem; scroll-margin-top: 90px; }
 .regalo .icono {
   position: absolute; top: -78px; left: 50%; transform: translateX(-50%);
   width: 132px; z-index: 2; filter: drop-shadow(0 10px 14px rgba(57, 0, 0, 0.35));
@@ -126,36 +141,26 @@ h1 {
 .tarjeta .linea { width: 120px; height: 1px; background: var(--sage); margin: 0.7rem auto 0.9rem; }
 .tarjeta p { margin: 0 auto 1.1rem; max-width: 34ch; font-size: 1.08rem; color: #EDE2DF; }
 
-.opcion {
-  display: flex; align-items: center; gap: 0.9rem; width: 100%;
-  background: var(--cream-2); color: var(--ink); text-align: left;
-  border: 1px solid var(--rose-powder); border-radius: 16px;
-  padding: 0.85rem 1rem; margin-top: 0.75rem;
-  font: inherit; cursor: pointer; text-decoration: none;
+
+.bloque { text-align: left; margin-top: 1.1rem; }
+.bloque h3 {
+  display: flex; align-items: center; gap: 0.55rem; margin: 0 0 0.6rem;
+  font-size: 1.25rem; font-weight: 600; color: var(--cream);
+}
+.bloque h3 svg { color: var(--rose-powder); flex: 0 0 auto; }
+.bloque h3 small { font-weight: 400; font-size: 0.95rem; color: var(--rose-powder); margin-left: auto; }
+.tiendas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
+.tienda {
+  display: grid; place-items: center; gap: 0.1rem; text-align: center;
+  padding: 0.85rem 0.4rem; border-radius: 14px;
+  background: var(--cream-2); color: var(--wine); text-decoration: none;
+  border: 1px solid var(--rose-powder);
+  font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.opcion:hover { transform: translateY(-1px); box-shadow: 0 8px 18px -10px rgba(0,0,0,0.5); }
-.opcion .ic { flex: 0 0 auto; color: var(--wine); padding-right: 0.9rem; border-right: 1px solid var(--rose-powder); display: grid; place-items: center; }
-.opcion .tx { flex: 1; min-width: 0; }
-.opcion strong { display: block; font-size: 1.15rem; font-weight: 600; line-height: 1.2; color: var(--wine); }
-.opcion small { display: block; font-size: 0.95rem; color: var(--ink-soft); }
-.opcion .fl { color: var(--olive); transition: transform 0.2s ease; }
-.opcion[aria-expanded="true"] .fl { transform: rotate(90deg); }
-
-.panel {
-  overflow: hidden; max-height: 0; transition: max-height 0.35s ease;
-  text-align: left;
-}
-.panel.abierto { max-height: 420px; }
-.panel-in { padding: 0.8rem 0.2rem 0.2rem; display: grid; gap: 0.55rem; }
-.tienda {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0.65rem 0.95rem; border-radius: 12px;
-  border: 1px solid rgba(217, 167, 172, 0.6); color: var(--cream); text-decoration: none;
-  font-size: 1.08rem; letter-spacing: 0.02em;
-}
-.tienda:hover { background: rgba(241, 240, 234, 0.1); }
-.banco { border: 1px solid rgba(217, 167, 172, 0.6); border-radius: 12px; padding: 0.9rem 1rem; }
+.tienda small { font-size: 0.82rem; font-weight: 500; color: var(--olive); }
+.tienda:hover { transform: translateY(-2px); box-shadow: 0 10px 18px -10px rgba(0,0,0,0.55); }
+.banco { background: rgba(241, 240, 234, 0.07); border: 1px solid rgba(217, 167, 172, 0.6); border-radius: 14px; padding: 0.95rem 1rem; }
 .banco dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.8rem; font-size: 1.02rem; }
 .banco dt { color: var(--sage); }
 .banco dd { margin: 0; }
@@ -199,7 +204,13 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
     <svg width="22" height="20" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 5.8-8 11-8 11z"/></svg>
   </div>
   <p class="intro">Por acompañarnos en uno de los días más especiales de nuestras vidas.</p>
+  <a class="ir-regalo" id="ir-regalo" href="#regalo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4"/><path d="M5 13v8h14v-8M12 9v12"/><path d="M12 9C10 5 6.5 5 6.8 7.3 7 9 12 9 12 9zM12 9c2-4 5.5-4 5.2-1.7C17 9 12 9 12 9z"/></svg>
+    Ver opciones de regalo
+  </a>
 
+  <div class="contenido" id="contenido">
+  <div>
   <div class="video" id="video">
     <video id="vid" src="gracias-video.mp4" poster="gracias-poster-v.jpg" preload="metadata" playsinline controls></video>
     <button class="play" id="play" aria-label="Ver el video de nuestra boda">
@@ -215,6 +226,7 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
     </div>
     Gracias también por el lindo detalle que tuvieron con nosotros. Será parte de nuestro nuevo hogar y de los recuerdos que construiremos juntos.
   </div>
+  </div>
 
   <!-- Para todos los demás -->
   <section class="regalo" id="regalo">
@@ -224,41 +236,38 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
       <div class="linea"></div>
       <p>El mejor regalo fue compartir este día con ustedes. Para quienes deseen tener un detalle adicional con nosotros, les dejamos aquí nuestras opciones de regalo. ♡</p>
 
-      <button class="opcion" aria-expanded="false" aria-controls="p-listas" data-panel="p-listas">
-        <span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4"/><path d="M5 13v8h14v-8M12 9v12"/><path d="M12 9C10 5 6.5 5 6.8 7.3 7 9 12 9 12 9zM12 9c2-4 5.5-4 5.2-1.7C17 9 12 9 12 9z"/></svg></span>
-        <span class="tx"><strong>Nuestra lista de regalos</strong><small>Ver los regalos que elegimos para nuestro hogar</small></span>
-        <span class="fl"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-      </button>
-      <div class="panel" id="p-listas">
-        <div class="panel-in">
-          <a class="tienda" href="https://www.cemaco.com/list/BODAALVARADOVARGAS07112026" target="_blank" rel="noopener">Cemaco <span>→</span></a>
-          <a class="tienda" href="https://www.max.com.gt/bodas-max/bodas/YZGO8B38" target="_blank" rel="noopener">Max <span>→</span></a>
-          <a class="tienda" href="https://simangiftregistry.web.app/table/20011898" target="_blank" rel="noopener">Siman <span>→</span></a>
+      <div class="bloque">
+        <h3>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4"/><path d="M5 13v8h14v-8M12 9v12"/><path d="M12 9C10 5 6.5 5 6.8 7.3 7 9 12 9 12 9zM12 9c2-4 5.5-4 5.2-1.7C17 9 12 9 12 9z"/></svg>
+          Nuestras listas de regalos
+        </h3>
+        <div class="tiendas">
+          <a class="tienda" href="https://www.cemaco.com/list/BODAALVARADOVARGAS07112026" target="_blank" rel="noopener">Cemaco<small>Ver lista →</small></a>
+          <a class="tienda" href="https://www.max.com.gt/bodas-max/bodas/YZGO8B38" target="_blank" rel="noopener">Max<small>Ver lista →</small></a>
+          <a class="tienda" href="https://simangiftregistry.web.app/table/20011898" target="_blank" rel="noopener">Siman<small>Ver lista →</small></a>
         </div>
       </div>
 
-      <button class="opcion" aria-expanded="false" aria-controls="p-banco" data-panel="p-banco">
-        <span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5H3z"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3.5 20.5h17"/></svg></span>
-        <span class="tx"><strong>Regalo por transferencia</strong><small>Ver nuestros datos bancarios</small></span>
-        <span class="fl"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
-      </button>
-      <div class="panel" id="p-banco">
-        <div class="panel-in">
-          <div class="banco">
-            <dl>
-              <dt>Banco</dt><dd>Banco Industrial</dd>
-              <dt>Tipo</dt><dd>Cuenta de ahorro</dd>
-              <dt>Nombre</dt><dd>Familia Alvarado Vargas</dd>
-              <dt>Cuenta</dt><dd class="num">1591672</dd>
-            </dl>
-            <button class="copiar" id="copiar">Copiar número de cuenta</button>
-          </div>
+      <div class="bloque">
+        <h3>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5H3z"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3.5 20.5h17"/></svg>
+          Regalo por transferencia
+        </h3>
+        <div class="banco">
+          <dl>
+            <dt>Banco</dt><dd>Banco Industrial</dd>
+            <dt>Tipo</dt><dd>Cuenta de ahorro</dd>
+            <dt>Nombre</dt><dd>Familia Alvarado Vargas</dd>
+            <dt>Cuenta</dt><dd class="num">1591672</dd>
+          </dl>
+          <button class="copiar" id="copiar">Copiar número de cuenta</button>
         </div>
       </div>
 
       <p class="nota-efectivo">Y si esa noche ya nos dejaron un detalle, ¡gracias de corazón! ♡</p>
     </div>
   </section>
+  </div>
 
   <footer>
     <img class="sello" src="gracias-sello.webp" alt="" width="74" height="75" loading="lazy">
@@ -284,6 +293,8 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
   // Quien ya nos dio regalo ve solo el agradecimiento, sin la tarjeta.
   if (qs.get('r') === '1') {
     $('#regalo').classList.add('hidden');
+    $('#ir-regalo').classList.add('hidden');
+    $('#contenido').classList.add('solo-video');
     $('#gracias-regalo').classList.remove('hidden');
   }
 
@@ -304,16 +315,6 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
   const vid = $('#vid');
   $('#play').addEventListener('click', () => { $('#video').classList.add('playing'); vid.play().catch(() => {}); });
   vid.addEventListener('play', () => $('#video').classList.add('playing'));
-
-  // Acordeones de regalo
-  document.querySelectorAll('[data-panel]').forEach(b => {
-    b.addEventListener('click', () => {
-      const p = document.getElementById(b.dataset.panel);
-      const abrir = b.getAttribute('aria-expanded') !== 'true';
-      b.setAttribute('aria-expanded', abrir);
-      p.classList.toggle('abierto', abrir);
-    });
-  });
 
   $('#copiar').addEventListener('click', async e => {
     const btn = e.currentTarget, o = btn.textContent;
