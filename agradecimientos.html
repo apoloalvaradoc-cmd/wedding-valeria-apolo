@@ -75,7 +75,7 @@
     <div class="card hidden" id="reg-card">
       <h2>Mesas de regalos <span class="muted" id="reg-cuenta"></span></h2>
       <p class="muted" style="margin-top:-0.4rem">
-        Lo que compraron en Cemaco y Siman. Donde el nombre coincide con un invitado aparece una sugerencia en su fila;
+        Lo que compraron en Cemaco, Max y Siman. Donde el nombre coincide con un invitado aparece una sugerencia en su fila;
         los que no encontramos quedan aquí para buscarlos a mano.
       </p>
       <div class="row" style="margin-bottom:0.6rem">
@@ -248,8 +248,12 @@ function coincide(quien, g) {
   });
 }
 const etiquetaRegalo = r => `${r.regalo || 'Regalo'} (${r.tienda[0].toUpperCase() + r.tienda.slice(1)})`;
-function sugerenciasDe(g) { return registro.filter(r => coincide(r.quien, g)); }
-function sinCoincidencia() { return registro.filter(r => !datos.some(g => coincide(r.quien, g))); }
+/* Si el regalo ya trae a qué invitación(es) corresponde (lo validamos a mano,
+   incluso cuando lo compró la pareja o fue conjunto), eso manda; si no, se
+   adivina por nombre. */
+const ligadas = r => Array.isArray(r.invitados) && r.invitados.length ? r.invitados : null;
+function sugerenciasDe(g) { return registro.filter(r => ligadas(r) ? ligadas(r).includes(g.id) : coincide(r.quien, g)); }
+function sinCoincidencia() { return registro.filter(r => !ligadas(r) && !datos.some(g => coincide(r.quien, g))); }
 
 async function aplicarSugerencia(id) {
   const g = datos.find(x => x.id === id);
