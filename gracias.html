@@ -124,7 +124,8 @@ h1 {
 .video.playing .play { display: none; }
 
 /* --- tarjeta de regalos --- */
-.regalo { position: relative; margin-top: 5.4rem; scroll-margin-top: 90px; }
+.regalo { position: relative; margin-top: 5.4rem; }
+.bloque { scroll-margin-top: 24px; }
 .regalo .icono {
   position: absolute; top: -78px; left: 50%; transform: translateX(-50%);
   width: 132px; z-index: 2; filter: drop-shadow(0 10px 14px rgba(57, 0, 0, 0.35));
@@ -136,7 +137,7 @@ h1 {
   padding: 4.6rem 1.2rem 1.4rem;
   box-shadow: 0 22px 44px -24px rgba(57, 0, 0, 0.75);
 }
-.tarjeta h2 { font-weight: 500; font-size: clamp(1.9rem, 8vw, 2.4rem); line-height: 1.05; margin: 0; }
+.tarjeta h2 { font-weight: 500; font-size: clamp(1.9rem, 8vw, 2.4rem); line-height: 1.05; margin: 0; letter-spacing: -0.015em; }
 .tarjeta h2 em { display: block; font-style: italic; font-weight: 400; }
 .tarjeta .linea { width: 120px; height: 1px; background: var(--sage); margin: 0.7rem auto 0.9rem; }
 .tarjeta p { margin: 0 auto 1.1rem; max-width: 34ch; font-size: 1.08rem; color: #EDE2DF; }
@@ -149,27 +150,44 @@ h1 {
 }
 .bloque h3 svg { color: var(--rose-powder); flex: 0 0 auto; }
 .bloque h3 small { font-weight: 400; font-size: 0.95rem; color: var(--rose-powder); margin-left: auto; }
-.tiendas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
+.tiendas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
 .tienda {
-  display: grid; place-items: center; gap: 0.1rem; text-align: center;
-  padding: 0.85rem 0.4rem; border-radius: 14px;
-  background: var(--cream-2); color: var(--wine); text-decoration: none;
-  border: 1px solid var(--rose-powder);
-  font-size: 1.2rem; font-weight: 600; letter-spacing: 0.02em;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: grid; place-items: center; gap: 0.25rem; text-align: center;
+  min-height: 96px; padding: 0.9rem 0.4rem 0.8rem; border-radius: 16px;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--cream-2) 100%); color: var(--wine); text-decoration: none;
+  border: 1px solid rgba(217, 167, 172, 0.9);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 8px 18px -12px rgba(0,0,0,0.6);
+  font-size: 1.22rem; font-weight: 600; letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms cubic-bezier(.2,.8,.2,1), box-shadow 160ms ease;
 }
-.tienda small { font-size: 0.82rem; font-weight: 500; color: var(--olive); }
-.tienda:hover { transform: translateY(-2px); box-shadow: 0 10px 18px -10px rgba(0,0,0,0.55); }
+.tienda .ic-t { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(88,4,16,0.08); color: var(--wine); }
+.tienda small { font-size: 0.85rem; font-weight: 600; color: var(--olive); letter-spacing: 0.02em; }
+@media (hover: hover) { .tienda:hover { transform: translateY(-2px); box-shadow: 0 1px 0 #fff inset, 0 14px 22px -12px rgba(0,0,0,0.6); } }
+.tienda:active, .copiar:active, .ir-regalo:active, .cuenta-num:active, .barra a:active { transform: scale(0.97); transition: transform 90ms ease-out; }
 .banco { background: rgba(241, 240, 234, 0.07); border: 1px solid rgba(217, 167, 172, 0.6); border-radius: 14px; padding: 0.95rem 1rem; }
 .banco dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.8rem; font-size: 1.02rem; }
 .banco dt { color: var(--sage); }
 .banco dd { margin: 0; }
 .banco .num { font-size: 1.35rem; letter-spacing: 0.06em; font-weight: 600; }
-.copiar {
-  margin-top: 0.75rem; width: 100%; font: inherit; font-size: 1rem; cursor: pointer;
-  background: var(--cream); color: var(--wine); border: 0; border-radius: 10px; padding: 0.55rem;
-  font-weight: 600; letter-spacing: 0.04em;
+.cuenta-num {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; width: 100%;
+  margin: 0 0 0.8rem; padding: 0.7rem 0.9rem; border-radius: 12px; cursor: pointer;
+  background: rgba(241, 240, 234, 0.1); border: 1px dashed rgba(217, 167, 172, 0.8); color: var(--cream);
+  font: inherit; text-align: left; -webkit-tap-highlight-color: transparent;
 }
+.cuenta-num .lbl { display: block; font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage); }
+.cuenta-num .n { display: block; font-size: 1.85rem; font-weight: 600; letter-spacing: 0.08em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cuenta-num .ic-c { color: var(--rose-powder); flex: 0 0 auto; }
+.copiado .cuenta-num, .cuenta-num.ok { border-style: solid; border-color: var(--sage); }
+.copiar {
+  margin-top: 0.85rem; width: 100%; min-height: 46px; font: inherit; font-size: 1.05rem; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: var(--cream); color: var(--wine); border: 0; border-radius: 12px; padding: 0.6rem;
+  font-weight: 700; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent;
+  transition: background 200ms ease, color 200ms ease;
+}
+.copiar.ok { background: var(--sage); color: var(--wine-dark); }
 .nota-efectivo { margin: 1.1rem auto 0 !important; font-size: 0.98rem !important; font-style: italic; color: var(--rose-powder) !important; }
 
 .gracias-regalo {
@@ -184,6 +202,31 @@ footer p { margin: 0.4rem 0 0; font-size: 1.12rem; }
 footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1; margin-top: 0.1rem; color: var(--wine); }
 
 .hidden { display: none !important; }
+
+/* --- barra flotante (celular): acceso directo a listas y transferencia --- */
+.barra {
+  position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 20;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px;
+  border-radius: 20px;
+  background: rgba(88, 4, 16, 0.78);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 18px 36px -16px rgba(57, 0, 0, 0.7);
+  transform: translateY(calc(100% + 24px)); opacity: 0;
+  transition: transform 380ms cubic-bezier(.2,.9,.25,1), opacity 240ms ease;
+}
+.barra.visible { transform: none; opacity: 1; }
+.barra a {
+  display: flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 48px;
+  border-radius: 15px; color: var(--cream); text-decoration: none; font-size: 1.02rem; font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+}
+.barra a:first-child { background: var(--cream-2); color: var(--wine); }
+@media (min-width: 860px) { .barra { display: none; } }
+@media (prefers-reduced-motion: reduce) { .barra { transition: opacity 200ms ease; transform: none; } }
+@media (prefers-reduced-transparency: reduce) { .barra { background: var(--wine); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+main { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 860px) { main { padding-bottom: 2.5rem; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -204,7 +247,7 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
     <svg width="22" height="20" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 5.8-8 11-8 11z"/></svg>
   </div>
   <p class="intro">Por acompañarnos en uno de los días más especiales de nuestras vidas.</p>
-  <a class="ir-regalo" id="ir-regalo" href="#regalo">
+  <a class="ir-regalo" id="ir-regalo" href="#listas">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4"/><path d="M5 13v8h14v-8M12 9v12"/><path d="M12 9C10 5 6.5 5 6.8 7.3 7 9 12 9 12 9zM12 9c2-4 5.5-4 5.2-1.7C17 9 12 9 12 9z"/></svg>
     Ver opciones de regalo
   </a>
@@ -236,31 +279,37 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
       <div class="linea"></div>
       <p>El mejor regalo fue compartir este día con ustedes. Para quienes deseen tener un detalle adicional con nosotros, les dejamos aquí nuestras opciones de regalo. ♡</p>
 
-      <div class="bloque">
+      <div class="bloque" id="listas">
         <h3>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4"/><path d="M5 13v8h14v-8M12 9v12"/><path d="M12 9C10 5 6.5 5 6.8 7.3 7 9 12 9 12 9zM12 9c2-4 5.5-4 5.2-1.7C17 9 12 9 12 9z"/></svg>
           Nuestras listas de regalos
         </h3>
         <div class="tiendas">
-          <a class="tienda" href="https://www.cemaco.com/list/BODAALVARADOVARGAS07112026" target="_blank" rel="noopener">Cemaco<small>Ver lista →</small></a>
-          <a class="tienda" href="https://www.max.com.gt/bodas-max/bodas/YZGO8B38" target="_blank" rel="noopener">Max<small>Ver lista →</small></a>
-          <a class="tienda" href="https://simangiftregistry.web.app/table/20011898" target="_blank" rel="noopener">Siman<small>Ver lista →</small></a>
+          <a class="tienda" href="https://www.cemaco.com/list/BODAALVARADOVARGAS07112026" target="_blank" rel="noopener"><span class="ic-t"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>Cemaco<small>Ver lista →</small></a>
+          <a class="tienda" href="https://www.max.com.gt/bodas-max/bodas/YZGO8B38" target="_blank" rel="noopener"><span class="ic-t"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>Max<small>Ver lista →</small></a>
+          <a class="tienda" href="https://simangiftregistry.web.app/table/20011898" target="_blank" rel="noopener"><span class="ic-t"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>Siman<small>Ver lista →</small></a>
         </div>
       </div>
 
-      <div class="bloque">
+      <div class="bloque" id="transferencia">
         <h3>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5H3z"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3.5 20.5h17"/></svg>
           Regalo por transferencia
         </h3>
         <div class="banco">
+          <button class="cuenta-num" id="cuenta-num" aria-label="Copiar número de cuenta 1591672">
+            <span><span class="lbl">Número de cuenta</span><span class="n">1591672</span></span>
+            <svg class="ic-c" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          </button>
           <dl>
             <dt>Banco</dt><dd>Banco Industrial</dd>
-            <dt>Tipo</dt><dd>Cuenta de ahorro</dd>
-            <dt>Nombre</dt><dd>Familia Alvarado Vargas</dd>
-            <dt>Cuenta</dt><dd class="num">1591672</dd>
+            <dt>Tipo</dt><dd>Cuenta de ahorro (quetzales)</dd>
+            <dt>A nombre de</dt><dd>Familia Alvarado Vargas</dd>
           </dl>
-          <button class="copiar" id="copiar">Copiar número de cuenta</button>
+          <button class="copiar" id="copiar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+            <span>Copiar número de cuenta</span>
+          </button>
         </div>
       </div>
 
@@ -281,6 +330,17 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
   </footer>
 </main>
 </div>
+
+<nav class="barra" id="barra" aria-label="Opciones de regalo">
+  <a href="#listas">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+    Listas de regalos
+  </a>
+  <a href="#transferencia">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5H3z"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3.5 20.5h17"/></svg>
+    Transferencia
+  </a>
+</nav>
 
 <script>
 (() => {
@@ -316,12 +376,58 @@ footer .firma { font-family: var(--script); font-size: 2.9rem; line-height: 1.1;
   $('#play').addEventListener('click', () => { $('#video').classList.add('playing'); vid.play().catch(() => {}); });
   vid.addEventListener('play', () => $('#video').classList.add('playing'));
 
-  $('#copiar').addEventListener('click', async e => {
-    const btn = e.currentTarget, o = btn.textContent;
-    try { await navigator.clipboard.writeText(CUENTA); btn.textContent = '¡Copiado!'; }
-    catch { btn.textContent = CUENTA; }
-    setTimeout(() => btn.textContent = o, 1800);
-  });
+  // Copiar la cuenta: desde el número mismo o desde el botón. La confirmación
+  // aparece en el mismo instante en los dos, y vibra donde se pueda.
+  const btnCopiar = $('#copiar'), lblCopiar = btnCopiar.querySelector('span'), numero = $('#cuenta-num');
+  let tCopia;
+  async function copiarCuenta() {
+    let ok = true;
+    try { await navigator.clipboard.writeText(CUENTA); }
+    catch {
+      try {
+        const t = document.createElement('textarea'); t.value = CUENTA; t.setAttribute('readonly', '');
+        t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+        ok = document.execCommand('copy'); t.remove();
+      } catch { ok = false; }
+    }
+    lblCopiar.textContent = ok ? '¡Copiado! Pégalo en tu banca' : 'Cuenta: ' + CUENTA;
+    btnCopiar.classList.toggle('ok', ok); numero.classList.toggle('ok', ok);
+    if (ok && navigator.vibrate) navigator.vibrate(12);
+    clearTimeout(tCopia);
+    tCopia = setTimeout(() => {
+      lblCopiar.textContent = 'Copiar número de cuenta';
+      btnCopiar.classList.remove('ok'); numero.classList.remove('ok');
+    }, 2200);
+  }
+  btnCopiar.addEventListener('click', copiarCuenta);
+  numero.addEventListener('click', copiarCuenta);
+
+  // Barra flotante: aparece al pasar el encabezado y se esconde cuando las
+  // listas o la cuenta ya están en pantalla (no tiene caso taparlas).
+  const barra = $('#barra');
+  if (qs.get('r') === '1') {
+    barra.remove();
+  } else {
+    let pasoArriba = false;
+    const enVista = new Set();
+    const pintar = () => barra.classList.toggle('visible', pasoArriba && !enVista.size);
+    new IntersectionObserver(([e]) => { pasoArriba = !e.isIntersecting; pintar(); })
+      .observe($('#ir-regalo'));
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => e.isIntersecting ? enVista.add(e.target) : enVista.delete(e.target));
+      pintar();
+    }, { threshold: 0.35 });
+    io.observe($('#listas')); io.observe($('#transferencia'));
+  }
+
+  // Los saltos a #listas / #transferencia se deslizan, salvo con movimiento reducido.
+  const suave = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const destino = document.querySelector(a.getAttribute('href'));
+    if (!destino) return;
+    e.preventDefault();
+    destino.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' });
+  }));
 })();
 </script>
 </body>
