@@ -66,7 +66,7 @@
         </div>
       </div>
       <ol class="muted" style="margin:0.6rem 0 0;padding-left:1.2rem">
-        <li>Abre el .vcf en tu teléfono para guardar los contactos (quedan como "Boda · Nombre"; si ya los tenías, WhatsApp los junta).</li>
+        <li>Abre el .vcf en tu teléfono para guardar los contactos (quedan como "Boda - Nombre"; si ya los tenías, WhatsApp los junta).</li>
         <li>En WhatsApp: ⋮ → Nueva difusión → busca "Boda" y selecciónalos (máximo 256 por lista).</li>
         <li>Pega el mensaje y envía. Luego vuelve aquí y toca el paso 3.</li>
       </ol>
@@ -128,7 +128,7 @@ const PAGINA_GRACIAS = CONFIG.sitioPublico + 'gracias.html';
 
 const PLANTILLAS = {
   sin_regalo:
-`¡Hola, {primer_nombre}! ❤️
+`¡Hola, {primer_nombre}!
 
 Queremos agradecer{les|te} de corazón por habernos acompañado en uno de los días más especiales de nuestras vidas. ¡Nos hizo muy felices compartirlo con{ ustedes|tigo}!
 
@@ -136,23 +136,23 @@ Gracias por todo {su|tu} cariño y por ser parte de este momento tan importante 
 
 {Les|Te} compartimos este enlace con algunos recuerdos de nuestra boda para que {puedan|puedas} revivir esa noche tan especial.
 
-🎥 {link}
+Video: {link}
 
 ¡Un abrazo enorme!
 
-Valeria y Apolo ❤️`,
+Valeria y Apolo`,
   con_regalo:
-`¡Hola, {primer_nombre}! ❤️
+`¡Hola, {primer_nombre}!
 
 ¡Gracias por acompañarnos en uno de los días más especiales de nuestras vidas! Fue una noche inolvidable, llena de amor, alegría y momentos que guardaremos para siempre en nuestros corazones.
 
 Gracias también por todo {su|tu} cariño y por el lindo detalle que {tuvieron|tuviste} con nosotros. Será parte de nuestro nuevo hogar y de los recuerdos que construiremos juntos en esta hermosa etapa que comenzamos como familia.
 
 Aquí {les|te} dejamos un pequeño video de esa noche:
-🎥 {link}
+{link}
 
 Con muchísimo cariño y gratitud,
-Valeria y Apolo ❤️`,
+Valeria y Apolo`,
 };
 
 const REGALOS = [
@@ -285,10 +285,18 @@ function mensajeDe(g, nombreDestino) {
     .replaceAll('{regalo}', nota ? ` (${nota})` : '')
     .replaceAll('{link}', linkDe(g));
 }
+/* Los emojis llegan como "?" en algunos teléfonos cuando van dentro del link
+   de WhatsApp, así que se quitan antes de enviar (también de textos viejos
+   guardados en el dispositivo). */
+const sinEmojis = t => t
+  .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}]/gu, '')
+  .replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n')
+  .replace(/[ \t]{2,}/g, ' ').replace(/ +([!?.,])/g, '$1').trim();
+
 function waLink(g, destino) {
   const d = destinos(g).find(x => x.destino === destino);
   if (!d) return '';
-  return `https://wa.me/${d.tel}?text=${encodeURIComponent(mensajeDe(g, d.nombre))}`;
+  return `https://wa.me/${d.tel}?text=${encodeURIComponent(sinEmojis(mensajeDe(g, d.nombre)))}`;
 }
 
 const ICONO_WA = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.16c-.24.68-1.2 1.26-1.97 1.42-.53.11-1.21.2-3.51-.75-2.95-1.22-4.85-4.21-5-4.41-.14-.2-1.19-1.58-1.19-3.02s.75-2.14 1.02-2.43c.27-.29.59-.37.79-.37l.57.01c.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.09.2-.14.32-.28.49l-.42.49c-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.27.14.43.12.59-.07.16-.2.68-.79.86-1.06.18-.28.36-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.34z"/></svg>';
@@ -436,7 +444,7 @@ function renderDifusion() {
   $('#dif-grupos').innerHTML = DIF_GRUPOS.map(x =>
     `<button class="chip ${difGrupo === x.k ? 'active' : ''}" data-dif="${x.k}">${x.label}</button>`).join('');
   const ds = difDestinos();
-  $('#dif-texto').value = difMensaje();
+  $('#dif-texto').value = sinEmojis(difMensaje());
   $('#dif-cuenta').textContent = `${difInvitados().length} invitaciones · ${ds.length} números`
     + (ds.length > 256 ? ' (más de 256: haz dos listas)' : '');
   $('#dif-vcf').disabled = $('#dif-marcar').disabled = !ds.length;
@@ -444,7 +452,7 @@ function renderDifusion() {
 function descargarVcf() {
   const vcf = difDestinos().map(d => [
     'BEGIN:VCARD', 'VERSION:3.0',
-    `FN:Boda · ${d.nombre}`, `N:${d.nombre};Boda;;;`,
+    `FN:Boda - ${d.nombre}`, `N:${d.nombre};Boda;;;`,
     `TEL;TYPE=CELL:+${d.tel}`, 'END:VCARD',
   ].join('\r\n')).join('\r\n');
   const a = document.createElement('a');
